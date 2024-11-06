@@ -242,7 +242,9 @@ def download_files(scr_path, lang, branch):
             lang: [
                 f'A1111-{lang}.py',
                 f'ReForge-{lang}.py',
-                f'ComfyUI-{lang}.py'
+                f'ComfyUI-{lang}.py',
+                f'widgets-{lang}.py',
+                f'downloading-{lang}.py'
             ],
             '': [
                 'auto-cleaner.py',
