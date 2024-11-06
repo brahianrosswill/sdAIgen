@@ -240,14 +240,18 @@ def download_files(scr_path, lang, branch):
         ],
         'scripts': {
             lang: [
+            	# UIs
                 f'A1111-{lang}.py',
                 f'ReForge-{lang}.py',
                 f'ComfyUI-{lang}.py',
-                f'widgets-{lang}.py',
-                f'downloading-{lang}.py'
+                # ---
+                f'widgets-{lang}.py',		# Main Widgets
+                f'downloading-{lang}.py' 	# Main Downloads (Repo, Models, other...)
             ],
             '': [
-                'auto-cleaner.py',
+            	'launch.py',			# Lauch WebUI
+                'auto-cleaner.py',		# Clear Models
+                # -Others Scripts-
                 'download-result.py',
                 'models-data.py',
                 'xl-models-data.py'
