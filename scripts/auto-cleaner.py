@@ -3,7 +3,8 @@
 from json_utils import read_json, save_json, update_json    # JSON (main)
 from widget_factory import WidgetFactory                    # WIDGETS
 
-from IPython.display import clear_output
+from IPython.display import display, HTML, clear_output
+import ipywidgets as widgets
 from pathlib import Path
 import psutil
 import time

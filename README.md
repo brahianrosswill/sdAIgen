@@ -18,7 +18,7 @@
 
 - [ ] Create notebooks for:
     - [ ] Google Colab:
-        - [ ] ru
+        - [x] ru
         - [ ] en
     - [ ] Kaggle:
         - [ ] ru
@@ -32,6 +32,10 @@
     - [ ] Models
     - [ ] VAE
     - [ ] ControlNet
+    
+ - [ ] Add more utilities:
+    - [ ] Save images in zip
+    - [ ] Think of more ideas ;3
 
 - [ ] Improve resource loading (borrow from [gutris1](https://github.com/gutris1) ;3)
 - [ ] Feed the cat...
