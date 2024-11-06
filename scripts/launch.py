@@ -2,11 +2,13 @@
 
 from json_utils import read_json, save_json, update_json  # JSON (main)
 
+from IPython.display import clear_output
 from datetime import timedelta
 from pathlib import Path
 import subprocess
 import requests
 import pickle
+import time
 import json
 import os
 import re
@@ -16,6 +18,7 @@ HOME = Path.home()
 SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
+WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
 ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 
 def load_settings(path):
