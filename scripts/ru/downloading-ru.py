@@ -1,14 +1,16 @@
 # ~ download.py | by: ANXETY ~
 
-from json_utils import read_json, save_json, update_json  # JSON (main)
+from json_utils import read_json, save_json, update_json    # JSON (main)
+from webui_utils import handle_colab_timer                  # WEBUI
 
 from IPython.display import clear_output
 from IPython.utils import capture
+from datetime import timedelta
 from pathlib import Path
 import subprocess
 import requests
-import time
 import shlex
+import time
 import sys
 import re
 import os
@@ -99,7 +101,28 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
 
 # =================== WEBUI ===================
 
-get_ipython().run_line_magic('run', f'{SCRIPTS}/{LANG}/{UI}-{LANG}.py')
+start_timer = read_json(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
+
+if not os.path.exists(WEBUI):
+    start_install = time.time()
+    print(f"⌚ Распаковка Stable Diffusion... | WEBUI: \033[34m{UI}\033[0m", end='')
+
+    get_ipython().run_line_magic('run', f'{SCRIPTS}/UIs/{UI}.py')
+
+    handle_colab_timer(WEBUI, start_timer)		# Setup timer (for ncpt timer-extensions)
+
+    install_time = time.time() - start_install
+    minutes, seconds = divmod(int(install_time), 60)
+    print(f"\r🚀 Распаковка Завершена! За {minutes:02}:{seconds:02} ⚡" + " "*15)
+
+else:
+    print(f"🔧 Текущий WebUI: \033[34m{UI} \033[0m")
+    print("🚀 Распаковка завершена. Пропуск. ⚡")
+
+    timer_colab = handle_colab_timer(WEBUI, start_timer)
+    elapsed_time = str(timedelta(seconds=time.time() - timer_colab)).split('.')[0]
+
+    print(f"⌚️ Вы проводите эту сессию в течение - \033[33m{elapsed_time}\033[0m")
 
 
 ## Changes extensions and WebUi

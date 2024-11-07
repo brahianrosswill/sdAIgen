@@ -239,18 +239,18 @@ def download_files(scr_path, lang, branch):
             'widget_factory.py'
         ],
         'scripts': {
+            'UIs': [
+                f'A1111.py',
+                f'ReForge}.py',
+                f'ComfyUI.py',
+	          ],
             lang: [
-            	# UIs
-                f'A1111-{lang}.py',
-                f'ReForge-{lang}.py',
-                f'ComfyUI-{lang}.py',
-                # ---
-                f'widgets-{lang}.py',		# Main Widgets
-                f'downloading-{lang}.py' 	# Main Downloads (Repo, Models, other...)
+                f'widgets-{lang}.py',       # Main Widgets
+                f'downloading-{lang}.py'    # Main Downloads (Repo, Models, other...)
             ],
             '': [
-            	'launch.py',			# Lauch WebUI
-                'auto-cleaner.py',		# Clear Models
+            	'launch.py',                  # Lauch WebUI
+                'auto-cleaner.py',		      # Clear Models
                 # -Others Scripts-
                 'download-result.py',
                 'models-data.py',

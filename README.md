@@ -8,26 +8,28 @@
     - [x] Launch web UI
     - [x] Auto-cleaner script
 
+- [x] Add support for ComfyUI
+
 ---
 
 ## Tasks to Do
 - [ ] Add translations for scripts:
-    - [ ] Widgets (en)
+    - [x] Widgets (en)
     - [ ] Downloads (en)
     
 
 - [ ] Create notebooks for:
-    - [ ] Google Colab:
+    - [x] Google Colab:
         - [x] ru
-        - [ ] en
+        - [x] en
     - [ ] Kaggle:
         - [ ] ru
         - [ ] en
 
-- [ ] Add support for ComfyUI
-- [ ] Add config settings
-- [ ] Add UI config settings
-- [ ] Add styles
+- [ ] Add settings:
+	- [ ] Add config
+	- [ ] Add UI config
+	- [ ] Add styles
 - [ ] Update the date for:
     - [ ] Models
     - [ ] VAE
