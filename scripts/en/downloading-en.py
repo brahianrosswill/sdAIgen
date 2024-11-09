@@ -66,7 +66,7 @@ def download_additional_packages(SCR_PATH):
         subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
-    print("💿 Установка библиотек, это займет какое-то время:")
+    print("💿 Installing the libraries, this will take some time:")
 
     install_lib = {
         # "aria2": "apt -y install aria2",
@@ -78,7 +78,7 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
 
     additional_libs = {
         "Google Colab": {
-            "xformers": "pip install xformers==0.0.27.post2 --no-deps"
+            "xformers": "pip install xformers==0.0.27.post2"
         },
         "Kaggle": {
             "xformers": "pip install xformers==0.0.27",
@@ -95,7 +95,7 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
     clear_output()
     update_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
 
-    print("🍪 Библиотеки установлены!")
+    print("🍪 The libraries are installed!")
     time.sleep(2)
     clear_output()
 
@@ -105,7 +105,7 @@ start_timer = read_json(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
 
 if not os.path.exists(WEBUI):
     start_install = time.time()
-    print(f"⌚ Распаковка Stable Diffusion... | WEBUI: \033[34m{UI}\033[0m", end='')
+    print(f"⌚ Unpacking Stable Diffusion... | WEBUI: \033[34m{UI}\033[0m", end='')
 
     get_ipython().run_line_magic('run', f'{SCRIPTS}/UIs/{UI}.py')
 
@@ -116,19 +116,19 @@ if not os.path.exists(WEBUI):
     print(f"\r🚀 Распаковка Завершена! За {minutes:02}:{seconds:02} ⚡" + " "*15)
 
 else:
-    print(f"🔧 Текущий WebUI: \033[34m{UI} \033[0m")
-    print("🚀 Распаковка завершена. Пропуск. ⚡")
+    print(f"🔧 Current WebUI: \033[34m{UI} \033[0m")
+    print("🚀 Unpacking is complete. Pass. ⚡")
 
     timer_colab = handle_colab_timer(WEBUI, start_timer)
     elapsed_time = str(timedelta(seconds=time.time() - timer_colab)).split('.')[0]
 
-    print(f"⌚️ Вы проводите эту сессию в течение - \033[33m{elapsed_time}\033[0m")
+    print(f"⌚️ You've been conducting this session for - \033[33m{elapsed_time}\033[0m")
 
 
 ## Changes extensions and WebUi
 if latest_webui or latest_extensions:
-    action = "WebUI и Расширений" if latest_webui and latest_extensions else ("WebUI" if latest_webui else "Расширений")
-    print(f"⌚️ Обновление {action}...", end='')
+    action = "WebUI and Extensions" if latest_webui and latest_extensions else ("WebUI" if latest_webui else "Extensions")
+    print(f"⌚️ Update {action}...", end='')
     with capture.capture_output():
         get_ipython().system('git config --global user.email "you@example.com"')
         get_ipython().system('git config --global user.name "Your Name"')
@@ -142,7 +142,7 @@ if latest_webui or latest_extensions:
         ## Update extensions
         if latest_extensions:
             get_ipython().system('{\'for dir in \' + WEBUI + \'/extensions/*/; do cd \\"$dir\\" && git reset --hard && git pull; done\'}')
-    print(f"\r✨ Обновление {action} Завершено!")
+    print(f"\r✨ Update {action} Completed!")
 
 
 # === FIXING EXTENSIONS ===
@@ -155,13 +155,13 @@ with capture.capture_output():
 
 ## Version switching
 if commit_hash:
-    print('⏳ Активация машины времени...', end="")
+    print('⏳ Time Machine Activation...', end="")
     with capture.capture_output():
         get_ipython().run_line_magic('cd', '{WEBUI}')
         get_ipython().system('git config --global user.email "you@example.com"')
         get_ipython().system('git config --global user.name "Your Name"')
         get_ipython().system('git reset --hard {commit_hash}')
-    print(f"\r⌛️ Машина времени активированна! Текущий коммит: \033[34m{commit_hash}\033[0m")
+    print(f"\r⌛️ Time Machine activated! Current commit: \033[34m{commit_hash}\033[0m")
 
 
 # Get XL or 1.5 models list
@@ -174,7 +174,7 @@ else:
         exec(f.read())
 
 ## Downloading model and stuff | oh~ Hey! If you're freaked out by that code too, don't worry, me too!
-print("📦 Скачивание моделей и прочего...", end='')
+print("📦 Downloading models and stuff...", end='')
 
 extension_repo = []
 PREFIXES = {
@@ -197,7 +197,7 @@ def monitor_aria2_download(header, args, dst_dir, out, url):
     try:
         command = f"aria2c {header} {args} -d {dst_dir} {out} '{url}'"
 
-        # Run aria2c with output capture
+       # Run aria2c with output capture
         process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         # Color codes for output
@@ -588,14 +588,14 @@ prefixed_urls = [
 url += ", ".join(prefixed_urls) + ", " + file_urls
 
 if detailed_download == "on":
-    print("\n\n\033[33m# ====== Подробная Загрузка ====== #\n\033[0m")
+    print("\n\n\033[33m# ====== Detailed Download ====== #\n\033[0m")
     download(url)
     print("\n\033[33m# =============================== #\n\033[0m")
 else:
     with capture.capture_output():
         download(url)
 
-print("\r🏁 Скачивание Завершено!" + " "*15)
+print("\r🏁 Download Complete!" + " "*15)
 
 
 # Cleaning shit after downloading...
@@ -610,11 +610,11 @@ def _clone_repository(repo, repo_name, extensions_dir):
     get_ipython().system(command)
 
 if extension_repo:
-    print("✨ Установка кастомных расширений...", end='')
+    print("✨ Installing custom extensions...", end='')
     with capture.capture_output():
         for repo, repo_name in extension_repo:
             _clone_repository(repo, repo_name, extensions_dir)
-    print(f"\r📦 Установлено '{len(extension_repo)}' кастомных расширений!")
+    print(f"\r📦 Installed '{len(extension_repo)}' custom extensions!")
 
 
 ## List Models and stuff

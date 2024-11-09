@@ -3,8 +3,8 @@
 ## Completed Tasks
 - [x] Start the project V2~
 - [x] Add scripts:
-    - [x] Widgets (ru)
-    - [x] Downloads (ru)
+    - [x] Widgets (ru/en)
+    - [x] Downloads (ru/en)
     - [x] Launch web UI
     - [x] Auto-cleaner script
 
@@ -13,11 +13,6 @@
 ---
 
 ## Tasks to Do
-- [ ] Add translations for scripts:
-    - [x] Widgets (en)
-    - [ ] Downloads (en)
-    
-
 - [ ] Create notebooks for:
     - [x] Google Colab:
         - [x] ru
