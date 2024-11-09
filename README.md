@@ -24,7 +24,7 @@
 - [ ] Add settings:
 	- [ ] Add config
 	- [ ] Add UI config
-	- [ ] Add styles
+	- [x] Add styles
 - [ ] Update the date for:
     - [ ] Models
     - [ ] VAE
