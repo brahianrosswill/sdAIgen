@@ -18,7 +18,7 @@ SETTINGS_PATH = SCR_PATH / 'settings.json'
 
 REPO_ZIP_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"
 
-BRANCH = read_json(SETTINGS_PATH. 'ENVIRONMENT.branch')
+BRANCH = read_json(SETTINGS_PATH, 'ENVIRONMENT.branch')
 
 os.chdir(HOME)
 
