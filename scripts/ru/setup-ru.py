@@ -186,7 +186,7 @@ def _get_start_timer():
 
     return int(time.time() - 5)
 
-def create_environment_data(env, scr_folder, lang):
+def create_environment_data(env, scr_folder, lang, branch):
     scr_folder.mkdir(parents=True, exist_ok=True)   # create main dir
     install_deps = 'xformers' in sys.modules
 
@@ -196,6 +196,7 @@ def create_environment_data(env, scr_folder, lang):
     return {
         'ENVIRONMENT': {
             'lang': lang,
+            'branch': branch,
             'env_name': env,
             'install_deps': install_deps,
             'home_path': str(scr_folder.parent),
@@ -283,7 +284,7 @@ if __name__ == "__main__":
     download_files(SCR_PATH, lang, branch)          # download scripts files
     setup_module_folder(SCR_PATH)                   # setup main dir -> modeules
 
-    env_data = create_environment_data(env, SCR_PATH, lang)
+    env_data = create_environment_data(env, SCR_PATH, lang, branch)
     save_environment_to_json(env_data, SCR_PATH)
 
     display_info(env, SCR_PATH)                     # display info text :3
