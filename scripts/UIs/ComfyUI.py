@@ -17,22 +17,24 @@ SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
 REPO_ZIP_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"
-
 BRANCH = read_json(SETTINGS_PATH, 'ENVIRONMENT.branch')
+
+EXTS = read_json(SETTINGS_PATH, 'WEBUI.extension_dir')
 
 os.chdir(HOME)
 
-# ==================== FILE OPERATIONS ====================
-
-def remove_directory(directory_path):
-    """Removes a directory if it exists."""
-    if directory_path and os.path.exists(directory_path):
-        try:
-            shutil.rmtree(directory_path)
-        except Exception:
-            get_ipython().system(f'rm -rf {directory_path}')
-
 # ==================== WEB UI OPERATIONS ====================
+
+def _download_file(url, directory, filename):
+    os.makedirs(directory, exist_ok=True)
+    file_path = os.path.join(directory, filename)
+    command = f"curl -sLo {file_path} {url}"
+    os.system(command)
+
+def _clone_repository(repo_url, directory):
+    os.makedirs(directory, exist_ok=True)
+    command = f"git clone {repo_url} {directory}"
+    os.system(command)
 
 def download_configuration():
     pass

@@ -9,7 +9,7 @@ import shutil
 import os
 
 # Constants
-UI = 'ReForge'
+UI = 'RwForge'
 
 HOME = Path.home()
 WEBUI = HOME / UI
@@ -17,36 +17,65 @@ SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
 REPO_ZIP_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"
-
 BRANCH = read_json(SETTINGS_PATH, 'ENVIRONMENT.branch')
+
+EXTS = read_json(SETTINGS_PATH, 'WEBUI.extension_dir')
 
 os.chdir(HOME)
 
-# ==================== FILE OPERATIONS ====================
-
-def remove_directory(directory_path):
-    """Removes a directory if it exists."""
-    if directory_path and os.path.exists(directory_path):
-        try:
-            shutil.rmtree(directory_path)
-        except Exception:
-            get_ipython().system(f'rm -rf {directory_path}')
-
 # ==================== WEB UI OPERATIONS ====================
 
+def _download_file(url, directory, filename):
+    os.makedirs(directory, exist_ok=True)
+    file_path = os.path.join(directory, filename)
+    command = f"curl -sLo {file_path} {url}"
+    os.system(command)
+
+def _clone_repository(repo_url, directory):
+    os.makedirs(directory, exist_ok=True)
+    command = f"git clone {repo_url} {directory}"
+    os.system(command)
+
 def download_configuration():
-    cfgs = [
-        f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{BRANCH}/__configs__/{UI}/config.json',
-        f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{BRANCH}/__configs__/{UI}/ui-config.json',
-        f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{BRANCH}/__configs__/styles.csv',
-        f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{BRANCH}/__configs__/user.css'
+    branch = BRANCH
+    ui = UI
+    exts = EXTS
+
+    configs = [
+        {
+            'filename': 'config.json',
+            'url': f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{branch}/__configs__/{ui}/config.json',
+            'directory': WEBUI
+        },
+        {
+            'filename': 'ui-config.json',
+            'url': f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{branch}/__configs__/{ui}/ui-config.json',
+            'directory': WEBUI
+        },
+        {
+            'filename': 'styles.csv',
+            'url': f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{branch}/__configs__/styles.csv',
+            'directory': WEBUI
+        },
+        {
+            'filename': 'user.css',
+            'url': f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{branch}/__configs__/user.css',
+            'directory': WEBUI
+        }
     ]
 
-    for url in cfgs:
-        filename = os.path.join(WEBUI, os.path.basename(url))
-        command = f"curl -sLo {filename} {url}"
+    for cfg in configs:
+        _download_file(cfg['url'], cfg['directory'], cfg['filename'])
 
-        os.system(command)
+    extensions = [
+        {
+            'repo_url': 'https://github.com/anxety-solo/webui_timer',
+            'directory': f'{exts}/timer'
+        }
+    ]
+
+    for ext in extensions:
+        _clone_repository(ext['repo_url'], ext['directory'])
 
 def unpack_webui():
     """Clones the web UI repository."""

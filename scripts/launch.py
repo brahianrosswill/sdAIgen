@@ -42,7 +42,7 @@ def is_package_installed(package_name):
         return True
     except subprocess.CalledProcessError:
         return False
-
+        
 def get_public_ip(version='ipv4'):
     """Get the public IP address."""
     try:

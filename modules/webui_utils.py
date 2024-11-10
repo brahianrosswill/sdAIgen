@@ -65,7 +65,7 @@ def _set_webui_paths(ui):
     update_json(SETTINGS_PATH, 'WEBUI', paths)
 
 def handle_colab_timer(webui_path, timer_webui):
-    timer_file_path = os.path.join(webui_path, 'static', 'colabTimer.txt')
+    timer_file_path = os.path.join(webui_path, 'static', 'timer.txt')
     
     os.makedirs(os.path.dirname(timer_file_path), exist_ok=True)
 
