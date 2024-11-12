@@ -183,9 +183,9 @@ def update_XL_options(change, widget):
 
     if selected:    # SD XL options
         model_widget.options = xl_model_options
-        model_widget.value = '1.Nova [Anime] [XL]'
+        model_widget.value = '1.Nova [Anime] [V7] [XL]'
         vae_widget.options = xl_vae_options
-        vae_widget.value = 'none'
+        vae_widget.value = '1.sdxl.vae'
         controlnet_widget.options = xl_controlnet_options
         controlnet_widget.value = 'none'
     else:     # SD 1.5 options

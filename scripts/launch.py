@@ -18,6 +18,7 @@ HOME = Path.home()
 SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
+UI = read_json(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
 ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 
@@ -128,6 +129,8 @@ paths_to_check = {
 }
 update_config_paths(f'{WEBUI}/config.json', paths_to_check)
 
+print(f"🔧 WebUI: \033[34m{UI} \033[0m")
+
 # Launching with tunnel
 if __name__ == "__main__":
     with tunnel:
@@ -137,10 +140,14 @@ if __name__ == "__main__":
         if ENV_NAME != "Google Colab":
             commandline_arguments += f' --encrypt-pass={tunnel_port} --api'
 
-        get_ipython().system(f'COMMANDLINE_ARGS="{commandline_arguments}" python launch.py')
+        if UI != 'ComfyUI':
+            get_ipython().system(f'COMMANDLINE_ARGS="{commandline_arguments}" python launch.py')
+        else:
+            get_ipython().system('pip install -r requirements.txt')
+            get_ipython().system(f'python main.py {commandline_arguments}')           
 
     # Print session duration
-    timer = float(open(f'{WEBUI}/static/colabTimer.txt', 'r').read())
+    timer = float(open(f'{WEBUI}/static/timer.txt', 'r').read())
     time_since_start = str(timedelta(seconds=time.time() - timer)).split('.')[0]
     print(f"\n⌚️ You have been conducting this session for - \033[33m{time_since_start}\033[0m")
 

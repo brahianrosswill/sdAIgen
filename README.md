@@ -9,11 +9,11 @@
     - [x] Auto-cleaner script
 
 - [x] Create notebook.
+- [x] Add support for ComfyUI
 
 ---
 
 ## Tasks to Do
-- [ ] Add support for ComfyUI
 
 - [ ] Add settings:
 	- [ ] Add config
