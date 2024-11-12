@@ -137,7 +137,7 @@ def display_info(env, scr_folder):
 
     display(HTML(content))
 
-# ==================== FUNCTIONS ====================
+# ==================== ENVIRONMENT ====================
 
 def detect_environment():
     environments = {
@@ -149,7 +149,9 @@ def detect_environment():
             return name
     raise EnvironmentError(f"Unsupported runtime environment. Supported: {', '.join(environments.values())}")
 
-def _clear_module_cache(modules_folder):
+# ==================== MODULES ====================
+
+def clear_module_cache(modules_folder):
     for module_name in list(sys.modules.keys()):
         module = sys.modules[module_name]
         if hasattr(module, '__file__') and module.__file__ and module.__file__.startswith(str(modules_folder)):
@@ -157,17 +159,18 @@ def _clear_module_cache(modules_folder):
     importlib.invalidate_caches()
 
 def setup_module_folder(scr_folder):
-    _clear_module_cache(scr_folder)
-
+    clear_module_cache(scr_folder)
     modules_folder = scr_folder / "modules"
     modules_folder.mkdir(parents=True, exist_ok=True)
     if str(modules_folder) not in sys.path:
         sys.path.append(str(modules_folder))
 
+# ==================== FILE HANDLING ====================
+
 def save_environment_to_json(data, scr_folder):
     file_path = scr_folder / 'settings.json'
     existing_data = {}
-
+    
     if file_path.exists():
         with open(file_path, 'r') as json_file:
             existing_data = json.load(json_file)
@@ -177,21 +180,17 @@ def save_environment_to_json(data, scr_folder):
     with open(file_path, 'w') as json_file:
         json.dump(existing_data, json_file, indent=4)
 
-def _get_start_timer():
-    if os.path.exists(SETTINGS_PATH):
+def get_start_timer():
+    if SETTINGS_PATH.exists():
         with open(SETTINGS_PATH, 'r') as f:
             settings = json.load(f)
-            start_timer = settings.get('ENVIRONMENT', {}).get('start_timer')
-            return start_timer
-
+            return settings.get('ENVIRONMENT', {}).get('start_timer', int(time.time() - 5))
     return int(time.time() - 5)
 
 def create_environment_data(env, scr_folder, lang, branch):
-    scr_folder.mkdir(parents=True, exist_ok=True)   # create main dir
+    scr_folder.mkdir(parents=True, exist_ok=True)
     install_deps = 'xformers' in sys.modules
-
-    # Setup Start Time
-    start_timer = _get_start_timer()
+    start_timer = get_start_timer()
 
     return {
         'ENVIRONMENT': {
@@ -206,9 +205,9 @@ def create_environment_data(env, scr_folder, lang, branch):
         }
     }
 
-def _process_files(scr_path, files_dict, branch, parent_folder=''):
-    repo='sdAIgen'    # waduh~
+def process_files(scr_path, files_dict, branch, parent_folder=''):
     file_list = []
+    repo = 'sdAIgen'
 
     for folder, contents in files_dict.items():
         folder_path = scr_path / parent_folder / folder
@@ -217,50 +216,29 @@ def _process_files(scr_path, files_dict, branch, parent_folder=''):
         if isinstance(contents, list):
             for file in contents:
                 file_url = urljoin(f"https://raw.githubusercontent.com/anxety-solo/{repo}/{branch}/", f"{parent_folder}{folder}/{file}")
-                # print(file_url)
                 file_path = folder_path / file
                 file_list.append((file_url, file_path))
 
         elif isinstance(contents, dict):
-            file_list.extend(_process_files(scr_path, contents, branch, parent_folder + folder + '/'))
+            file_list.extend(process_files(scr_path, contents, branch, parent_folder + folder + '/'))
 
     return file_list
 
 def download_files(scr_path, lang, branch):
     files_dict = {
-        'CSS': [
-            'main-widgets.css',
-            'download-result.css',
-            'auto-cleaner.css'
-        ],
+        'CSS': ['main-widgets.css', 'download-result.css', 'auto-cleaner.css'],
         'JS': ['main-widgets.js'],
-        'modules': [
-            'json_utils.py',
-            'webui_utils.py',
-            'widget_factory.py'
-        ],
+        'modules': ['json_utils.py', 'webui_utils.py', 'widget_factory.py'],
         'scripts': {
-            'UIs': [
-                'A1111.py',
-                'ReForge.py',
-                'ComfyUI.py',
-	          ],
-            lang: [
-                f'widgets-{lang}.py',       # Main Widgets
-                f'downloading-{lang}.py'    # Main Downloads (Repo, Models, other...)
-            ],
-            '': [
-                'launch.py',                # Lauch WebUI
-                'auto-cleaner.py',          # Clear Models
-                # -Others Scripts-
-                'download-result.py',
-                'models-data.py',
-                'xl-models-data.py'
-            ]
+            # UIs
+            'UIs': ['A1111.py', 'ReForge.py', 'ComfyUI.py'],
+            # others
+            lang: [f'widgets-{lang}.py', f'downloading-{lang}.py'],
+            '': ['launch.py', 'auto-cleaner.py', 'download-result.py', 'models-data.py', 'xl-models-data.py']
         }
     }
 
-    file_list = _process_files(scr_path, files_dict, branch)
+    file_list = process_files(scr_path, files_dict, branch)
 
     for file_url, file_path in tqdm(file_list, desc="Downloading files", unit="file"):
         os.system(f'wget -q {file_url} -O {file_path}')
@@ -269,22 +247,20 @@ def download_files(scr_path, lang, branch):
 
 # ======================= MAIN ======================
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description='Download script for ANXETY.')
     parser.add_argument('--lang', type=str, default='en', help='Language to be used (default: en)')
     parser.add_argument('--branch', type=str, default='main', help='Branch to download files from (default: main)')
     args = parser.parse_args()
 
-    lang = args.lang
-    branch = args.branch
-    # ---
-
     env = detect_environment()
+    download_files(SCR_PATH, args.lang, args.branch)						# download scripts files
+    setup_module_folder(SCR_PATH)									# setup main dir -> modeules
 
-    download_files(SCR_PATH, lang, branch)          # download scripts files
-    setup_module_folder(SCR_PATH)                   # setup main dir -> modeules
-
-    env_data = create_environment_data(env, SCR_PATH, lang, branch)
+    env_data = create_environment_data(env, SCR_PATH, args.lang, args.branch)
     save_environment_to_json(env_data, SCR_PATH)
 
-    display_info(env, SCR_PATH)                     # display info text :3
+    display_info(env, SCR_PATH)										# display info text :3
+
+if __name__ == "__main__":
+    main()

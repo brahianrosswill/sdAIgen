@@ -268,7 +268,7 @@ def _center_text(text, terminal_width=45):
     padding = (terminal_width - len(text)) // 2
     return f"{' ' * padding}{text}{' ' * padding}"
 
-def format_output(url, dst_dir, file_name, image_name=None, image_url=None):
+def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
     info = _center_text(f"[{file_name.split('.')[0]}]")
     sep_line = '---' * 20
 
@@ -277,7 +277,7 @@ def format_output(url, dst_dir, file_name, image_name=None, image_url=None):
     print(f"\033[33mSAVE DIR: \033[34m{dst_dir}")
     print(f"\033[33mFILE NAME: \033[34m{file_name}\033[0m")
     if 'civitai' in url and image_url:
-        print(f"\033[32m[Preview DL]:\033[0m {image_name} - {image_url}")
+        print(f"\033[32m[Preview]:\033[0m {image_name} - {image_url}")
     print("\n")
 
 ''' GET CivitAi API - DATA '''
@@ -359,23 +359,26 @@ class CivitAiAPI:
 
         if not data:
             print("\033[31m[Data Info]:\033[0m Failed to retrieve data from the API.\n")
-            return 'None', None, None, None, None, None, None
+            return 'None', None, None, None, None
 
         model_type, model_name = self.get_model_info(url, data, file_name)
         download_url = self.get_download_url(data, model_type)
         image_url, image_name = self.get_image_info(data, model_type, model_name)
 
-        return f"{download_url}{'&' if '?' in download_url else '?'}token={self.token}", download_url, model_type, model_name, image_url, image_name, data
+        return f"{download_url}{'&' if '?' in download_url else '?'}token={self.token}", download_url, model_name, image_url, image_name
 
 ''' Main Download Code '''
 
 def _strip_url(url):
     """Removes unnecessary parts from the URL for correct downloading."""
-    if 'github.com' in url:
-        return url.replace('/blob/', '/raw/')
-    elif "huggingface.co" in url:
+    if "huggingface.co" in url:
         url = url.replace('/blob/', '/resolve/')
-        return url.split('?')[0] if '?' in url else url
+        if '?' in url:
+            url = url.split('?')[0]
+
+    elif 'github.com' in url:
+        return url.replace('/blob/', '/raw/')
+
     return url
 
 def _unpack_zip_files():
@@ -391,12 +394,12 @@ def _unpack_zip_files():
                     os.remove(zip_path)
 
 def download(url):
-    """Basic download function, processes the URL and initiates the download."""
     links_and_paths = [link_or_path.strip() for link_or_path in url.split(',') if link_or_path.strip()]
 
     for link_or_path in links_and_paths:
         if any(link_or_path.lower().startswith(prefix) for prefix in PREFIXES):
-            _handle_manual_download(link_or_path)
+            # _handle_manual_download(link_or_path)
+            pass
         else:
             url, dst_dir, file_name = link_or_path.split()
             manual_download(url, dst_dir, file_name)
@@ -426,18 +429,14 @@ def _handle_manual_download(url):
 
 def manual_download(url, dst_dir, file_name=None, prefix=None):
     hf_header = f"--header='Authorization: Bearer {huggingface_token}'" if huggingface_token else ""
-    aria2c_header = "--header='User-Agent: Mozilla/5.0' --allow-overwrite=true"
+    aria2_header = "--header='User-Agent: Mozilla/5.0' --allow-overwrite=true"
     aria2_args = "--optimize-concurrent-downloads --console-log-level=error --summary-interval=1 --stderr=true -c -x16 -s16 -k1M -j5"
 
     clean_url = _strip_url(url)
 
     if 'civitai' in url:
         civitai_api = CivitAiAPI(civitai_token)
-        url, clean_url, model_type, file_name, image_url, image_name, data = civitai_api.fetch_data(url, file_name)
-
-        if image_url and image_name:
-            command = ["aria2c"] + aria2_args.split() + ["-d", dst_dir, "-o", image_name, image_url]
-            subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        url, clean_url, file_name, image_url, image_name = civitai_api.fetch_data(url, file_name)
 
     elif 'github' in url or 'huggingface.co' in url:
         if file_name and '.' not in file_name:
@@ -448,13 +447,13 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
 
     ## Formatted info output
     try:
-        format_output(clean_url, dst_dir, file_name, image_name, image_url)
+        format_output(clean_url, dst_dir, file_name, image_url, image_name)
     except UnboundLocalError:
         format_output(clean_url, dst_dir, file_name, None, None)
 
-    _run_aria2c(prefix, url, dst_dir, file_name, aria2_args, hf_header if 'huggingface' in url else aria2c_header)
+    _run_aria2c(prefix, url, dst_dir, file_name, aria2_args, hf_header if 'huggingface' in url else aria2_header)
 
-def _run_aria2c(prefix, url, dst_dir, file_name=None,args="", header=""):
+def _run_aria2c(prefix, url, dst_dir, file_name=None, args="", header=""):
     """Starts the download using aria2c."""
     file_path = os.path.join(dst_dir, file_name)
     if os.path.exists(file_path) and prefix == 'config':
@@ -466,7 +465,7 @@ def _run_aria2c(prefix, url, dst_dir, file_name=None,args="", header=""):
 
 ''' SubModels - Added URLs '''
 
-# Separation of merged numbers
+# # Separation of merged numbers
 def split_numbers(num_str, max_num):
     result = []
     i = 0
@@ -487,7 +486,6 @@ def split_numbers(num_str, max_num):
 def add_submodels(selection, num_selection, model_dict, dst_dir):
     if selection == "none":
         return []
-
     selected_models = []
 
     if selection == "ALL":
@@ -495,8 +493,8 @@ def add_submodels(selection, num_selection, model_dict, dst_dir):
     else:
         selected_models.extend(model_dict.get(selection, []))
 
-        max_num = len(model_dict)
         unique_nums = set()
+        max_num = len(model_dict)
         nums = num_selection.replace(',', ' ').split()
 
         for num_part in nums:
@@ -507,12 +505,14 @@ def add_submodels(selection, num_selection, model_dict, dst_dir):
                 name = list(model_dict.keys())[num - 1]
                 selected_models.extend(model_dict[name])
 
-    unique_models = {model['name']: model for model in selected_models}.values()
-
-    for model in unique_models:
+    unique_models = {}
+    for model in selected_models:
+        if 'name' not in model and 'huggingface.co' in model['url']:
+            model['name'] = os.path.basename(model['url'])
         model['dst_dir'] = dst_dir
+        unique_models[model['name']] = model
 
-    return list(unique_models)
+    return list(unique_models.values())
 
 def handle_submodels(selection, num_selection, model_dict, dst_dir, url):
     submodels = add_submodels(selection, num_selection, model_dict, dst_dir)
@@ -531,25 +531,27 @@ url = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir,
 
 def process_file_download(file_url, prefixes, unique_urls):
     files_urls = ""
+    current_tag = None
 
     if file_url.startswith("http"):
-        if "blob" in file_url:
-            file_url = file_url.replace("blob", "raw")
+        file_url = file_url.replace("/blob/", "/raw/")
         response = requests.get(file_url)
         lines = response.text.split('\n')
     else:
         with open(file_url, 'r') as file:
             lines = file.readlines()
 
-    current_tag = None
     for line in lines:
         line = line.strip()
 
-        # Check for tags in the string
-        if any(f'# {tag}' in line.lower() for tag in prefixes):
-            current_tag = next((tag for tag in prefixes if tag in line.lower()), None)
+        # if any(f'# {tag}' in line.lower() for tag in prefixes):
+        #     current_tag = next((tag for tag in prefixes if tag in line.lower()), None)
 
-        # Extract the URL from the string
+        for prefix in prefixes.keys():
+            if f'# {prefix}'.lower() in line.lower():
+                current_tag = prefix
+                break
+
         urls = [url.split('#')[0].strip() for url in line.split(',')]
         for url in urls:
             filter_url = url.split('[')[0].strip()    # Take out the unnecessary parts of the URL
@@ -568,9 +570,6 @@ if custom_file_urls:
     for custom_file_url in custom_file_urls.replace(',', '').split():
         if not custom_file_url.endswith('.txt'):
             custom_file_url += '.txt'
-        if not custom_file_url.startswith('http'):
-            if not custom_file_url.startswith(SCR_PATH):
-                custom_file_url = f'{SCR_PATH}/{custom_file_url}'
 
         try:
             file_urls += process_file_download(custom_file_url, PREFIXES, unique_urls)
@@ -582,8 +581,7 @@ urls = (Model_url, Vae_url, LoRA_url, Embedding_url, Extensions_url)
 prefixed_urls = [
     f"{prefix}:{url.strip()}"
     for prefix, url in zip(PREFIXES.keys(), urls)
-    if url
-    for url in url.replace(',', '').split()
+    if url for url in url.replace(',', '').split()
 ]
 url += ", ".join(prefixed_urls) + ", " + file_urls
 
