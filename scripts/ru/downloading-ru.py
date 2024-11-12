@@ -398,8 +398,7 @@ def download(url):
 
     for link_or_path in links_and_paths:
         if any(link_or_path.lower().startswith(prefix) for prefix in PREFIXES):
-            # _handle_manual_download(link_or_path)
-            pass
+            _handle_manual_download(link_or_path)
         else:
             url, dst_dir, file_name = link_or_path.split()
             manual_download(url, dst_dir, file_name)
@@ -465,7 +464,7 @@ def _run_aria2c(prefix, url, dst_dir, file_name=None, args="", header=""):
 
 ''' SubModels - Added URLs '''
 
-# # Separation of merged numbers
+# Separation of merged numbers
 def split_numbers(num_str, max_num):
     result = []
     i = 0
