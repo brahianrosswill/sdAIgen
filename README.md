@@ -11,14 +11,14 @@
 - [x] Create notebook.
 - [x] Add support for ComfyUI
 
+- [x] Add settings:
+	- [x] Add config
+	- [x] Add UI config
+	- [x] Add styles
+
 ---
 
 ## Tasks to Do
-
-- [ ] Add settings:
-	- [ ] Add config
-	- [ ] Add UI config
-	- [x] Add styles
 
 - [ ] Update the date for:
     - [ ] Models
