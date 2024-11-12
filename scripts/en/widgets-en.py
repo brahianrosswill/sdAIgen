@@ -42,7 +42,7 @@ model_options = [
     '7.Meina-Mix [Anime] [V11] + INP', '8.Mix-Pro [Anime] [V4] + INP'
 ]
 xl_model_options = [
-    'none', '1.Nova [Anime] [XL]'
+    'none', '1.Nova [Anime] [V7] [XL]'
 ]
 model_widget = factory.create_dropdown(model_options, 'Model:', '4.Counterfeit [Anime] [V3] + INP')
 model_num_widget = factory.create_text('Model Number:', '', 'Enter the model numbers for the download.')
@@ -60,7 +60,7 @@ vae_options = [
     '4.ClearVae.vae', '5.WD.vae'
 ]
 xl_vae_options = [
-    'none'
+    'none', 'ALL', '1.sdxl.vae'
 ]
 vae_widget = factory.create_dropdown(vae_options, 'Vae:', '3.Blessed2.vae')
 vae_num_widget = factory.create_text('Vae Number:', '', 'Enter vae numbers for the download.')
@@ -81,18 +81,18 @@ controlnet_options = [
     '12.Softedge', '13.Tile'
 ]
 xl_controlnet_options = [
-    'none', 'ALL', '1. Kohya Controllite XL Blur',
-    '2. Kohya Controllite XL Canny', '3. Kohya Controllite XL Depth',
-    '4. Kohya Controllite XL Openpose Anime', '5. Kohya Controllite XL Scribble Anime',
-    '6. T2I Adapter XL Canny',
-    '7. T2I Adapter XL Openpose',
-    '8. T2I Adapter XL Sketch',
-    '9. T2I Adapter Diffusers XL Canny',
-    '10. T2I Adapter Diffusers XL Depth Midas',
-    '11. T2I Adapter Diffusers XL Depth Zoe',
-    '12. T2I Adapter Diffusers XL Lineart',
-    '13. T2I Adapter Diffusers XL Openpose',
-    '14. T2I Adapter Diffusers XL Sketch',
+    'none', 'ALL', '1.Kohya Controllite XL Blur',
+    '2.Kohya Controllite XL Canny', '3.Kohya Controllite XL Depth',
+    '4.Kohya Controllite XL Openpose Anime', '5.Kohya Controllite XL Scribble Anime',
+    '6.T2I Adapter XL Canny',
+    '7.T2I Adapter XL Openpose',
+    '8.T2I Adapter XL Sketch',
+    '9.T2I Adapter Diffusers XL Canny',
+    '10.T2I Adapter Diffusers XL Depth Midas',
+    '11.T2I Adapter Diffusers XL Depth Zoe',
+    '12.T2I Adapter Diffusers XL Lineart',
+    '13.T2I Adapter Diffusers XL Openpose',
+    '14.T2I Adapter Diffusers XL Sketch',
 ]
 controlnet_widget = factory.create_dropdown(controlnet_options, 'ControlNet:', 'none')
 controlnet_num_widget = factory.create_text('ControlNet Number:', '', 'Enter the ControlNet model numbers for the download.')
