@@ -64,7 +64,10 @@ def get_files_list(directory, extensions):
 def get_folders_list(directory):
     if not os.path.isdir(directory):
         return []  # Return empty list if directory does not exist
-    return [folder for folder in os.listdir(directory) if os.path.isdir(os.path.join(directory, folder))]
+    return [
+        folder for folder in os.listdir(directory)
+        if os.path.isdir(os.path.join(directory, folder)) and not folder.startswith('__')
+    ]
 
 def get_controlnets_list(directory, filter_pattern):
     if not os.path.isdir(directory):
@@ -73,7 +76,7 @@ def get_controlnets_list(directory, filter_pattern):
     return [
         filter_name.match(file).group(1) if filter_name.match(file) else file
         for file in os.listdir(directory)
-        if not file.endswith(tuple(EXCLUDED_EXTENSIONS))
+        if not file.endswith(tuple(EXCLUDED_EXTENSIONS)) and '.' in file
     ]
 
 ## Widgets

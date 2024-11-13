@@ -62,7 +62,7 @@ def clean_directory(directory, directory_type):
         for file in files:
             file_path = os.path.join(root, file)
 
-            if not file.endswith(tuple(trash_extensions)):
+            if not file.endswith(tuple(trash_extensions)) and '.' in file:
                 deleted_files += 1
 
             os.remove(file_path)

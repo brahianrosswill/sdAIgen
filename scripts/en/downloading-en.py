@@ -78,7 +78,7 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
 
     additional_libs = {
         "Google Colab": {
-            "xformers": "pip install xformers==0.0.27.post2 --no-deps"
+            "xformers": "pip install xformers==0.0.28 --no-deps"
         },
         "Kaggle": {
             "xformers": "pip install xformers==0.0.27",

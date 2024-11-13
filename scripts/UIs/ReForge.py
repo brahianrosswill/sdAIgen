@@ -9,7 +9,7 @@ import shutil
 import os
 
 # Constants
-UI = 'RwForge'
+UI = 'ReForge'
 
 HOME = Path.home()
 WEBUI = HOME / UI
