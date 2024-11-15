@@ -113,7 +113,7 @@ if not os.path.exists(WEBUI):
 
     install_time = time.time() - start_install
     minutes, seconds = divmod(int(install_time), 60)
-    print(f"\r🚀 Распаковка Завершена! За {minutes:02}:{seconds:02} ⚡" + " "*15)
+    print(f"\r🚀 Unpacking is complete! For {minutes:02}:{seconds:02} ⚡" + " "*15)
 
 else:
     print(f"🔧 Current WebUI: \033[34m{UI} \033[0m")

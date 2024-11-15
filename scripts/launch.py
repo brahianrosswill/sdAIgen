@@ -1,6 +1,7 @@
 # ~ launch.py | by: ANXETY ~
 
-from json_utils import read_json, save_json, update_json  # JSON (main)
+from json_utils import read_json, save_json, update_json    # JSON (main)
+from TunnelHub import Tunnel                                # Tunneling
 
 from IPython.display import clear_output
 from datetime import timedelta
@@ -13,6 +14,7 @@ import json
 import os
 import re
 
+
 # Constants
 HOME = Path.home()
 SCR_PATH = HOME / 'ANXETY'
@@ -23,10 +25,8 @@ WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
 ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 
 def load_settings(path):
-    """Load settings from a JSON file."""
     if not os.path.exists(path):
         return {}
-
     try:
         _environment = read_json(path, 'ENVIRONMENT')
         _widgets = read_json(path, 'WIDGETS')
@@ -37,7 +37,6 @@ def load_settings(path):
         return {}
 
 def is_package_installed(package_name):
-    """Check if a npm package is installed globally."""
     try:
         subprocess.run(["npm", "ls", "-g", package_name], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return True
@@ -45,7 +44,6 @@ def is_package_installed(package_name):
         return False
 
 def get_public_ip(version='ipv4'):
-    """Get the public IP address."""
     try:
         url = f'https://api64.ipify.org?format=json&{version}=true'
         response = requests.get(url)
@@ -55,11 +53,9 @@ def get_public_ip(version='ipv4'):
         return None
 
 def update_config_paths(config_path, paths_to_check):
-    """Update paths in the configuration file if necessary."""
     if os.path.exists(config_path):
         with open(config_path, 'r') as file:
             config_data = json.load(file)
-
         for key, expected_value in paths_to_check.items():
             if key in config_data and config_data[key] != expected_value:
                 sed_command = f"sed -i 's|\"{key}\": \".*\"|\"{key}\": \"{expected_value}\"|' {config_path}"
@@ -77,9 +73,9 @@ if not public_ipv4:
     public_ipv4 = get_public_ip(version='ipv4')
     update_json(SETTINGS_PATH, "ENVIRONMENT.public_ip", public_ipv4)
 
-tunnel_class = pickle.load(open(f"{SCR_PATH}/new_tunnel", "rb"), encoding="utf-8")
 tunnel_port = 1834
-tunnel = tunnel_class(tunnel_port)
+tunnel = Tunnel(tunnel_port)
+tunnel.logger.setLevel(logging.DEBUG)
 
 # Define tunnel commands
 tunnels = [
@@ -144,7 +140,7 @@ if __name__ == "__main__":
             get_ipython().system(f'COMMANDLINE_ARGS="{commandline_arguments}" python launch.py')
         else:
             get_ipython().system('pip install -r requirements.txt')
-            get_ipython().system(f'python main.py {commandline_arguments}')           
+            get_ipython().system(f'python main.py {commandline_arguments}')
 
     # Print session duration
     timer = float(open(f'{WEBUI}/static/timer.txt', 'r').read())

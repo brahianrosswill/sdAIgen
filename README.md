@@ -15,10 +15,15 @@
 	- [x] Add config
 	- [x] Add UI config
 	- [x] Add styles
+	
+- [x] Fix tunnel creation.
 
 ---
 
 ## Tasks to Do
+
+- [ ] possible features:
+    - [ ] Linking by symbolic links of common catalogs of models, vae, lora, etc.
 
 - [ ] Update the date for:
     - [ ] Models
