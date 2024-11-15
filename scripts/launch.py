@@ -8,6 +8,7 @@ from datetime import timedelta
 from pathlib import Path
 import subprocess
 import requests
+import logging
 import pickle
 import time
 import json
