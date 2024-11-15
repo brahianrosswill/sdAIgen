@@ -78,7 +78,7 @@ if not public_ipv4:
     public_ipv4 = get_public_ip(version='ipv4')
     update_json(SETTINGS_PATH, "ENVIRONMENT.public_ip", public_ipv4)
 
-tunnel_port = 1834
+tunnel_port = 8188 if UI == 'ComfyUI' else 7860
 tunnel = Tunnel(tunnel_port)
 tunnel.logger.setLevel(logging.DEBUG)
 
@@ -138,7 +138,7 @@ if __name__ == "__main__":
         os.chdir(WEBUI)
         commandline_arguments += f' --port={tunnel_port}'
 
-        if ENV_NAME != "Google Colab":
+        if ENV_NAME == "Kaggle" and UI != 'ComfyUI':
             commandline_arguments += f' --encrypt-pass={tunnel_port} --api'
 
         if UI != 'ComfyUI':

@@ -4,6 +4,7 @@ from IPython.display import display, HTML, clear_output
 from urllib.parse import urljoin
 from pathlib import Path
 from tqdm import tqdm
+import importlib.util
 import importlib
 import json
 import time
@@ -189,7 +190,7 @@ def get_start_timer():
 
 def create_environment_data(env, scr_folder, lang, branch):
     scr_folder.mkdir(parents=True, exist_ok=True)
-    install_deps = 'xformers' in sys.modules
+    install_deps = importlib.util.find_spec('xformers') is not None
     start_timer = get_start_timer()
 
     return {
