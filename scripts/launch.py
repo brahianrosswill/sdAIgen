@@ -135,13 +135,13 @@ print(f"🔧 WebUI: \033[34m{UI} \033[0m")
 if __name__ == "__main__":
     with tunnel:
         os.chdir(WEBUI)
-        commandline_arguments = f' --port={tunnel_port}'
+        commandline_arguments += f' --port={tunnel_port}'
 
         if ENV_NAME != "Google Colab":
             commandline_arguments += f' --encrypt-pass={tunnel_port} --api'
 
         if UI != 'ComfyUI':
-            get_ipython().system(f'COMMANDLINE_ARGS="{commandline_arguments}" python launch.py')
+            get_ipython().system(f'python launch.py {commandline_arguments}')
         else:
             get_ipython().system('pip install -r requirements.txt')
             get_ipython().system(f'python main.py {commandline_arguments}')
