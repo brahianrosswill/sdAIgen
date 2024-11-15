@@ -228,7 +228,7 @@ def download_files(scr_path, lang, branch):
     files_dict = {
         'CSS': ['main-widgets.css', 'download-result.css', 'auto-cleaner.css'],
         'JS': ['main-widgets.js'],
-        'modules': ['json_utils.py', 'webui_utils.py', 'widget_factory.py'],
+        'modules': ['json_utils.py', 'webui_utils.py', 'widget_factory.py', 'TunnelHub.py'],
         'scripts': {
             # UIs
             'UIs': ['A1111.py', 'ReForge.py', 'ComfyUI.py'],
