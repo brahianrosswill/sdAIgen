@@ -25,6 +25,7 @@ WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
 ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 
 def load_settings(path):
+    """Load settings from a JSON file."""
     if not os.path.exists(path):
         return {}
     try:
@@ -37,6 +38,7 @@ def load_settings(path):
         return {}
 
 def is_package_installed(package_name):
+    """Check if a package is installed globally using npm."""
     try:
         subprocess.run(["npm", "ls", "-g", package_name], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return True
@@ -44,6 +46,7 @@ def is_package_installed(package_name):
         return False
 
 def get_public_ip(version='ipv4'):
+    """Retrieve the public IP address."""
     try:
         url = f'https://api64.ipify.org?format=json&{version}=true'
         response = requests.get(url)
@@ -53,6 +56,7 @@ def get_public_ip(version='ipv4'):
         return None
 
 def update_config_paths(config_path, paths_to_check):
+    """Update configuration paths in the specified JSON config file."""
     if os.path.exists(config_path):
         with open(config_path, 'r') as file:
             config_data = json.load(file)
@@ -91,16 +95,16 @@ tunnels = [
     }
 ]
 
-lt_tunnel = is_package_installed('localtunnel')
-
-if lt_tunnel:
+# Check for localtunnel installation
+if is_package_installed('localtunnel'):
     tunnels.append({
         "command": f"lt --port {tunnel_port}",
         "name": "lt",
         "pattern": re.compile(r"[\w-]+\.loca\.lt"),
-        "note": "Password : " + "\033[32m" + public_ipv4 + "\033[0m" + " rerun cell if 404 error."
+        "note": f"Password : \033[32m{public_ipv4}\033[0m rerun cell if 404 error."
     })
 
+# Check for zrok token and add to tunnels if available
 if zrok_token:
     os.system(f'zrok enable {zrok_token} &> /dev/null')
     tunnels.append({
@@ -131,7 +135,7 @@ print(f"🔧 WebUI: \033[34m{UI} \033[0m")
 if __name__ == "__main__":
     with tunnel:
         os.chdir(WEBUI)
-        commandline_arguments += f' --port={tunnel_port}'
+        commandline_arguments = f' --port={tunnel_port}'
 
         if ENV_NAME != "Google Colab":
             commandline_arguments += f' --encrypt-pass={tunnel_port} --api'
