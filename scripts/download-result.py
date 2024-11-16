@@ -117,5 +117,5 @@ outputs_widgets_list = [widget for widget, widget_list in widgets_dict.items() i
 result_output_widget = factory.create_hbox(outputs_widgets_list).add_class("result-output-container")
 
 container_widget = factory.create_vbox([header_widget, HR, result_output_widget, HR],
-                                       layout={'width': '1200px'}).add_class("result-container")
+                                       layout={'width': '1080px'}).add_class("result-container")
 factory.display(container_widget)
