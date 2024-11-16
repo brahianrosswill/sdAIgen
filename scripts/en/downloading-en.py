@@ -81,8 +81,9 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
             "xformers": "pip install xformers==0.0.28 --no-deps"
         },
         "Kaggle": {
-            "xformers": "pip install xformers==0.0.27",
-            "torch": "pip install torchvision==0.18.1 torchaudio==2.3.1 open-clip-torch==2.26.1"
+            "xformers": "pip install xformers==0.0.28 --no-deps"
+            # "xformers": "pip install xformers==0.0.27",
+            # "torch": "pip install torchvision==0.18.1 torchaudio==2.3.1 open-clip-torch==2.26.1"
         }
     }
 
