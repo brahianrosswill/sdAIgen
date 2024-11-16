@@ -79,7 +79,7 @@ class Tunnel:
         port: int,
         check_local_port: bool = True,
         debug: bool = False,
-        timeout: int = 60,
+        timeout: int = 10,		# default 60 sec
         propagate: bool = False,
         log_handlers: List[logging.Handler] = None,
         log_dir: StrOrPath = None,

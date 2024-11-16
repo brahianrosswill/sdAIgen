@@ -123,10 +123,10 @@ instruction_label = factory.create_html('''
 <span class="instruction">Use <span style="color: #B2B2B2;">ctrl</span> or <span style="color: #B2B2B2;">shift</span> for multiple selections.</span>
 ''')
 auto_cleaner_widget = factory.create_select_multiple(clean_options, '', [], layout={'width': 'auto'}, class_names=['custom_select_multiple'])
-output = widgets.Output().add_class('output')
+output = widgets.Output().add_class('output_panel')
 # ---
-execute_button = factory.create_button('Execute Cleaning', class_names=['button_execute', 'button'])
-hide_button = factory.create_button('Hide Widget', class_names=['button_hide', 'button'])
+execute_button = factory.create_button('Execute Cleaning', class_names=['button_execute', 'cleaner_button'])
+hide_button = factory.create_button('Hide Widget', class_names=['button_hide', 'cleaner_button'])
 
 # Button Click
 execute_button.on_click(execute_button_press)
@@ -140,6 +140,6 @@ buttons = factory.create_hbox([execute_button, hide_button])
 lower_information_panel = factory.create_hbox([buttons, storage_info], class_names=['lower_information_panel'])
 
 container = factory.create_vbox([instruction_label, HR, auto_cleaner_widget, output, HR, lower_information_panel],
-                                layout={'width': '800px'}, class_names=['container'])
+                                layout={'width': '800px'}, class_names=['cleaner_container'])
 
 factory.display(container)

@@ -37,7 +37,7 @@ for key, value in settings.items():
     locals()[key] = value
 
 # ====================== WIDGETS =====================
-HR = widgets.HTML('<hr>')
+HR = widgets.HTML('<hr class="divider-line">')
 HEADER_DL = 'DOWNLOAD RESULTS'
 VERSION = 'v0.5'
 
@@ -51,9 +51,9 @@ EXCLUDED_EXTENSIONS = {'.txt', '.yaml', '.log'}
 
 ## Functions
 def output_container_generator(header, items):
-    header_widget = factory.create_html(f'<div class="header_outputs">{header} ➤</div>')
-    content_widgets = [factory.create_html(f'<div class="items">{item}</div>') for item in items]
-    container_widget = factory.create_vbox([header_widget, *content_widgets]).add_class("outputs")
+    header_widget = factory.create_html(f'<div class="header-output-title">{header} ➤</div>')
+    content_widgets = [factory.create_html(f'<div class="output-item">{item}</div>') for item in items]
+    container_widget = factory.create_vbox([header_widget, *content_widgets]).add_class("output-section")
     return container_widget
 
 def get_files_list(directory, extensions):
@@ -81,7 +81,7 @@ def get_controlnets_list(directory, filter_pattern):
 
 ## Widgets
 header_widget = factory.create_html(f'''
-<div><span class="header">{HEADER_DL}</span> <span style="color: grey; opacity: 0.25;">| {VERSION}</span></div>
+<div><span class="header-main-title">{HEADER_DL}</span> <span style="color: grey; opacity: 0.25;">| {VERSION}</span></div>
 ''')
 
 # Models
@@ -98,7 +98,7 @@ loras_list = get_files_list(lora_dir, ('.safetensors',))
 loras_widget = output_container_generator('LoRAs', loras_list)
 # Extensions
 extensions_list = get_folders_list(extension_dir)
-extensions_widget = output_container_generator('Extensions', extensions_list).add_class("extension")  # for fix height
+extensions_widget = output_container_generator('Extensions', extensions_list).add_class("extension-grid")  # for fix height
 # ControlNet
 controlnets_list = get_controlnets_list(control_dir, r'^[^_]*_[^_]*_[^_]*_(.*)_fp16\.safetensors')
 controlnets_widget = output_container_generator('ControlNets', controlnets_list)
@@ -114,8 +114,8 @@ widgets_dict = {
 }
 
 outputs_widgets_list = [widget for widget, widget_list in widgets_dict.items() if widget_list]
-result_output_widget = factory.create_hbox(outputs_widgets_list).add_class("result_container")
+result_output_widget = factory.create_hbox(outputs_widgets_list).add_class("result-output-container")
 
 container_widget = factory.create_vbox([header_widget, HR, result_output_widget, HR],
-                                       layout={'width': '1200px'}).add_class("container")
+                                       layout={'width': '1200px'}).add_class("result-container")
 factory.display(container_widget)

@@ -60,7 +60,6 @@ a {
 
 /* Element text style */
 
-.widget-html,
 .widget-button,
 .widget-text label,
 .widget-checkbox label,
@@ -216,12 +215,17 @@ a {
 /* Button styles */
 
 .button {
+    cursor: pointer;
+    font-family: "Shantell Sans", serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    color: white !important;
+    user-select: none;
     font-size: 15px;
     background-image: radial-gradient(circle at top left, purple 10%, violet 90%);
     background-size: 200% 200%;
     background-position: left bottom;
     transition: background 0.5s ease-in-out, transform 0.3s ease;
-    cursor: pointer;
 }
 .button_save {
     border-radius: 15px;
