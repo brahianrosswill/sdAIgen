@@ -112,27 +112,30 @@ def display_info(env, scr_folder):
     </style>
 
     <script>
-    const textContainer = document.getElementById('text-container');
-    const messageContainer = document.getElementById('message-container');
-    const textSpans = textContainer.querySelectorAll('span');
-    const messageSpans = messageContainer.querySelectorAll('span');
+    function initAnimation() {{
+        const textContainer = document.getElementById('text-container');
+        const messageContainer = document.getElementById('message-container');
+        const textSpans = textContainer.querySelectorAll('span');
+        const messageSpans = messageContainer.querySelectorAll('span');
 
-    // Set transition delay for each span in the text container
-    textSpans.forEach((span, index) => {{
-      span.style.transitionDelay = `${{index * 25}}ms`;
-    }});
+        // Set transition delay for each span in the text container
+        textSpans.forEach((span, index) => {{
+          span.style.transitionDelay = `${{index * 25}}ms`;
+        }});
 
-    // Set transition delay for each span in the message container
-    messageSpans.forEach((span, index) => {{
-      span.style.transitionDelay = `${{index * 50}}ms`;
-    }});
+        // Set transition delay for each span in the message container
+        messageSpans.forEach((span, index) => {{
+          span.style.transitionDelay = `${{index * 50}}ms`;
+        }});
 
 
-    // Set a timeout to add the 'loaded' class to both containers after a short delay
-    setTimeout(() => {{
-      textContainer.classList.add('loaded');
-      messageContainer.classList.add('loaded');
-    }}, 250);
+        // Set a timeout to add the 'loaded' class to both containers after a short delay
+        setTimeout(() => {{
+          textContainer.classList.add('loaded');
+          messageContainer.classList.add('loaded');
+        }}, 250);
+    }}
+    initAnimation();
     </script>
     """
 

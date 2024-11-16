@@ -9,6 +9,7 @@ from datetime import timedelta
 from pathlib import Path
 import subprocess
 import requests
+import zipfile
 import shlex
 import time
 import sys
@@ -599,17 +600,17 @@ get_ipython().system('find {WEBUI} \\( -type d \\( -name ".ipynb_checkpoints" -o
 
 
 ## Install of Custom extensions
-def _clone_repository(repo, repo_name, extensions_dir):
+def _clone_repository(repo, repo_name, extension_dir):
     """Clones the repository to the specified directory."""
     repo_name = repo_name or repo.split('/')[-1]
-    command = f'cd {extensions_dir} && git clone {repo} {repo_name} && cd {repo_name} && git fetch'
+    command = f'cd {extension_dir} && git clone {repo} {repo_name} && cd {repo_name} && git fetch'
     get_ipython().system(command)
 
 if extension_repo:
     print("✨ Installing custom extensions...", end='')
     with capture.capture_output():
         for repo, repo_name in extension_repo:
-            _clone_repository(repo, repo_name, extensions_dir)
+            _clone_repository(repo, repo_name, extension_dir)
     print(f"\r📦 Installed '{len(extension_repo)}' custom extensions!")
 
 
