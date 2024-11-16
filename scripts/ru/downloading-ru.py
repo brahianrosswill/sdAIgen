@@ -81,9 +81,9 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
             "xformers": "pip install xformers==0.0.28 --no-deps"
         },
         "Kaggle": {
-            "xformers": "pip install xformers==0.0.28 --no-deps"
-            # "xformers": "pip install xformers==0.0.27",
-            # "torch": "pip install torchvision==0.18.1 torchaudio==2.3.1 open-clip-torch==2.26.1"
+            "openssl": "conda install -y openssh",
+            "xformers": "pip install xformers==0.0.27",
+            "torch": "pip install torchvision==0.18.1 torchaudio==2.3.1 open-clip-torch==2.26.1"
         }
     }
 
@@ -451,7 +451,7 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     except UnboundLocalError:
         format_output(clean_url, dst_dir, file_name, None, None)
 
-    _run_aria2c(prefix, url, dst_dir, file_name, aria2_args, hf_header if 'huggingface' in url else aria2_header)
+    _run_aria2c(prefix, clean_url, dst_dir, file_name, aria2_args, hf_header if 'huggingface' in url else aria2_header)
 
 def _run_aria2c(prefix, url, dst_dir, file_name=None, args="", header=""):
     """Starts the download using aria2c."""
