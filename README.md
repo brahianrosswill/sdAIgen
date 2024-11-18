@@ -22,9 +22,6 @@
 
 ## Tasks to Do
 
-- [ ] possible features:
-    - [ ] Linking by symbolic links of common catalogs of models, vae, lora, etc.
-
 - [ ] Update the date for:
     - [ ] Models
     - [ ] VAE
@@ -33,7 +30,5 @@
  - [ ] Add more utilities:
     - [ ] Save images in zip
     - [ ] Think of more ideas ;3
-
-- [ ] Improve resource loading (borrow from [gutris1](https://github.com/gutris1) ;3)
 
 - [ ] Finish project V2~
