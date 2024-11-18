@@ -82,7 +82,7 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
         },
         "Kaggle": {
             "openssl": "conda install -y openssh",
-            "xformers": "pip install xformers==0.0.27",
+            "xformers": "pip install xformers==0.0.27 --no-deps",
             "torch": "pip install torchvision==0.18.1 torchaudio==2.3.1 open-clip-torch==2.26.1"
         }
     }
