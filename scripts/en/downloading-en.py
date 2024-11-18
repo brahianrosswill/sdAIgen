@@ -451,6 +451,10 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     except UnboundLocalError:
         format_output(clean_url, dst_dir, file_name, None, None)
 
+    ## fix token init in url
+    if 'civitai' in url:
+        clean_url = url
+
     _run_aria2c(prefix, clean_url, dst_dir, file_name, aria2_args, hf_header if 'huggingface' in url else aria2_header)
 
 def _run_aria2c(prefix, url, dst_dir, file_name=None, args="", header=""):
