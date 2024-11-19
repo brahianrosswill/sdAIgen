@@ -3,6 +3,7 @@
 from json_utils import read_json, save_json, update_json    # JSON (main)
 from webui_utils import handle_colab_timer                  # WEBUI
 
+from urllib.parse import urlparse, parse_qs
 from IPython.display import clear_output
 from IPython.utils import capture
 from datetime import timedelta
@@ -337,7 +338,11 @@ class CivitAiAPI:
         """Get the appropriate download URL based on model type."""
         if any(t.lower() in model_type.lower() for t in self.SUPPORT_TYPES):
             return data['files'][0]['downloadUrl']
-        return data['files'][1]['downloadUrl'] if 'type' in url else data['files'][0]['downloadUrl']
+
+        try:
+            return data['files'][1]['downloadUrl'] if 'type' in url else data['files'][0]['downloadUrl']
+        except (IndexError, KeyError) as e:
+            return data.get('downloadUrl')
 
     def get_image_info(self, data, model_type, model_name):
         """Retrieve image URL and name if applicable."""
@@ -345,7 +350,7 @@ class CivitAiAPI:
             return None, None
 
         for image in data.get('images', []):
-            if image['nsfwLevel'] >= 4 and env == 'Kaggle':  # Filter NSFW images for Kaggle
+            if image['nsfwLevel'] >= 4 and ENV_NAME == 'Kaggle':  # Filter NSFW images for Kaggle
                 continue
             image_url = image['url']
             image_extension = image_url.split('.')[-1]
