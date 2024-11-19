@@ -78,7 +78,7 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
 
     additional_libs = {
         "Google Colab": {
-            "xformers": "pip install xformers==0.0.28.post3 --no-deps"
+            "xformers": "pip install xformers==0.0.28.post1 --no-deps"
         },
         "Kaggle": {
             "openssl": "conda install -y openssh",
