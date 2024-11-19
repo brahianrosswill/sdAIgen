@@ -282,23 +282,23 @@ def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
         print(f"\033[32m[Preview]:\033[0m {image_name} - {image_url}")
     print("\n")
 
-''' GET CivitAi API - DATA '''
+''' CivitAi API '''
 
 class CivitAiAPI:
-    SUPPORT_TYPES = ('Checkpoint', 'TextualInversion', 'LORA')
+    SUPPORT_TYPES = {'Checkpoint', 'TextualInversion', 'LORA'}
 
     def __init__(self, civitai_token=None):
         self.token = civitai_token or "62c0c5956b2f9defbd844d754000180b"
         self.base_url = "https://civitai.com/api/v1"
 
-    def strip_url(self, url):
+    def _prepare_url(self, url):
         """Prepare the URL for API requests by adding the token."""
         url = url.split('?token=')[0] if '?token=' in url else url
         if '?type=' in url:
             return url.replace('?type=', f'?token={self.token}&type=')
         return f"{url}?token={self.token}"
 
-    def get_model_data(self, url):
+    def _get_model_data(self, url):
         """Retrieve model data from the API."""
         try:
             if "civitai.com/models/" in url:
@@ -312,8 +312,20 @@ class CivitAiAPI:
                 version_id = url.split('/models/')[1].split('/')[0]
 
             return requests.get(f"{self.base_url}/model-versions/{version_id}").json()
-        except (KeyError, IndexError, requests.RequestException):
+        except (KeyError, IndexError, requests.RequestException) as e:
+            print(f"\033[31m[Error]:\033[0m {e}")
             return None
+
+    def fetch_data(self, url):
+        """Main method to fetch data from CivitAi API."""
+        url = self._prepare_url(url)
+        data = self._get_model_data(url)
+
+        if not data:
+            print("\033[31m[Data Info]:\033[0m Failed to retrieve data from the API.\n")
+            return None
+
+        return data
 
     def get_model_info(self, url, data, file_name):
         """Extract model type and name from the data."""
@@ -334,44 +346,35 @@ class CivitAiAPI:
 
         return model_type, model_name
 
-    def get_download_url(self, data, model_type):
-        """Get the appropriate download URL based on model type."""
-        if any(t.lower() in model_type.lower() for t in self.SUPPORT_TYPES):
-            return data['files'][0]['downloadUrl']
+    def get_download_url(self, data, url):
+        """Return the download URL from the data."""
+        if data and 'files' in data:
+            model_type, _ = self.get_model_info(url, data, None)  # Get model type for checking
+            if any(t.lower() in model_type.lower() for t in self.SUPPORT_TYPES):
+                return data.get('downloadUrl')
+            return data['files'][1]['downloadUrl'] if len(data['files']) > 1 else data.get('downloadUrl')
+        return None
 
-        try:
-            return data['files'][1]['downloadUrl'] if 'type' in url else data['files'][0]['downloadUrl']
-        except (IndexError, KeyError) as e:
-            return data.get('downloadUrl')
+    def get_full_and_clean_download_url(self, download_url):
+        """Return both the clean and full download URLs."""
+        clean_url = download_url
+        full_url = f"{download_url}{'&' if '?' in download_url else '?'}token={self.token}"
+        return clean_url, full_url
 
-    def get_image_info(self, data, model_type, model_name):
-        """Retrieve image URL and name if applicable."""
+    def get_image_info(self, data, model_name, model_type):
+        """Return image URL and name if applicable."""
         if not any(t in model_type for t in self.SUPPORT_TYPES):
             return None, None
 
-        for image in data.get('images', []):
-            if image['nsfwLevel'] >= 4 and ENV_NAME == 'Kaggle':  # Filter NSFW images for Kaggle
-                continue
-            image_url = image['url']
-            image_extension = image_url.split('.')[-1]
-            image_name = f"{model_name.split('.')[0]}.preview.{image_extension}" if image_url else None
-            return image_url, image_name
+        if data and 'images' in data:
+            for image in data['images']:
+                if image['nsfwLevel'] >= 4 and ENV_NAME == 'Kaggle':  # Filter NSFW images for Kaggle
+                    continue
+                image_url = image['url']
+                image_extension = image_url.split('.')[-1]
+                image_name = f"{model_name.split('.')[0]}.preview.{image_extension}" if image_url else None
+                return image_url, image_name
         return None, None
-
-    def fetch_data(self, url, file_name=None):
-        """Main method to fetch data from CivitAi API."""
-        url = self.strip_url(url)
-        data = self.get_model_data(url)
-
-        if not data:
-            print("\033[31m[Data Info]:\033[0m Failed to retrieve data from the API.\n")
-            return 'None', None, None, None, None
-
-        model_type, model_name = self.get_model_info(url, data, file_name)
-        download_url = self.get_download_url(data, model_type)
-        image_url, image_name = self.get_image_info(data, model_type, model_name)
-
-        return f"{download_url}{'&' if '?' in download_url else '?'}token={self.token}", download_url, model_name, image_url, image_name
 
 ''' Main Download Code '''
 
@@ -440,8 +443,16 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     clean_url = _strip_url(url)
 
     if 'civitai' in url:
-        civitai_api = CivitAiAPI(civitai_token)
-        url, clean_url, file_name, image_url, image_name = civitai_api.fetch_data(url, file_name)
+        civitai = CivitAiAPI(civitai_token)
+        data = civitai.fetch_data(url)
+
+        if data:
+            model_type, model_name = civitai.get_model_info(url, data, file_name)
+            download_url = civitai.get_download_url(data, url)
+            clean_url, url = civitai.get_full_and_clean_download_url(download_url)
+            image_url, image_name = civitai.get_image_info(data, model_name, model_type)
+            # fix name error | split NoneType
+            file_name = model_name
 
     elif 'github' in url or 'huggingface.co' in url:
         if file_name and '.' not in file_name:
