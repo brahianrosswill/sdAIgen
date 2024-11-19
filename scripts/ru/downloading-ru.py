@@ -78,12 +78,12 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
 
     additional_libs = {
         "Google Colab": {
-            "xformers": "pip install xformers==0.0.28 --no-deps"
+            "xformers": "pip install xformers==0.0.28.post3 --no-deps"
         },
         "Kaggle": {
             "openssl": "conda install -y openssh",
-            "xformers": "pip install xformers==0.0.27 --no-deps",
-            "torch": "pip install torchvision==0.18.1 torchaudio==2.3.1 open-clip-torch==2.26.1"
+            "xformers": "pip install xformers==0.0.28.post3 --no-deps",
+            "torch": "pip install torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121"
         }
     }
 
