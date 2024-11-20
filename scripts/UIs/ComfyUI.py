@@ -31,13 +31,19 @@ def _download_file(url, directory, filename):
     command = f"curl -sLo {file_path} {url}"
     os.system(command)
 
-def _clone_repository(repo_url, directory):
-    os.makedirs(directory, exist_ok=True)
-    command = f"git clone {repo_url} {directory}"
-    os.system(command)
+def _clone_repository():
+    extensions_list = [
+        "git clone --depth 1 --recursive https://github.com/ssitu/ComfyUI_UltimateSDUpscale",
+        "git clone --depth 1 https://github.com/ltdrdata/ComfyUI-Manager",
+        "git clone --depth 1 https://github.com/pythongosssss/ComfyUI-Custom-Scripts"
+    ]
+    os.chdir(EXTS)
+
+    for command in extensions_list:
+        os.system(command)
 
 def download_configuration():
-    pass
+    _clone_repository()
 
 def unpack_webui():
     """Clones the web UI repository."""
