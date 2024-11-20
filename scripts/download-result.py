@@ -15,6 +15,8 @@ HOME = Path.home()
 SCR_PATH = Path(HOME / 'ANXETY')
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
+UI = read_json(SETTINGS_PATH, 'WEBUI.current')
+
 CSS = SCR_PATH / 'CSS'
 widgets_css = CSS / 'download-result.css'
 
@@ -98,7 +100,8 @@ loras_list = get_files_list(lora_dir, ('.safetensors',))
 loras_widget = output_container_generator('LoRAs', loras_list)
 # Extensions
 extensions_list = get_folders_list(extension_dir)
-extensions_widget = output_container_generator('Extensions', extensions_list).add_class("extension-grid")  # for fix height
+extension_type = 'Nodes' if UI == 'ComfyUI' else 'Extensions'
+extensions_widget = output_container_generator(extension_type, extensions_list).add_class("extension-grid")  # for fix height
 # ControlNet
 controlnets_list = get_controlnets_list(control_dir, r'^[^_]*_[^_]*_[^_]*_(.*)_fp16\.safetensors')
 controlnets_widget = output_container_generator('ControlNets', controlnets_list)

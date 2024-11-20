@@ -624,16 +624,17 @@ get_ipython().system('find {WEBUI} \\( -type d \\( -name ".ipynb_checkpoints" -o
 def _clone_repository(repo, repo_name, extension_dir):
     """Clones the repository to the specified directory."""
     repo_name = repo_name or repo.split('/')[-1]
-    command = f'cd {extension_dir} && git clone {repo} {repo_name} && cd {repo_name} && git fetch'
+    command = f'cd {extension_dir} && git clone --depth 1 --recursive {repo} {repo_name} && cd {repo_name} && git fetch'
     get_ipython().system(command)
 
+extension_type = 'nodes' if UI == 'ComfyUI' else 'extensions'
+
 if extension_repo:
-    print("✨ Installing custom extensions...", end='')
+    print(f"✨ Installing custom {extension_type}...", end='')
     with capture.capture_output():
         for repo, repo_name in extension_repo:
             _clone_repository(repo, repo_name, extension_dir)
-    print(f"\r📦 Installed '{len(extension_repo)}' custom extensions!")
-
+    print(f"\r📦 Installed '{len(extension_repo)}' custom {extension_type}!")
 
 ## List Models and stuff
 get_ipython().run_line_magic('run', f'{SCRIPTS}/download-result.py')
