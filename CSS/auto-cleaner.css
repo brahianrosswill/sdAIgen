@@ -9,11 +9,21 @@ hr {
 }
 
 .instruction {
-    font-family: cursive;
     font-size: 18px;
     color: grey;
     user-select: none;
     cursor: default;
+}
+
+/* Text FONTs */
+
+.instruction,
+.custom_select_multiple select,
+.output_message,
+.storage_info,
+.cleaner_button {
+    font-family: "Shantell Sans", serif;
+    font-optical-sizing: auto;
 }
 
 
@@ -35,8 +45,8 @@ hr {
     right: 10px;
     content: "AutoCleaner";
     font-family: "Tiny5", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 750;
-    font-style: normal;
     font-size: 24px;
     color: rgba(0, 0, 0, 0.3);
 }
@@ -46,15 +56,14 @@ hr {
     right: 10px;
     content: "ANXETY";
     font-family: "Tiny5", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 750;
-    font-style: normal;
     font-size: 18px;
     color: rgba(0, 0, 0, 0.3);
 }
 
 .custom_select_multiple select {
     padding: 10px;
-    font-family: cursive;
     border: 1px solid #262626 !important;
     border-radius: 10px;
     color: white;
@@ -74,8 +83,7 @@ hr {
 }
 
 .output_message {
-    font-family: cursive;
-    color: white !important;
+    color: white;
     font-size: 14px;
     user-select: none;
     cursor: default
@@ -90,7 +98,6 @@ hr {
     background-color: #1c1c1c;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
     width: auto;
-    font-family: cursive;
     font-size: 14px;
     user-select: none;
     cursor: default
@@ -109,10 +116,8 @@ hr {
 
 .cleaner_button {
     width: auto;
-    font-family: cursive;
-    color: white !important;
+    color: white;
     font-size: 14px;
-    font-weight: bold;
     height: 35px;
     border-radius: 15px;
     background-image: radial-gradient(circle at top left, purple 10%, violet 90%);
@@ -148,9 +153,7 @@ hr {
 
 /* Emergence */
 .cleaner_container {
-    animation-name: slideInTopBlur;
-    animation-duration: 0.7s;
-    animation-fill-mode: forwards;
+    animation: slideInTopBlur 0.7s forwards;
 }
 
 @keyframes slideInTopBlur {
@@ -168,9 +171,7 @@ hr {
 
 /* Leaving */
 .cleaner_container.hide {
-    animation-name: slideOutTopBlur;
-    animation-duration: 0.3s;
-    animation-fill-mode: forwards;
+    animation: slideOutTopBlur 0.3s forwards;
 }
 
 @keyframes slideOutTopBlur {

@@ -4,7 +4,6 @@
 
 .header-main-title,
 .header-output-title {
-    font-family: cursive;
     font-size: 20px;
     font-weight: bold;
     text-align: center;
@@ -24,12 +23,22 @@
     width: 1000px;
 }
 
+
 /* Element text style */
+
 .widget-html {
-    font-family: cursive;
     font-size: 14px;
     color: white !important;
     user-select: none;
+}
+
+/* Text FONTs */
+
+.widget-html,
+.header-main-title,
+.header-output-title {
+    font-family: "Shantell Sans", serif;
+    font-optical-sizing: auto;
 }
 
 
@@ -56,8 +65,8 @@
     right: 10px;
     content: "ANXETY";
     font-family: "Tiny5", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 750;
-    font-style: normal;
     font-size: 24px;
     color: rgba(0, 0, 0, 0.3);
 }
