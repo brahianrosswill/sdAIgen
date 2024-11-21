@@ -177,6 +177,11 @@ def update_change_webui(change, widget):
     selected_webui = change['new']
     commandline_arguments = webui_selection.get(selected_webui, "")
     commandline_arguments_widget.value = commandline_arguments
+    
+    if selected_webui == 'ComfyUI':
+        Extensions_url_widget.description = 'Custom Nodes:'
+    else:
+        Extensions_url_widget.description = 'Extensions:'
 
 def update_XL_options(change, widget):
     selected = change['new']
