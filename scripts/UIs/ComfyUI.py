@@ -43,6 +43,10 @@ def _clone_repository():
         os.system(command)
 
 def download_configuration():
+    # custom nodes - install dependencies
+    url = f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/{BRANCH}/__configs__/ComfyUI/install-deps.py'
+    _download_file(url, WEBUI, 'install-deps.py')
+
     _clone_repository()
 
 def unpack_webui():

@@ -144,7 +144,9 @@ if __name__ == "__main__":
         if UI != 'ComfyUI':
             get_ipython().system(f'python launch.py {commandline_arguments}')
         else:
+            get_ipython().system(f"python {WEBUI / 'install-deps.py'}")
             get_ipython().system('pip install -r requirements.txt')
+            clear_output(wait=True)
             get_ipython().system(f'python main.py {commandline_arguments}')
 
     # Print session duration
