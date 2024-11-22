@@ -144,8 +144,8 @@ if __name__ == "__main__":
         if UI != 'ComfyUI':
             get_ipython().system(f'python launch.py {commandline_arguments}')
         else:
-            get_ipython().system(f"python {WEBUI / 'install-deps.py'}")
-            get_ipython().system('pip install -r requirements.txt')
+            #get_ipython().system(f"python {WEBUI / 'install-deps.py'}")
+            get_ipython().system('python install-deps.py')
             clear_output(wait=True)
             get_ipython().system(f'python main.py {commandline_arguments}')
 
