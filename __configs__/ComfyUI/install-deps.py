@@ -58,7 +58,7 @@ def install_package(package_name, comparison_operator="", required_version=""):
         package_spec = package_name
 
     print(f"\033[1;33mInstalling '{package_spec}'\033[0m")
-    subprocess.run([sys.executable, "-m", "pip", "install", package_spec], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
+    subprocess.run([sys.executable, "-m", "pip", "install", package_spec], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def install_requirements(requirements_file_path):
     """Installs libraries from requirements.txt."""
@@ -83,7 +83,7 @@ def run_install_script(install_script_path):
     """Runs install.py if it exists."""
     if install_script_path.exists():
         print(f"\033[1;34mRunning install script from {install_script_path}...\033[0m")
-        subprocess.run([sys.executable, str(install_script_path)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
+        subprocess.run([sys.executable, str(install_script_path)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def main():
     """Main function that searches for and installs libraries."""
