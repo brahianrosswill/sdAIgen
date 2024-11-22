@@ -81,6 +81,7 @@ if not public_ipv4:
 tunnel_port = 8188 if UI == 'ComfyUI' else 7860
 tunnel = Tunnel(tunnel_port)
 tunnel.logger.setLevel(logging.DEBUG)
+os.environ["PYTHONWARNINGS"] = "ignore"
 
 # Define tunnel commands
 tunnels = [
@@ -144,8 +145,8 @@ if __name__ == "__main__":
         if UI != 'ComfyUI':
             get_ipython().system(f'python launch.py {commandline_arguments}')
         else:
-            get_ipython().system(f"python {WEBUI / 'install-deps.py'}")
             get_ipython().system('python install-deps.py')
+            get_ipython().system('pip install -r requirements.txt')
             clear_output(wait=True)
             get_ipython().system(f'python main.py {commandline_arguments}')
 
