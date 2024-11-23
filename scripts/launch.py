@@ -146,7 +146,8 @@ if __name__ == "__main__":
             get_ipython().system(f'python launch.py {commandline_arguments}')
         else:
             get_ipython().system('python install-deps.py')
-            get_ipython().system('pip install -r requirements.txt')
+            print("Installing dependencies for ComfyUI from requirements.txt...")
+            subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             clear_output(wait=True)
             get_ipython().system(f'python main.py {commandline_arguments}')
 
