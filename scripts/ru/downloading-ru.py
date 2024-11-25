@@ -288,11 +288,13 @@ class CivitAiAPI:
     SUPPORT_TYPES = {'Checkpoint', 'TextualInversion', 'LORA'}
 
     def __init__(self, civitai_token=None):
-        self.token = civitai_token or "62c0c5956b2f9defbd844d754000180b"
+        self.token = civitai_token or "65b66176dcf284b266579de57fbdc024"    # FAKE
         self.base_url = "https://civitai.com/api/v1"
 
     def _prepare_url(self, url):
         """Prepare the URL for API requests by adding the token."""
+        if not self.token:
+            return url
         url = url.split('?token=')[0] if '?token=' in url else url
         if '?type=' in url:
             return url.replace('?type=', f'?token={self.token}&type=')
@@ -487,21 +489,24 @@ def _run_aria2c(prefix, url, dst_dir, file_name=None, args="", header=""):
 
 # Separation of merged numbers
 def split_numbers(num_str, max_num):
-    result = []
+    unique_numbers = set()
+    nums_str = num_str.replace(',', ' ').strip()
+
     i = 0
-    while i < len(num_str):
+    while i < len(nums_str):
         found = False
         for length in range(2, 0, -1):
-            if i + length <= len(num_str):
-                part = int(num_str[i:i + length])
+            if i + length <= len(nums_str):
+                part = int(nums_str[i:i + length])
                 if part <= max_num:
-                    result.append(part)
+                    unique_numbers.add(part)
                     i += length
                     found = True
                     break
         if not found:
             break
-    return result
+
+    return sorted(unique_numbers)
 
 def add_submodels(selection, num_selection, model_dict, dst_dir):
     if selection == "none":
@@ -513,12 +518,8 @@ def add_submodels(selection, num_selection, model_dict, dst_dir):
     else:
         selected_models.extend(model_dict.get(selection, []))
 
-        unique_nums = set()
         max_num = len(model_dict)
-        nums = num_selection.replace(',', ' ').split()
-
-        for num_part in nums:
-            unique_nums.update(split_numbers(num_part, max_num))
+        unique_nums = split_numbers(num_selection, max_num)
 
         for num in unique_nums:
             if 1 <= num <= max_num:

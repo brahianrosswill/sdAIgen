@@ -97,7 +97,7 @@ xl_controlnet_options = [
 controlnet_widget = factory.create_dropdown(controlnet_options, 'ControlNet:', 'none')
 controlnet_num_widget = factory.create_text('ControlNet Number:', '', 'Enter the ControlNet model numbers for the download.')
 commit_hash_widget = factory.create_text('Commit Hash:')
-civitai_token_widget = factory.create_text('CivitAI Token:')
+civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Enter your CivitAi API token.')
 huggingface_token_widget = factory.create_text('HuggingFace Token:')
 
 zrok_token_widget = factory.create_text('Zrok Token:')
