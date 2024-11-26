@@ -228,43 +228,60 @@ def process_files(scr_path, files_dict, branch, parent_folder=''):
 
     return file_list
 
-def download_files(scr_path, lang, branch):
+async def download_file(session, url, path):
+    async with session.get(url) as response:
+        response.raise_for_status()
+        with open(path, 'wb') as f:
+            f.write(await response.read())
+
+async def download_files_async(scr_path, lang, branch):
     files_dict = {
         'CSS': ['main-widgets.css', 'download-result.css', 'auto-cleaner.css'],
         'JS': ['main-widgets.js'],
         'modules': ['json_utils.py', 'webui_utils.py', 'widget_factory.py', 'TunnelHub.py'],
         'scripts': {
-            # UIs
             'UIs': ['A1111.py', 'ReForge.py', 'ComfyUI.py'],
-            # others
             lang: [f'widgets-{lang}.py', f'downloading-{lang}.py'],
             '': ['launch.py', 'auto-cleaner.py', 'download-result.py', 'models-data.py', 'xl-models-data.py']
         }
     }
 
     file_list = process_files(scr_path, files_dict, branch)
+    
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        for file_url, file_path in file_list:
+            tasks.append(download_file(session, file_url, file_path))
+        
+        for future in tqdm(asyncio.as_completed(tasks), total=len(tasks), desc="Downloading files", unit="file"):
+            await future
 
-    for file_url, file_path in tqdm(file_list, desc="Downloading files", unit="file"):
-        os.system(f'wget -q {file_url} -O {file_path}')
+    clear_output(wait=True)
 
-    clear_output()
+def download_files(scr_path, lang, branch):
+    asyncio.run(download_files_async(scr_path, lang, branch))
 
 # ======================= MAIN ======================
 
-def main():
+import aiohttp
+import asyncio
+import nest_asyncio
+nest_asyncio.apply()
+
+async def main_async():
     parser = argparse.ArgumentParser(description='Download script for ANXETY.')
     parser.add_argument('--lang', type=str, default='en', help='Language to be used (default: en)')
     parser.add_argument('--branch', type=str, default='main', help='Branch to download files from (default: main)')
     args = parser.parse_args()
 
     env = detect_environment()
-    download_files(SCR_PATH, args.lang, args.branch)						# download scripts files
-    setup_module_folder(SCR_PATH)									# setup main dir -> modeules
+    await download_files_async(SCR_PATH, args.lang, args.branch)    # download scripts files
+    setup_module_folder(SCR_PATH)   # setup main dir -> modules
 
     env_data = create_environment_data(env, SCR_PATH, args.lang, args.branch)
     save_environment_to_json(env_data, SCR_PATH)
 
-    display_info(env, SCR_PATH)										# display info text :3
+    display_info(env, SCR_PATH)   # display info text :3
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main_async())
