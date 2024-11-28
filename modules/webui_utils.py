@@ -34,14 +34,14 @@ def update_current_webui(current_value):
 
 def _set_webui_paths(ui):
     webui_paths = {
-        'A1111': ('A1111', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora'),
-        'ReForge': ('ReForge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora'),
-        'ComfyUI': ('ComfyUI', 'custom_nodes', 'embeddings', 'vae', 'checkpoints', 'loras')
+        'A1111': ('A1111', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN'),
+        'ReForge': ('ReForge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN'),
+        'ComfyUI': ('ComfyUI', 'custom_nodes', 'embeddings', 'vae', 'checkpoints', 'loras', 'upscale_models')
     }
     if ui not in webui_paths:
         return
 
-    webui_name, extension, embed, vae, checkpoint, lora = webui_paths[ui]
+    webui_name, extension, embed, vae, checkpoint, lora, upscale = webui_paths[ui]
 
     webui = HOME / webui_name
     models = webui / 'models'
@@ -58,6 +58,7 @@ def _set_webui_paths(ui):
         'embed_dir': str(embeddings),
         'extension_dir': str(webui / extension),
         'control_dir': str(models / controlnets),
+        'upscale_dir': str(models / upscale),
         'adetailer_dir': str(models / 'adetailer'),
         'output_dir': str(webui_output)
     }

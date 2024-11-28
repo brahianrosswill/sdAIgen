@@ -10,6 +10,7 @@
 }
 .header-main-title {
     color: #AC8FA5;
+    text-align: center;
     margin-bottom: 15px;
 }
 .header-output-title {
@@ -81,8 +82,9 @@
     overflow: visible;
 }
 .output-section {
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
-    flex-wrap: wrap;
     background-color: #181818;
     padding: 10px 15px;
     border-radius: 15px;
@@ -93,9 +95,10 @@
 }
 
 /* good use of space */
-.extension-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.output-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
 }
 
 

@@ -186,6 +186,7 @@ PREFIXES = {
     "embed": embed_dir,
     "extension": extension_dir,
     "control": control_dir,
+    "upscale": upscale_dir,
     "adetailer": adetailer_dir,
     "config": WEBUI
 }

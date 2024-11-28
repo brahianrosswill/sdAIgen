@@ -41,7 +41,7 @@ for key, value in settings.items():
 # ====================== WIDGETS =====================
 HR = widgets.HTML('<hr class="divider-line">')
 HEADER_DL = 'DOWNLOAD RESULTS'
-VERSION = 'v0.5'
+VERSION = 'v0.51'
 
 factory = WidgetFactory()
 
@@ -52,11 +52,14 @@ factory.load_css(widgets_css)
 EXCLUDED_EXTENSIONS = {'.txt', '.yaml', '.log'}
 
 ## Functions
-def output_container_generator(header, items):
+def output_container_generator(header, items, is_grid=False):
     header_widget = factory.create_html(f'<div class="header-output-title">{header} ➤</div>')
     content_widgets = [factory.create_html(f'<div class="output-item">{item}</div>') for item in items]
-    container_widget = factory.create_vbox([header_widget, *content_widgets]).add_class("output-section")
-    return container_widget
+
+    container_method = factory.create_hbox if is_grid else factory.create_vbox    # hbox -> grid
+    content_container = container_method(content_widgets).add_class("output-items" if is_grid else "")
+
+    return factory.create_vbox([header_widget, content_container]).add_class("output-section")
 
 def get_files_list(directory, extensions):
     if not os.path.isdir(directory):
@@ -101,7 +104,7 @@ loras_widget = output_container_generator('LoRAs', loras_list)
 # Extensions
 extensions_list = get_folders_list(extension_dir)
 extension_type = 'Nodes' if UI == 'ComfyUI' else 'Extensions'
-extensions_widget = output_container_generator(extension_type, extensions_list).add_class("extension-grid")  # for fix height
+extensions_widget = output_container_generator(extension_type, extensions_list, is_grid=True)
 # ControlNet
 controlnets_list = get_controlnets_list(control_dir, r'^[^_]*_[^_]*_[^_]*_(.*)_fp16\.safetensors')
 controlnets_widget = output_container_generator('ControlNets', controlnets_list)
