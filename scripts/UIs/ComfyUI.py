@@ -1,11 +1,10 @@
 # ~ ComfyUI.py | by: ANXETY ~
 
-from json_utils import read_json, update_json   # JSON (main)
+from json_utils import read_json, update_json  # JSON (main)
 
 from IPython.display import clear_output
 from IPython.utils import capture
 from pathlib import Path
-import shutil
 import os
 
 # Constants
@@ -18,7 +17,6 @@ SETTINGS_PATH = SCR_PATH / 'settings.json'
 
 REPO_ZIP_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"
 BRANCH = read_json(SETTINGS_PATH, 'ENVIRONMENT.branch')
-
 EXTS = read_json(SETTINGS_PATH, 'WEBUI.extension_dir')
 
 os.chdir(HOME)
@@ -31,7 +29,15 @@ def _download_file(url, directory, filename):
     command = f"curl -sLo {file_path} {url}"
     os.system(command)
 
-def _clone_repository():
+def download_files(file_list):
+    for file_info in file_list:
+        parts = file_info.split(',')
+        url = parts[0].strip()
+        directory = parts[1].strip() if len(parts) > 1 else WEBUI   # Default Save Path
+        filename = parts[2].strip() if len(parts) > 2 else os.path.basename(url)
+        _download_file(url, directory, filename)
+
+def clone_repository():
     extensions_list = [
         "git clone --depth 1 --recursive https://github.com/ssitu/ComfyUI_UltimateSDUpscale",
         "git clone --depth 1 https://github.com/ltdrdata/ComfyUI-Manager",
@@ -43,14 +49,18 @@ def _clone_repository():
         os.system(command)
 
 def download_configuration():
-    # custom nodes - install dependencies
-    url = f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/{BRANCH}/__configs__/ComfyUI/install-deps.py'
-    _download_file(url, WEBUI, 'install-deps.py')
+    ## FILES
+    url_comfy = f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/{BRANCH}/__configs__/ComfyUI'
+    files = [
+        f"{url_comfy}/install-deps.py",
+        f'{url_comfy}/workflows/anxety-workflow.json, {WEBUI}/user/default/workflows'
+    ]
+    download_files(files)
 
-    _clone_repository()
+    ## REPOS
+    clone_repository()
 
 def unpack_webui():
-    """Clones the web UI repository."""
     with capture.capture_output():
         zip_path = f"{SCR_PATH}/{UI}.zip"
         get_ipython().system(f'aria2c --console-log-level=error -c -x 16 -s 16 -k 1M {REPO_ZIP_URL} -d {SCR_PATH} -o {UI}.zip')
