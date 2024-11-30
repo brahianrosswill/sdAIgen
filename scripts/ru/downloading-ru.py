@@ -1,7 +1,7 @@
 # ~ download.py | by: ANXETY ~
 
 from json_utils import read_json, save_json, update_json    # JSON (main)
-from webui_utils import handle_colab_timer                  # WEBUI
+from webui_utils import handle_setup_timer                  # WEBUI
 
 from urllib.parse import urlparse, parse_qs
 from IPython.display import clear_output
@@ -111,7 +111,7 @@ if not os.path.exists(WEBUI):
 
     get_ipython().run_line_magic('run', f'{SCRIPTS}/UIs/{UI}.py')
 
-    handle_colab_timer(WEBUI, start_timer)		# Setup timer (for ncpt timer-extensions)
+    handle_setup_timer(WEBUI, start_timer)		# Setup timer (for ncpt timer-extensions)
 
     install_time = time.time() - start_install
     minutes, seconds = divmod(int(install_time), 60)
@@ -121,7 +121,7 @@ else:
     print(f"🔧 Текущий WebUI: \033[34m{UI} \033[0m")
     print("🚀 Распаковка завершена. Пропуск. ⚡")
 
-    timer_colab = handle_colab_timer(WEBUI, start_timer)
+    timer_colab = handle_setup_timer(WEBUI, start_timer)
     elapsed_time = str(timedelta(seconds=time.time() - timer_colab)).split('.')[0]
 
     print(f"⌚️ Вы проводите эту сессию в течение - \033[33m{elapsed_time}\033[0m")

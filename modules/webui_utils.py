@@ -9,72 +9,71 @@ SETTINGS_PATH = HOME / 'ANXETY' / 'settings.json'
 SCR_PATH = Path(HOME / 'ANXETY')
 
 def update_current_webui(current_value):
-    # Read the current and latest stored values
+    """Update the current WebUI value and save it."""
     current_stored_value = read_json(SETTINGS_PATH, 'WEBUI.current')
     latest_value = read_json(SETTINGS_PATH, 'WEBUI.latest', None)
 
-    # If there is no latest value, save the current value as the latest
-    if latest_value is None:
+    if latest_value is None or current_stored_value != current_value:
+        save_json(SETTINGS_PATH, 'WEBUI.latest', current_stored_value)
         save_json(SETTINGS_PATH, 'WEBUI.current', current_value)
-        save_json(SETTINGS_PATH, 'WEBUI.latest', current_value)
-    else:
-        # If the current value differs from the stored current value
-        if current_stored_value != current_value:
-            # Save the current stored value as the latest
-            if current_stored_value is not None:
-                save_json(SETTINGS_PATH, 'WEBUI.latest', current_stored_value)
-            # Update the current value
-            update_json(SETTINGS_PATH, 'WEBUI.current', current_value)
 
-    # Save the web UI path
     save_json(SETTINGS_PATH, 'WEBUI.webui_path', f'{HOME}/{current_value}')
 
-    # Call the function to set web UI paths
     _set_webui_paths(current_value)
 
 def _set_webui_paths(ui):
     webui_paths = {
-        'A1111': ('A1111', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN'),
-        'ReForge': ('ReForge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN'),
-        'ComfyUI': ('ComfyUI', 'custom_nodes', 'embeddings', 'vae', 'checkpoints', 'loras', 'upscale_models')
+        'A1111': ('Stable-diffusion', 'VAE', 'Lora', 'embeddings', 'extensions', 'ESRGAN', 'outputs'),
+        'ReForge': ('Stable-diffusion', 'VAE', 'Lora', 'embeddings', 'extensions', 'ESRGAN', 'outputs'),
+        'ComfyUI': ('checkpoints', 'vae', 'loras', 'embeddings', 'custom_nodes', 'upscale_models', 'output'),
     }
+
     if ui not in webui_paths:
         return
 
-    webui_name, extension, embed, vae, checkpoint, lora, upscale = webui_paths[ui]
-
-    webui = HOME / webui_name
+    webui = HOME / ui
     models = webui / 'models'
+    checkpoint, vae, lora, embed, extension, upscale, webui_output = webui_paths[ui]
 
-    embeddings = models / embed if ui == 'ComfyUI' else webui / embed
-    controlnets = 'controlnet' if ui == 'ComfyUI' else 'ControlNet'
-    webui_output = webui / 'output' if ui == 'ComfyUI' else 'outputs'
+    # Setup Path
+    model_dir = models / checkpoint
+    vae_dir = models / vae
+    lora_dir = models / lora
+    embed_dir = (
+        models / embed if ui == 'ComfyUI' else
+        webui / embed
+    )
+    extension_dir = webui / extension
+    upscale_dir = models / upscale
+    # extra
+    control_dir = models / ('controlnet' if ui == 'ComfyUI' else 'ControlNet')
+    adetailer_dir = models / 'adetailer'
 
     paths = {
-        # 'models': str(models),
-        'model_dir': str(models / checkpoint),
-        'vae_dir': str(models / vae),
-        'lora_dir': str(models / lora),
-        'embed_dir': str(embeddings),
-        'extension_dir': str(webui / extension),
-        'control_dir': str(models / controlnets),
-        'upscale_dir': str(models / upscale),
-        'adetailer_dir': str(models / 'adetailer'),
+        'model_dir': str(model_dir),
+        'vae_dir': str(vae_dir),
+        'lora_dir': str(lora_dir),
+        'embed_dir': str(embed_dir),
+        'extension_dir': str(extension_dir),
+        'control_dir': str(control_dir),
+        'upscale_dir': str(upscale_dir),
+        'adetailer_dir': str(adetailer_dir),
         'output_dir': str(webui_output)
     }
 
     update_json(SETTINGS_PATH, 'WEBUI', paths)
 
-def handle_colab_timer(webui_path, timer_webui):
-    timer_file_path = os.path.join(webui_path, 'static', 'timer.txt')
-    
-    os.makedirs(os.path.dirname(timer_file_path), exist_ok=True)
+def handle_setup_timer(webui_path, timer_webui):
+    timer_file_path = Path(webui_path) / 'static' / 'timer.txt'
+    timer_file_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if not os.path.exists(timer_file_path):
-        with open(timer_file_path, 'w') as timer_file:
-            timer_file.write(str(timer_webui))
-    else:
-        with open(timer_file_path, 'r') as timer_file:
-            timer_webui = float(timer_file.read())
+    try:
+        with timer_file_path.open('r') as file:
+            timer_webui = float(file.read())
+    except FileNotFoundError:
+        pass
+
+    with timer_file_path.open('w') as file:
+        file.write(str(timer_webui))
 
     return timer_webui

@@ -59,7 +59,6 @@ def download_configuration():
         os.system(command)
 
 def unpack_webui():
-    """Clones the web UI repository."""
     with capture.capture_output():
         zip_path = f"{SCR_PATH}/{UI}.zip"
         get_ipython().system(f'aria2c --console-log-level=error -c -x 16 -s 16 -k 1M {REPO_ZIP_URL} -d {SCR_PATH} -o {UI}.zip')
