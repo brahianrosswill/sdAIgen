@@ -1,3 +1,11 @@
+<div align="center">
+
+<h1 align="center">~ ANXETY | Stable Diffusion WebUI | NoteBook V2 ~</h1>
+
+English | [Русский ](./README-ru_RU.md)
+
+</div>
+
 # To-Do List
 
 ## Completed Tasks
