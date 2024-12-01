@@ -1,17 +1,14 @@
 ''' CivitAi API | ANXETY'''
 
-from json_utils import read_json    # JSON (main)
 import requests
-
-# Constants
-ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 
 class CivitAiAPI:
     SUPPORT_TYPES = {'Checkpoint', 'TextualInversion', 'LORA'}
 
-    def __init__(self, civitai_token=None):
+    def __init__(self, civitai_token=None, env_name=''):
         self.token = civitai_token or "65b66176dcf284b266579de57fbdc024"    # FAKE
         self.base_url = "https://civitai.com/api/v1"
+        self.env_name = env_name
 
     def _prepare_url(self, url):
         """Prepare the URL for API requests by adding the token."""
@@ -92,7 +89,7 @@ class CivitAiAPI:
 
         if data and 'images' in data:
             for image in data['images']:
-                if image['nsfwLevel'] >= 4 and ENV_NAME == 'Kaggle':  # Filter NSFW images for Kaggle
+                if image['nsfwLevel'] >= 4 and self.env_name == 'Kaggle':  # Filter NSFW images for Kaggle
                     continue
                 image_url = image['url']
                 image_extension = image_url.split('.')[-1]

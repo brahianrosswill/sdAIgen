@@ -351,7 +351,7 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     clean_url = _strip_url(url)
 
     if 'civitai' in url:
-        civitai = CivitAiAPI(civitai_token)
+        civitai = CivitAiAPI(civitai_token, ENV_NAME)
         data = civitai.fetch_data(url)
 
         if data:
