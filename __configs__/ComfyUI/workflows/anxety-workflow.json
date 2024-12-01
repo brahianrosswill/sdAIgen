@@ -54,10 +54,10 @@
       "widgets_values": [
         156680208700286,
         "randomize",
-        25,
-        4,
+        28,
+        5.5,
         "euler",
-        "normal",
+        "karras",
         1
       ]
     },

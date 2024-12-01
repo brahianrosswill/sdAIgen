@@ -124,7 +124,7 @@ clear_output()
 # Update configuration paths
 paths_to_check = {
     "tagger_hf_cache_dir": f"{WEBUI}/models/interrogators/",
-    "ad_extra_models_dir": f"{WEBUI}/models/adetailer/",
+    "ad_extra_models_dir": adetailer_dir,
     "sd_checkpoint_hash": "",
     "sd_model_checkpoint": "",
     "sd_vae": "None"

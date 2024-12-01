@@ -26,9 +26,5 @@
     - [ ] Models
     - [ ] VAE
     - [x] ControlNet
-    
- - [ ] Add more utilities:
-    - [ ] Save images in zip
-    - [ ] Think of more ideas ;3
 
 - [ ] Finish project V2~
