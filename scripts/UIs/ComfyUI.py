@@ -15,7 +15,7 @@ WEBUI = HOME / UI
 SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
-REPO_ZIP_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"
+REPO_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"
 BRANCH = read_json(SETTINGS_PATH, 'ENVIRONMENT.branch')
 EXTS = read_json(SETTINGS_PATH, 'WEBUI.extension_dir')
 
@@ -63,7 +63,7 @@ def download_configuration():
 def unpack_webui():
     with capture.capture_output():
         zip_path = f"{SCR_PATH}/{UI}.zip"
-        get_ipython().system(f'aria2c --console-log-level=error -c -x 16 -s 16 -k 1M {REPO_ZIP_URL} -d {SCR_PATH} -o {UI}.zip')
+        get_ipython().system(f'aria2c --console-log-level=error -c -x 16 -s 16 -k 1M {REPO_URL} -d {SCR_PATH} -o {UI}.zip')
         get_ipython().system(f'unzip -q -o {zip_path} -d {WEBUI}')
         get_ipython().system(f'rm -rf {zip_path}')
 

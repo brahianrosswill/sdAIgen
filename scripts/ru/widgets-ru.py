@@ -25,7 +25,7 @@ webui_selection = {
     'A1111': "--listen --xformers --enable-insecure-extension-access --disable-console-progressbars --no-half-vae --theme dark",
     'ReForge': "--xformers --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars --theme dark",
     'ComfyUI': "--dont-print-server --preview-method auto --use-pytorch-cross-attention",
-    # 'Forge': "--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars --theme dark"
+    'Forge': "--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars --theme dark"
 }
 
 # Initialize the WidgetFactory
@@ -70,7 +70,7 @@ vae_num_widget = factory.create_text('Номер Vae:', '', 'Введите но
 additional_header = factory.create_header('Дополнительно')
 latest_webui_widget = factory.create_checkbox('Обновить WebUI', True)
 latest_extensions_widget = factory.create_checkbox('Обновить Расширения', True)
-change_webui_widget = factory.create_dropdown(['A1111', 'ReForge', 'ComfyUI'], 'WebUI:', 'A1111', layout={'width': 'auto'})
+change_webui_widget = factory.create_dropdown(['A1111', 'ReForge', 'ComfyUI', 'Forge'], 'WebUI:', 'A1111', layout={'width': 'auto'})
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Подробная Загрузка:', 'off', layout={'width': 'auto'})
 choose_changes_widget = factory.create_hbox([latest_webui_widget, latest_extensions_widget, change_webui_widget, detailed_download_widget],
                                             layout={'justify_content': 'space-between'})

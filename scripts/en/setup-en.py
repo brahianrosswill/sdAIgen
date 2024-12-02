@@ -240,7 +240,7 @@ async def download_files_async(scr_path, lang, branch):
         'JS': ['main-widgets.js'],
         'modules': ['json_utils.py', 'webui_utils.py', 'widget_factory.py', 'TunnelHub.py', 'CivitaiAPI.py'],
         'scripts': {
-            'UIs': ['A1111.py', 'ReForge.py', 'ComfyUI.py'],
+            'UIs': ['A1111.py', 'ReForge.py', 'ComfyUI.py', 'Forge.py'],
             lang: [f'widgets-{lang}.py', f'downloading-{lang}.py'],
             '': ['launch.py', 'auto-cleaner.py', 'download-result.py', '_models-data.py', '_xl-models-data.py']
         }

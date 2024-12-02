@@ -37,4 +37,4 @@
   
 #### Subdirectory -> UIs
 
-- **ReForge.py**, **ComfyUI.py**, **A1111.py**: Downloading the UI repo and its customizations.
+- Downloading the UI repo and its customizations.

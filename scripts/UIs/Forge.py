@@ -1,4 +1,4 @@
-# ~ A1111.py | by: ANXETY ~
+# ~ Forge.py | by: ANXETY ~
 
 from json_utils import read_json, update_json   # JSON (main)
 
@@ -9,7 +9,7 @@ import shutil
 import os
 
 # Constants
-UI = 'A1111'
+UI = 'Forge'
 
 HOME = Path.home()
 WEBUI = HOME / UI
