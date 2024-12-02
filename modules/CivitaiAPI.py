@@ -1,14 +1,16 @@
 ''' CivitAi API | ANXETY'''
 
+from urllib.parse import urlparse, parse_qs
 import requests
+import os
 
 class CivitAiAPI:
+    Kaggle = 'KAGGLE_URL_BASE' in os.environ    # to check NSFW
     SUPPORT_TYPES = {'Checkpoint', 'TextualInversion', 'LORA'}
 
-    def __init__(self, civitai_token=None, env_name=''):
+    def __init__(self, civitai_token=None):
         self.token = civitai_token or "65b66176dcf284b266579de57fbdc024"    # FAKE
         self.base_url = "https://civitai.com/api/v1"
-        self.env_name = env_name
 
     def _prepare_url(self, url):
         """Prepare the URL for API requests by adding the token."""
@@ -48,7 +50,7 @@ class CivitAiAPI:
 
         return data
 
-    def get_model_info(self, url, data, file_name):
+    def get_model_info(self, data, url, file_name):
         """Extract model type and name from the data."""
         model_type = data['model']['type']
         model_name = data['files'][0]['name']
@@ -70,7 +72,7 @@ class CivitAiAPI:
     def get_download_url(self, data, url):
         """Return the download URL from the data."""
         if data and 'files' in data:
-            model_type, _ = self.get_model_info(url, data, None)  # Get model type for checking
+            model_type, _ = self.get_model_info(data, url, None)  # Get model type for checking
             if any(t.lower() in model_type.lower() for t in self.SUPPORT_TYPES):
                 return data.get('downloadUrl')
             return data['files'][1]['downloadUrl'] if len(data['files']) > 1 else data.get('downloadUrl')
@@ -89,7 +91,7 @@ class CivitAiAPI:
 
         if data and 'images' in data:
             for image in data['images']:
-                if image['nsfwLevel'] >= 4 and self.env_name == 'Kaggle':  # Filter NSFW images for Kaggle
+                if image['nsfwLevel'] >= 4 and self.Kaggle:  # Filter NSFW images for Kaggle
                     continue
                 image_url = image['url']
                 image_extension = image_url.split('.')[-1]

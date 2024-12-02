@@ -1,4 +1,4 @@
-# ~ launch.py | by: ANXETY ~
+# ~ launch.py | by ANXETY ~
 
 from json_utils import read_json, save_json, update_json    # JSON (main)
 from TunnelHub import Tunnel                                # Tunneling

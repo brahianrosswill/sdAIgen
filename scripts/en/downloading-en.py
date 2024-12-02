@@ -1,10 +1,9 @@
-# ~ download.py | by: ANXETY ~
+# ~ download.py | by ANXETY ~
 
 from json_utils import read_json, save_json, update_json    # JSON (main)
 from webui_utils import handle_setup_timer                  # WEBUI
 from CivitaiAPI import CivitAiAPI                           # CivitAI API
 
-from urllib.parse import urlparse, parse_qs
 from IPython.display import clear_output
 from IPython.utils import capture
 from datetime import timedelta
@@ -351,11 +350,11 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     clean_url = _strip_url(url)
 
     if 'civitai' in url:
-        civitai = CivitAiAPI(civitai_token, ENV_NAME)
+        civitai = CivitAiAPI(civitai_token)
         data = civitai.fetch_data(url)
 
         if data:
-            model_type, model_name = civitai.get_model_info(url, data, file_name)
+            model_type, model_name = civitai.get_model_info(data, url, file_name)
             download_url = civitai.get_download_url(data, url)
             clean_url, url = civitai.get_full_and_clean_download_url(download_url)
             image_url, image_name = civitai.get_image_info(data, model_name, model_type)

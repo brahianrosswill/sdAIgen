@@ -1,11 +1,10 @@
-# ~ Forge.py | by: ANXETY ~
+# ~ Forge.py | by ANXETY ~
 
 from json_utils import read_json, update_json   # JSON (main)
 
 from IPython.display import clear_output
 from IPython.utils import capture
 from pathlib import Path
-import shutil
 import os
 
 # Constants

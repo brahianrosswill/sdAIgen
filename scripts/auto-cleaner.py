@@ -1,4 +1,4 @@
-# ~ auto-cleaner.py | by: ANXETY ~
+# ~ auto-cleaner.py | by ANXETY ~
 
 from json_utils import read_json, save_json, update_json    # JSON (main)
 from widget_factory import WidgetFactory                    # WIDGETS

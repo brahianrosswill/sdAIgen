@@ -1,4 +1,4 @@
-# ~ setup.py | by: ANXETY ~
+# ~ setup.py | by ANXETY ~
 
 from IPython.display import display, HTML, clear_output
 from urllib.parse import urljoin
@@ -257,9 +257,6 @@ async def download_files_async(scr_path, lang, branch):
             await future
 
     clear_output(wait=True)
-
-def download_files(scr_path, lang, branch):
-    asyncio.run(download_files_async(scr_path, lang, branch))
 
 # ======================= MAIN ======================
 

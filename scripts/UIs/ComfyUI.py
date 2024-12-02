@@ -1,4 +1,4 @@
-# ~ ComfyUI.py | by: ANXETY ~
+# ~ ComfyUI.py | by ANXETY ~
 
 from json_utils import read_json, update_json  # JSON (main)
 

@@ -1,4 +1,4 @@
-# ~ widgets.py | by: ANXETY ~
+# ~ widgets.py | by ANXETY ~
 
 from json_utils import read_json, save_json, update_json  # JSON (main)
 from json_utils import key_or_value_exists, delete_key    # JSON (other)

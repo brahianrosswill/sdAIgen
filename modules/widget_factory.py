@@ -1,5 +1,5 @@
 """
-WidgetFactory Module | by: ANXETY
+WidgetFactory Module | by ANXETY
 """
 
 from IPython.display import display, HTML
