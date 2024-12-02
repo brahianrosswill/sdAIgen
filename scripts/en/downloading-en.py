@@ -280,7 +280,7 @@ def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
     print(f"\033[33mSAVE DIR: \033[34m{dst_dir}")
     print(f"\033[33mFILE NAME: \033[34m{file_name}\033[0m")
     if 'civitai' in url and image_url:
-        print(f"\033[32m[Preview]:\033[0m {image_name} - {image_url}")
+        print(f"\033[32m[Preview]:\033[0m {image_name} -> {image_url}")
     print("\n")
 
 ''' Main Download Code '''

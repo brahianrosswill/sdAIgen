@@ -6,33 +6,7 @@ English | [Русский ](./README-ru_RU.md)
 
 </div>
 
-# To-Do List
-
-## Completed Tasks
-- [x] Start the project V2~
-- [x] Add scripts:
-    - [x] Widgets (ru/en)
-    - [x] Downloads (ru/en)
-    - [x] Launch web UI
-    - [x] Auto-cleaner script
-
-- [x] Create notebook.
-- [x] Add support for ComfyUI
-
-- [x] Add settings:
-	- [x] Add config
-	- [x] Add UI config
-	- [x] Add styles
-	
-- [x] Fix tunnel creation.
-
----
-
-## Tasks to Do
-
-- [ ] Update the date for:
-    - [ ] Models
-    - [ ] VAE
-    - [x] ControlNet
-
-- [ ] Finish project V2~
+| LANG | Colab           | Kaggle         |
+| :--- | :-------------- | :------------- |
+| EN   | [![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/anxety-solo/sdAIgen/blob/main/notebook/ANXETY_sdAIgen_EN.ipynb) | ✖️              |
+| RU   | [![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/anxety-solo/sdAIgen/blob/main/notebook/ANXETY_sdAIgen_RU.ipynb) | ✖️              |

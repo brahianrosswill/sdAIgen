@@ -55,7 +55,7 @@ switch_model_widget = factory.create_hbox([inpainting_model_widget, XL_models_wi
 """Create VAE selection widgets."""
 vae_header = factory.create_header('VAE Selection')
 vae_options = [
-    'none', '1.Anime.vae',
+    'none', 'ALL', '1.Anime.vae',
     '2.Anything.vae', '3.Blessed2.vae',
     '4.ClearVae.vae', '5.WD.vae'
 ]

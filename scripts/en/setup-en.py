@@ -45,7 +45,7 @@ def display_info(env, scr_folder):
     <div id="message-container">
       <span>Done! Now you can run the cells below. ☄️</span>
       <span>Runtime environment: <span class="env">{env}</span></span>
-      <span>File Location: <span class="files-location">{scr_folder}</span></span>
+      <span>File location: <span class="files-location">{scr_folder}</span></span>
     </div>
 
     <style>
