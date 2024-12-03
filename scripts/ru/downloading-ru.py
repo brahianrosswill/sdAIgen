@@ -195,28 +195,35 @@ for path in PREFIXES.values():
 
 ''' Formatted Info Output '''
 
+def format_output_line(line):
+    """Format a line of output with ANSI color codes."""
+    line = re.sub(r'\[', "\033[35m【\033[0m", line)
+    line = re.sub(r'\]', "\033[35m】\033[0m", line)
+    line = re.sub(r'(#)(\w+)', r'\1\033[32m\2\033[0m', line)
+    line = re.sub(r'(\(\d+%\))', r'\033[36m\1\033[0m', line)
+    line = re.sub(r'(CN:)(\d+)', r'\1\033[34m\2\033[0m', line)
+    line = re.sub(r'(DL:)(\d+\w+)', r'\1\033[32m\2\033[0m', line)
+    line = re.sub(r'(ETA:)(\d+\w+)', r'\1\033[33m\2\033[0m', line)
+    return line
+
+def handle_error_output(line, error_codes, error_messages):
+    """Check and collect error messages from the output."""
+    if 'errorCode' in line or 'Exception' in line:
+        error_codes.append(line)
+    if '|' in line and 'ERR' in line:
+        formatted_line = re.sub(r'(\|\s*)(ERR)(\s*\|)', r'\1\033[31m\2\033[0m\3', line)
+        error_messages.append(formatted_line)
+
 def monitor_aria2_download(header, args, dst_dir, out, url):
     """Starts aria2c and intercepts the output to display the download progress."""
     try:
         command = f"aria2c {header} {args} -d {dst_dir} {out} '{url}'"
-
-        # Run aria2c with output capture
         process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-        # Color codes for output
-        MAGENTA = "\033[35m"
-        GREEN = "\033[32m"
-        CYAN = "\033[36m"
-        YELLOW = "\033[33m"
-        BLUE = "\033[34m"
-        RESET = "\033[0m"
-        RED = "\033[31m"
-
+        error_codes = []
+        error_messages = []
         result = ""
         br = False
-
-        code = []
-        errors = []
 
         while True:
             lines = process.stderr.readline()
@@ -226,41 +233,31 @@ def monitor_aria2_download(header, args, dst_dir, out, url):
             if lines:
                 result += lines
 
-                for outputs in lines.splitlines():
-                    if 'errorCode' in outputs or 'Exception' in outputs:
-                        code.append(outputs)
-                    if '|' in outputs and 'ERR' in outputs:
-                        outputs = re.sub(r'(\|\s*)(ERR)(\s*\|)', f'\\1{RED}\\2{RESET}\\3', outputs)
-                        errors.append(outputs)
+                for output_line in lines.splitlines():
+                    handle_error_output(lines, error_codes, error_messages)
 
-                    if re.match(r'\[#\w{6}\s.*\]', outputs):
-                        outputs = re.sub(r'\[', MAGENTA + '【' + RESET, outputs)
-                        outputs = re.sub(r'\]', MAGENTA + '】' + RESET, outputs)
-                        outputs = re.sub(r'(#)(\w+)', f'\\1{GREEN}\\2{RESET}', outputs)
-                        outputs = re.sub(r'(\(\d+%\))', f'{CYAN}\\1{RESET}', outputs)
-                        outputs = re.sub(r'(CN:)(\d+)', f"\\1{BLUE}\\2{RESET}", outputs)
-                        outputs = re.sub(r'(DL:)(\d+\w+)', f"\\1{GREEN}\\2{RESET}", outputs)
-                        outputs = re.sub(r'(ETA:)(\d+\w+)', f"\\1{YELLOW}\\2{RESET}", outputs)
-                        lines = outputs.splitlines()
+                    if re.match(r'\[#\w{6}\s.*\]', output_line):
+                        formatted_line = format_output_line(output_line)
                         for line in lines:
-                            print(f"\r{' '*180}\r {line}", end="")
+                            print(f"\r{' ' * 180}\r{formatted_line}", end="")
                             sys.stdout.flush()
                         br = True
                         break
 
-        error = code + errors
-        for lines in error:
-            print(f"  {lines}")
+        # Print collected error messages
+        for error in error_codes + error_messages:
+            print(f" {error}")
 
         if br:
             print()
 
+        # Print final status
         stripe = result.find("======+====+===========")
         if stripe != -1:
-            for lines in result[stripe:].splitlines():
-                if '|' in lines and 'OK' in lines:
-                    lines = re.sub(r'(\|\s*)(OK)(\s*\|)', f'\\1{GREEN}\\2{RESET}\\3', lines)
-                    print(f"  {lines}")
+            for line in result[stripe:].splitlines():
+                if '|' in line and 'OK' in line:
+                    formatted_line = re.sub(r'(\|\s*)(OK)(\s*\|)', r'\1\033[32m\2\033[0m\3', line)
+                    print(f" {formatted_line}")
 
         process.wait()
 
@@ -281,7 +278,7 @@ def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
     print(f"\033[33mFILE NAME: \033[34m{file_name}\033[0m")
     if 'civitai' in url and image_url:
         print(f"\033[32m[Preview]:\033[0m {image_name} -> {image_url}")
-    print("\n")
+    print()
 
 ''' Main Download Code '''
 
@@ -520,10 +517,6 @@ else:
         download(url)
 
 print("\r🏁 Скачивание Завершено!" + " "*15)
-
-
-# Cleaning shit after downloading...
-get_ipython().system('find {WEBUI} \\( -type d \\( -name ".ipynb_checkpoints" -o -name ".aria2" \\) -o -type f -name "*.aria2" \\) -exec rm -r {{}} \\; >/dev/null 2>&1')
 
 
 ## Install of Custom extensions
