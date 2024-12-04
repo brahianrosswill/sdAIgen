@@ -15,12 +15,42 @@ SCR_PATH = Path(HOME / 'ANXETY')
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 
+SCRIPTS = SCR_PATH / 'scripts'
+
 CSS = SCR_PATH / 'CSS'
 JS = SCR_PATH / 'JS'
 widgets_css = CSS / 'main-widgets.css'
 widgets_js = JS / 'main-widgets.js'
 
 # ====================== WIDGETS =====================
+def read_model_data(file_path, data_type):
+    """
+    Reads model, VAE, or ControlNet data from the specified file.
+
+    The function loads data from a Python script and returns the corresponding list of model names based on the specified data type.
+
+    Parameters:
+    ----------
+    file_path : str
+        The path to the file containing model data in Python format.
+    data_type : str
+        The type of data to extract: "model", "vae", or "cnet".
+    """
+    local_vars = {}
+    
+    with open(file_path) as f:
+        exec(f.read(), {}, local_vars)
+    
+    if data_type == "model":
+        model_names = list(local_vars['model_list'].keys())   # Return model names
+        return ['none'] + model_names
+    elif data_type == "vae":
+        vae_names = list(local_vars['vae_list'].keys())    # Return the VAE names
+        return ['none', 'ALL'] + vae_names
+    elif data_type == "cnet":
+        cnet_names = list(local_vars['controlnet_list'].keys())   # Return ControlNet names
+        return ['none', 'ALL'] + cnet_names
+
 webui_selection = {
     'A1111': "--listen --xformers --enable-insecure-extension-access --disable-console-progressbars --no-half-vae --theme dark",
     'ReForge': "--xformers --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars --theme dark",
@@ -35,16 +65,8 @@ HR = widgets.HTML('<hr>')
 # --- MODEL ---
 """Create model selection widgets."""
 model_header = factory.create_header('Model Selection')
-model_options = [
-    'none', '1.Anime (by XpucT) + INP', '2.BluMix [Anime] [V7] + INP',
-    '3.Cetus-Mix [Anime] [V4] + INP', '4.Counterfeit [Anime] [V3] + INP',
-    '5.CuteColor [Anime] [V3]', '6.Dark-Sushi-Mix [Anime]',
-    '7.Meina-Mix [Anime] [V11] + INP', '8.Mix-Pro [Anime] [V4] + INP'
-]
-xl_model_options = [
-    'none', '1.Nova [Anime] [V7] [XL]'
-]
-model_widget = factory.create_dropdown(model_options, 'Model:', '4.Counterfeit [Anime] [V3] + INP')
+model_options = model_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'model')
+model_widget = factory.create_dropdown(model_options, 'Model:', '4. Counterfeit [Anime] [V3] + INP')
 model_num_widget = factory.create_text('Model Number:', '', 'Enter the model numbers for the download.')
 inpainting_model_widget = factory.create_checkbox('Inpainting Models', False, class_names=['inpaint'])
 XL_models_widget = factory.create_checkbox('SDXL', False, class_names=['sdxl'])
@@ -54,15 +76,8 @@ switch_model_widget = factory.create_hbox([inpainting_model_widget, XL_models_wi
 # --- VAE ---
 """Create VAE selection widgets."""
 vae_header = factory.create_header('VAE Selection')
-vae_options = [
-    'none', 'ALL', '1.Anime.vae',
-    '2.Anything.vae', '3.Blessed2.vae',
-    '4.ClearVae.vae', '5.WD.vae'
-]
-xl_vae_options = [
-    'none', 'ALL', '1.sdxl.vae'
-]
-vae_widget = factory.create_dropdown(vae_options, 'Vae:', '3.Blessed2.vae')
+vae_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'vae')
+vae_widget = factory.create_dropdown(vae_options, 'Vae:', '3. Blessed2.vae')
 vae_num_widget = factory.create_text('Vae Number:', '', 'Enter vae numbers for the download.')
 
 # --- ADDITIONAL ---
@@ -74,26 +89,8 @@ change_webui_widget = factory.create_dropdown(['A1111', 'ReForge', 'ComfyUI', 'F
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Detailed Download:', 'off', layout={'width': 'auto'})
 choose_changes_widget = factory.create_hbox([latest_webui_widget, latest_extensions_widget, change_webui_widget, detailed_download_widget],
                                             layout={'justify_content': 'space-between'})
-controlnet_options = [
-    'none', 'ALL', '1.Openpose', '2.Canny', '3.Depth',
-    '4.Lineart', '5.ip2p', '6.Shuffle', '7.Inpaint',
-    '8.MLSD', '9.Normalbae', '10.Scribble', '11.Seg',
-    '12.Softedge', '13.Tile'
-]
-xl_controlnet_options = [
-    'none', 'ALL', '1.Kohya Controllite XL Blur',
-    '2.Kohya Controllite XL Canny', '3.Kohya Controllite XL Depth',
-    '4.Kohya Controllite XL Openpose Anime', '5.Kohya Controllite XL Scribble Anime',
-    '6.T2I Adapter XL Canny',
-    '7.T2I Adapter XL Openpose',
-    '8.T2I Adapter XL Sketch',
-    '9.T2I Adapter Diffusers XL Canny',
-    '10.T2I Adapter Diffusers XL Depth Midas',
-    '11.T2I Adapter Diffusers XL Depth Zoe',
-    '12.T2I Adapter Diffusers XL Lineart',
-    '13.T2I Adapter Diffusers XL Openpose',
-    '14.T2I Adapter Diffusers XL Sketch',
-]
+
+controlnet_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'cnet')
 controlnet_widget = factory.create_dropdown(controlnet_options, 'ControlNet:', 'none')
 controlnet_num_widget = factory.create_text('ControlNet Number:', '', 'Enter the ControlNet model numbers for the download.')
 commit_hash_widget = factory.create_text('Commit Hash:')
@@ -186,21 +183,20 @@ def update_change_webui(change, widget):
 def update_XL_options(change, widget):
     selected = change['new']
 
-    if selected:    # SD XL options
-        model_widget.options = xl_model_options
-        model_widget.value = '1.Nova [Anime] [V7] [XL]'
-        vae_widget.options = xl_vae_options
-        vae_widget.value = '1.sdxl.vae'
-        controlnet_widget.options = xl_controlnet_options
-        controlnet_widget.value = 'none'
-    else:     # SD 1.5 options
-        model_widget.options = model_options
-        model_widget.value = '4.Counterfeit [Anime] [V3] + INP'
-        vae_widget.options = vae_options
-        vae_widget.value = '3.Blessed2.vae'
-        controlnet_widget.options = controlnet_options
-        controlnet_widget.value = 'none'
+    default_model_values = {
+        True: ('1. Nova [Anime] [V7] [XL]', '1. sdxl.vae', 'none'),   # For XL models
+        False: ('4. Counterfeit [Anime] [V3] + INP', '3. Blessed2.vae', 'none')   # For 1.5 models
+    }
 
+    # GET DATA MODELs | VAES| CNETs
+    data_file = '_xl-models-data.py' if selected else '_models-data.py'
+    model_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'model')
+    vae_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'vae')
+    controlnet_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'cnet')
+
+    # Set default values from the dictionary
+    model_widget.value, vae_widget.value, controlnet_widget.value = default_model_values[selected]
+    
 # Connecting widgets
 factory.connect_widgets([(change_webui_widget, 'value')], [update_change_webui])
 factory.connect_widgets([(XL_models_widget, 'value')], [update_XL_options])
