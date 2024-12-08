@@ -267,12 +267,16 @@ nest_asyncio.apply()
 
 async def main_async():
     parser = argparse.ArgumentParser(description='Download script for ANXETY.')
-    parser.add_argument('--lang', type=str, default='en', help='Language to be used (default: en)')
-    parser.add_argument('--branch', type=str, default='main', help='Branch to download files from (default: main)')
+    parser.add_argument('-l', '--lang', type=str, default='en', help='Language to be used (default: en)')
+    parser.add_argument('-b', '--branch', type=str, default='main', help='Branch to download files from (default: main)')
+    parser.add_argument('-s', '--skip-download', action='store_true', help='Skip downloading files and just update the directory and modules')
     args = parser.parse_args()
 
     env = detect_environment()
-    await download_files_async(SCR_PATH, args.lang, args.branch)    # download scripts files
+
+    if not args.skip_download:
+        await download_files_async(SCR_PATH, args.lang, args.branch)  # download scripts files
+
     setup_module_folder(SCR_PATH)   # setup main dir -> modules
 
     env_data = create_environment_data(env, SCR_PATH, args.lang, args.branch)
