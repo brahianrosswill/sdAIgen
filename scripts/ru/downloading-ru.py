@@ -32,23 +32,19 @@ SCRIPTS = SCR_PATH / 'scripts'
 # ============ loading settings V5 =============
 def load_settings(path):
     """Load settings from a JSON file."""
-    if os.path.exists(path):
-        try:
-            _environment = read_json(path, 'ENVIRONMENT')
-            _widgets = read_json(path, 'WIDGETS')
-            _webui = read_json(path, 'WEBUI')
+    try:
+        return {
+            **read_json(path, 'ENVIRONMENT'),
+            **read_json(path, 'WIDGETS'),
+            **read_json(path, 'WEBUI')
+        }
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"Error loading settings: {e}")
+        return {}
 
-            settings = {**_environment, **_widgets, **_webui}
-            return settings
-        except (json.JSONDecodeError, IOError) as e:
-            print(f"Error loading settings: {e}")
-    return {}
-
+# Load settings
 settings = load_settings(SETTINGS_PATH)
-
-# Create local variables for each key in the settings
-for key, value in settings.items():
-    locals()[key] = value
+locals().update(settings)
 
 # ================ LIBRARIES V3 ================
 def install_packages(install_lib):
@@ -102,7 +98,6 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
     clear_output()
 
 # =================== WEBUI ===================
-
 start_timer = read_json(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
 
 if not os.path.exists(WEBUI):
@@ -110,7 +105,6 @@ if not os.path.exists(WEBUI):
     print(f"⌚ Распаковка Stable Diffusion... | WEBUI: \033[34m{UI}\033[0m", end='')
 
     get_ipython().run_line_magic('run', f'{SCRIPTS}/UIs/{UI}.py')
-
     handle_setup_timer(WEBUI, start_timer)		# Setup timer (for ncpt timer-extensions)
 
     install_time = time.time() - start_install
@@ -121,9 +115,8 @@ else:
     print(f"🔧 Текущий WebUI: \033[34m{UI} \033[0m")
     print("🚀 Распаковка завершена. Пропуск. ⚡")
 
-    timer_colab = handle_setup_timer(WEBUI, start_timer)
-    elapsed_time = str(timedelta(seconds=time.time() - timer_colab)).split('.')[0]
-
+    timer_env = handle_setup_timer(WEBUI, start_timer)
+    elapsed_time = str(timedelta(seconds=time.time() - timer_env)).split('.')[0]
     print(f"⌚️ Вы проводите эту сессию в течение - \033[33m{elapsed_time}\033[0m")
 
 
@@ -168,12 +161,9 @@ if commit_hash:
 
 # Get XL or 1.5 models list
 ## model_list | vae_list | controlnet_list
-if XL_models:
-    with open(f'{SCRIPTS}/_xl-models-data.py') as f:
-        exec(f.read())
-else:
-    with open(f'{SCRIPTS}/_models-data.py') as f:
-        exec(f.read())
+model_files = '_xl-models-data.py' if XL_models else '_models-data.py'
+with open(f'{SCRIPTS}/{model_files}') as f:
+    exec(f.read())
 
 ## Downloading model and stuff | oh~ Hey! If you're freaked out by that code too, don't worry, me too!
 print("📦 Скачивание моделей и прочего...", end='')
