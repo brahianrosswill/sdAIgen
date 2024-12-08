@@ -25,13 +25,12 @@ HR = widgets.HTML('<hr>')
 
 def load_settings(path):
     """Load settings from a JSON file."""
-    if not os.path.exists(path):
-        return {}
     try:
-        _environment = read_json(path, 'ENVIRONMENT')
-        _widgets = read_json(path, 'WIDGETS')
-        _webui = read_json(path, 'WEBUI')
-        return {**_environment, **_widgets, **_webui}
+        return {
+            **read_json(path, 'ENVIRONMENT'),
+            **read_json(path, 'WIDGETS'),
+            **read_json(path, 'WEBUI')
+        }
     except (json.JSONDecodeError, IOError) as e:
         print(f"Error loading settings: {e}")
         return {}

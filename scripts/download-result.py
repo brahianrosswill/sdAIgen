@@ -22,21 +22,19 @@ widgets_css = CSS / 'download-result.css'
 
 def load_settings(path):
     """Load settings from a JSON file."""
-    if os.path.exists(path):
-        try:
-            _webui = read_json(path, 'WEBUI')
+    try:
+        return {
+            **read_json(path, 'ENVIRONMENT'),
+            **read_json(path, 'WIDGETS'),
+            **read_json(path, 'WEBUI')
+        }
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"Error loading settings: {e}")
+        return {}
 
-            settings = {**_webui}
-            return settings
-        except (json.JSONDecodeError, IOError) as e:
-            print(f"Error loading settings: {e}")
-    return {}
-
+# Load settings
 settings = load_settings(SETTINGS_PATH)
-
-# Create local variables for each key in the settings
-for key, value in settings.items():
-    locals()[key] = value
+locals().update(settings)
 
 # ====================== WIDGETS =====================
 HR = widgets.HTML('<hr class="divider-line">')
