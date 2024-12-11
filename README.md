@@ -2,19 +2,19 @@
 
 <h1 align="center">~ ANXETY | Stable Diffusion WebUI | NoteBook V2 ~</h1>
 
-English | [Русский](./README-ru_RU.md)
+English | [Русский](README.ru-ru.md)
 
 </div>
 
 <div align="center">
     <a href="https://discord.gg/eemJdDusvH">
-        <img src="./.assets/SVG/en/discord-en.svg" width="800" height="130" alt="discord">
+        <img src=".Docs/SVG/en/discord-en.svg" width="800" height="130" alt="discord">
     </a>
     <a href="https://colab.research.google.com/github/anxety-solo/sdAIgen/blob/main/notebook/ANXETY_sdAIgen_EN.ipynb">
-        <img src="./.assets/SVG/en/colab-en.svg" width="800" height="160" alt="colab">
+        <img src=".Docs/SVG/en/colab-en.svg" width="800" height="160" alt="colab">
     </a>
     <a href="https://www.kaggle.com/code/anxetysolo/sdaigen-en-ipynb">
-        <img src="./.assets/SVG/en/kaggle-en.svg" width="800" height="160" alt="kaggle">
+        <img src=".Docs/SVG/en/kaggle-en.svg" width="800" height="160" alt="kaggle">
     </a>
 </div>
 
@@ -59,6 +59,5 @@ English | [Русский](./README-ru_RU.md)
 </details>
 
 <div align="center">
-	</br>
 	<h6>Some scripts are taken from <a href="https://github.com/gutris1">gutris1</a>.</h6>
 </div>
