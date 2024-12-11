@@ -1,9 +1,9 @@
 <div align="center">
-
-<h1 align="center">~ ANXETY | Stable Diffusion WebUI | NoteBook V2 ~</h1>
-
+<img width="512px" height="auto" src="https://raw.githubusercontent.com/anxety-solo/sdAIgen/dev/.Docs/Imgs/sdaigen.png"/></br>
+<h1>~ ANXETY | Stable Diffusion WebUI | NoteBook V2 ~</h1>
+	
 English | [Русский](README.ru-ru.md)
-
+ 
 </div>
 
 <div align="center">
