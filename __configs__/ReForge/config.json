@@ -103,7 +103,7 @@
     "ui_tab_order": [
         "txt2img",
         "img2img",
-        "Fast PNG Info",
+        "Image Info",
         "SuperMerger",
         "HUB",
         "Infinite image browsing",

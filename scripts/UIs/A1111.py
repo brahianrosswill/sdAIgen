@@ -49,7 +49,9 @@ def download_configuration():
 
     ## REPOS
     extensions_list = [
-        "git clone https://github.com/anxety-solo/webui_timer timer"
+        "git clone https://github.com/anxety-solo/webui_timer timer",
+        "git clone https://github.com/anxety-solo/cattpuccin-theme",
+        "git clone https://github.com/gutris1/sd-image-info image-info"
     ]
     os.chdir(EXTS)
 
