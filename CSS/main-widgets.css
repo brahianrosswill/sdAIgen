@@ -175,6 +175,7 @@ a {
     opacity: 0;
     transition: opacity 0.3s;
     display: inline-block;
+    user-select: none;
 }
 
 .popup {

@@ -135,12 +135,17 @@ print(f"🔧 WebUI: \033[34m{UI} \033[0m")
 # Launching the tunnel
 with tunnel:
     os.chdir(WEBUI)
-    commandline_arguments = ''  # Ensure this variable is defined
     commandline_arguments += f' --port={tunnel_port}'
+    
+    # dark theme append
+    if UI != 'ComfyUI'
+        commandline_arguments += f' --theme dark' 
 
+    # NSFW filter Kaggle
     if ENV_NAME == "Kaggle" and UI != 'ComfyUI':
         commandline_arguments += f' --encrypt-pass={tunnel_port} --api'
 
+    ## Launch
     if UI != 'ComfyUI':
         get_ipython().system(f'python launch.py {commandline_arguments}')
     else:

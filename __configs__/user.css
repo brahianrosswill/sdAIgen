@@ -8,6 +8,10 @@
     min-width: 50%;
 }
 
+#tabs > .tab-nav > button.selected {
+    color: var(--block-title-text-color);
+}
+
 #txt2img_gallery > .grid-wrap, #txt2img_gallery > .preview,
 #img2img_gallery > .grid-wrap, #img2img_gallery > .preview{
     max-height: none;

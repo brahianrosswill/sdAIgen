@@ -514,6 +514,10 @@ else:
 print("\r🏁 Скачивание Завершено!" + " "*15)
 
 
+# Cleaning shit after downloading...
+get_ipython().system('find {webui_path} -type d -name ".ipynb_checkpoints" -exec rm -r {{}} \\; >/dev/null 2>&1')
+
+
 ## Install of Custom extensions
 def _clone_repository(repo, repo_name, extension_dir):
     """Clones the repository to the specified directory."""

@@ -83,7 +83,7 @@
     "tac_showWikiLinks": true,
     "samples_filename_pattern": "[model_name]_[seed]",
     "grid_text_active_color": "#ffffff",
-    "grid_background_color": "#181825",
+    "grid_background_color": "#0b0b0b",
     "extra_networks_default_multiplier": 0.7,
     "cross_attention_optimization": "sdp - scaled dot product",
     "hide_samplers": [
