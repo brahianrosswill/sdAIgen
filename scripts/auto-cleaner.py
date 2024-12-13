@@ -93,7 +93,7 @@ def execute_button_press(button):
 
     with output:
         for message in generate_messages(deleted_files_dict):
-            message_widget = HTML(f'<p class="output_message">{message}</p>')
+            message_widget = HTML(f'<p class="output_message animated_message">{message}</p>')
             display(message_widget)
 
     _update_memory_info()
@@ -143,7 +143,10 @@ storage_info = factory.create_html(f'''
 buttons = factory.create_hbox([execute_button, hide_button])
 lower_information_panel = factory.create_hbox([buttons, storage_info], class_names=['lower_information_panel'])
 
-container = factory.create_vbox([instruction_label, HR, auto_cleaner_widget, output, HR, lower_information_panel],
-                                layout={'width': '800px'}, class_names=['cleaner_container'])
+# Create a horizontal layout for the selection and output areas
+hbox_layout = factory.create_hbox([auto_cleaner_widget, output], class_names=['selection_output_layout'])
+
+container = factory.create_vbox([instruction_label, HR, hbox_layout, HR, lower_information_panel],
+                                layout={'width': '1080px'}, class_names=['cleaner_container'])
 
 factory.display(container)

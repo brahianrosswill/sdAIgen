@@ -26,7 +26,6 @@ hr {
     font-optical-sizing: auto;
 }
 
-
 /* Container style */
 
 .cleaner_container {
@@ -73,7 +72,6 @@ hr {
 
 .output_panel {
     padding: 10px;
-    height: auto;
     border: 1px solid #262626;
     border-radius: 10px;
     background-color: #1c1c1c;
@@ -82,13 +80,28 @@ hr {
     box-sizing: border-box;
 }
 
+/* Animation for output messages */
+.animated_message {
+    animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .output_message {
     color: white;
     font-size: 14px;
     user-select: none;
-    cursor: default
+    cursor: default;
 }
-
 
 .storage_info {
     padding: 5px 20px;
@@ -100,9 +113,8 @@ hr {
     width: auto;
     font-size: 14px;
     user-select: none;
-    cursor: default
+    cursor: default;
 }
-
 
 /* Button and storage info layout */
 .lower_information_panel {
@@ -110,7 +122,6 @@ hr {
     align-items: center;
     justify-content: space-between;
 }
-
 
 /* Button style */
 
@@ -148,10 +159,25 @@ hr {
     outline: none;
 }
 
+/* Layout for selection and output areas */
+.selection_output_layout {
+    display: flex;
+    justify-content: space-between; 
+    align-items: stretch; 
+    margin: 5px 0;
+}
 
-/* Animation of elements */
+.custom_select_multiple {
+    flex: 1;
+    margin-right: 10px;
+}
 
-/* Emergence */
+.output_panel {
+    flex: 1;
+    min-height: 100px;
+}
+
+/* General styles for the cleaner container */
 .cleaner_container {
     animation: slideInTopBlur 0.7s forwards;
 }
@@ -169,7 +195,7 @@ hr {
     }
 }
 
-/* Leaving */
+/* Leaving animation */
 .cleaner_container.hide {
     animation: slideOutTopBlur 0.3s forwards;
 }
