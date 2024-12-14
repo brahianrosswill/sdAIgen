@@ -5,6 +5,8 @@ from json_utils import read_json, update_json   # JSON (main)
 from IPython.display import clear_output
 from IPython.utils import capture
 from pathlib import Path
+import subprocess
+import asyncio
 import os
 
 # Constants
@@ -23,20 +25,27 @@ os.chdir(HOME)
 
 # ==================== WEB UI OPERATIONS ====================
 
-def _download_file(url, directory, filename):
+async def _download_file(url, directory, filename):
     os.makedirs(directory, exist_ok=True)
     file_path = os.path.join(directory, filename)
-    get_ipython().system(f'curl -sLo {file_path} {url}')
+    process = await asyncio.create_subprocess_shell(
+        f'curl -sLo {file_path} {url}',
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    await process.communicate()
 
-def download_files(file_list):
+async def download_files(file_list):
+    tasks = []
     for file_info in file_list:
         parts = file_info.split(',')
         url = parts[0].strip()
         directory = parts[1].strip() if len(parts) > 1 else WEBUI   # Default Save Path
         filename = parts[2].strip() if len(parts) > 2 else os.path.basename(url)
-        _download_file(url, directory, filename)
+        tasks.append(_download_file(url, directory, filename))
+    await asyncio.gather(*tasks)
 
-def download_configuration():
+async def download_configuration():
     ## FILES
     url_af = f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{BRANCH}/__configs__/'
     configs = [
@@ -45,18 +54,43 @@ def download_configuration():
         f'{url_af}/styles.csv',
         f'{url_af}/user.css',
     ]
-    download_files(configs)
+    await download_files(configs)
 
     ## REPOS
     extensions_list = [
-        "git clone https://github.com/anxety-solo/webui_timer timer",
-        "git clone https://github.com/anxety-solo/cattpuccin-theme",
-        "git clone https://github.com/gutris1/sd-image-info image-info"
+        ## ANXETY Edits
+        "https://github.com/anxety-solo/webui_timer timer",
+        "https://github.com/anxety-solo/cattpuccin-theme",
+        
+        ## OTHER | ON
+        "https://github.com/gutris1/sd-image-info Image-Info",
+
+        ## OTHER | OFF
+        # "https://github.com/Bing-su/adetailer Adetailer",
+        # "https://github.com/thomasasfk/sd-webui-aspect-ratio-helper Aspect-Ratio-Helper",
+        # "https://github.com/richrobber2/canvas-zoom Canvas-Zoom",
+        # "https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus",
+        # "https://github.com/Zyin055/Config-Presets",
+        # "https://github.com/Mikubill/sd-webui-controlnet ControlNet",
+        # "https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing",
+        ## "https://github.com/hako-mikan/sd-webui-regional-prompter Regional-Prompter",
+        # "https://github.com/viyiviyi/sd-encrypt-image Encrypt-Image",
+        # "https://github.com/gutris1/sd-image-info Image-Info",
+        # "https://github.com/gutris1/sd-hub SD-Hub",
+        # "https://github.com/ilian6806/stable-diffusion-webui-state State",
+        # "https://github.com/hako-mikan/sd-webui-supermerger Supermerger",
+        # "https://github.com/DominikDoom/a1111-sd-webui-tagcomplete TagComplete",
+        # "https://github.com/Tsukreya/Umi-AI-Wildcards",
+        # "https://github.com/picobyte/stable-diffusion-webui-wd14-tagger wd14-tagger"
     ]
+    os.makedirs(EXTS, exist_ok=True)
     os.chdir(EXTS)
 
+    tasks = []
     for command in extensions_list:
-        get_ipython().system(command)
+        tasks.append(asyncio.create_subprocess_shell(f'git clone --depth 1 --recursive {command}'))
+    
+    await asyncio.gather(*tasks)
 
 def unpack_webui():
     zip_path = f"{SCR_PATH}/{UI}.zip"
@@ -69,4 +103,4 @@ def unpack_webui():
 if __name__ == "__main__":
     with capture.capture_output():
         unpack_webui()
-        download_configuration()
+        asyncio.run(download_configuration())

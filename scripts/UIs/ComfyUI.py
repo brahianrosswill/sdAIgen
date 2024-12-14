@@ -1,10 +1,12 @@
 # ~ ComfyUI.py | by ANXETY ~
 
-from json_utils import read_json, update_json    # JSON (main)
+from json_utils import read_json, update_json   # JSON (main)
 
 from IPython.display import clear_output
 from IPython.utils import capture
 from pathlib import Path
+import subprocess
+import asyncio
 import os
 
 # Constants
@@ -23,41 +25,40 @@ os.chdir(HOME)
 
 # ==================== WEB UI OPERATIONS ====================
 
-def _download_file(url, directory, filename):
+async def _download_file(url, directory, filename):
     os.makedirs(directory, exist_ok=True)
     file_path = os.path.join(directory, filename)
-    get_ipython().system(f'curl -sLo {file_path} {url}')
+    process = await asyncio.create_subprocess_shell(
+        f'curl -sLo {file_path} {url}',
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    await process.communicate()
 
-def download_files(file_list):
+async def download_files(file_list):
+    tasks = []
     for file_info in file_list:
         parts = file_info.split(',')
         url = parts[0].strip()
         directory = parts[1].strip() if len(parts) > 1 else WEBUI   # Default Save Path
         filename = parts[2].strip() if len(parts) > 2 else os.path.basename(url)
-        _download_file(url, directory, filename)
+        tasks.append(_download_file(url, directory, filename))
+    await asyncio.gather(*tasks)
 
-def clone_repository():
+async def download_configuration():
     extensions_list = [
-        "git clone --depth 1 --recursive https://github.com/ssitu/ComfyUI_UltimateSDUpscale",
-        "git clone --depth 1 https://github.com/ltdrdata/ComfyUI-Manager",
-        "git clone --depth 1 https://github.com/pythongosssss/ComfyUI-Custom-Scripts"
+        "https://github.com/ssitu/ComfyUI_UltimateSDUpscale",
+        "https://github.com/ltdrdata/ComfyUI-Manager",
+        "https://github.com/pythongosssss/ComfyUI-Custom-Scripts"
     ]
+    os.makedirs(EXTS, exist_ok=True)
     os.chdir(EXTS)
 
+    tasks = []
     for command in extensions_list:
-        get_ipython().system(command)
-
-def download_configuration():
-    ## FILES
-    url_comfy = f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/{BRANCH}/__configs__/ComfyUI'
-    files = [
-        f"{url_comfy}/install-deps.py",
-        f'{url_comfy}/workflows/anxety-workflow.json, {WEBUI}/user/default/workflows'
-    ]
-    download_files(files)
-
-    ## REPOS
-    clone_repository()
+        tasks.append(asyncio.create_subprocess_shell(f'git clone --depth 1 --recursive {command}'))
+    
+    await asyncio.gather(*tasks)
 
 def unpack_webui():
     zip_path = f"{SCR_PATH}/{UI}.zip"
@@ -70,4 +71,4 @@ def unpack_webui():
 if __name__ == "__main__":
     with capture.capture_output():
         unpack_webui()
-        download_configuration()
+        asyncio.run(download_configuration())

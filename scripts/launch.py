@@ -138,7 +138,7 @@ with tunnel:
     commandline_arguments += f' --port={tunnel_port}'
     
     # dark theme append
-    if UI != 'ComfyUI'
+    if UI != 'ComfyUI':
         commandline_arguments += f' --theme dark' 
 
     # NSFW filter Kaggle
