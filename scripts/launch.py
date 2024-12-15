@@ -139,9 +139,9 @@ with tunnel:
     
     # dark theme append
     if UI != 'ComfyUI':
-        commandline_arguments += f' --theme dark' 
-
-    # NSFW filter Kaggle
+        commandline_arguments += ' --theme dark'
+    
+    # NSFW filter for Kaggle
     if ENV_NAME == "Kaggle" and UI != 'ComfyUI':
         commandline_arguments += f' --encrypt-pass={tunnel_port} --api'
 
