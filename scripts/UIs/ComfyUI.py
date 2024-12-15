@@ -30,8 +30,8 @@ async def _download_file(url, directory, filename):
     file_path = os.path.join(directory, filename)
     process = await asyncio.create_subprocess_shell(
         f'curl -sLo {file_path} {url}',
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
     )
     await process.communicate()
 
@@ -65,7 +65,11 @@ async def download_configuration():
 
     tasks = []
     for command in extensions_list:
-        tasks.append(asyncio.create_subprocess_shell(f'git clone --depth 1 --recursive {command}'))
+        tasks.append(asyncio.create_subprocess_shell(
+            f'git clone --depth 1 --recursive {command}',
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        ))
     
     await asyncio.gather(*tasks)
 
