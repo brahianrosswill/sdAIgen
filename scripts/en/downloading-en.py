@@ -264,7 +264,7 @@ def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
     sep_line = '---' * 20
 
     print(f"\n\033[32m{sep_line}\033[36;1m{info}\033[32m{sep_line}\033[0m")
-    print(f"\033[33mURL: {url}")
+    print(f"\033[33mURL: \033[0m{url}")
     print(f"\033[33mSAVE DIR: \033[34m{dst_dir}")
     print(f"\033[33mFILE NAME: \033[34m{file_name}\033[0m")
     if 'civitai' in url and image_url:

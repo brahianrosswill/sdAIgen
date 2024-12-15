@@ -85,10 +85,19 @@ vae_num_widget = factory.create_text('Номер Vae:', '', 'Введите но
 additional_header = factory.create_header('Дополнительно')
 latest_webui_widget = factory.create_checkbox('Обновить WebUI', True)
 latest_extensions_widget = factory.create_checkbox('Обновить Расширения', True)
+check_custom_nodes_dependencies_widget = factory.create_checkbox('Чекать зависимости Custom-Nodes', True)
 change_webui_widget = factory.create_dropdown(['A1111', 'ReForge', 'ComfyUI', 'Forge'], 'WebUI:', 'A1111', layout={'width': 'auto'})
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Подробная Загрузка:', 'off', layout={'width': 'auto'})
-choose_changes_widget = factory.create_hbox([latest_webui_widget, latest_extensions_widget, change_webui_widget, detailed_download_widget],
-                                            layout={'justify_content': 'space-between'})
+choose_changes_widget = factory.create_hbox(
+    [
+        latest_webui_widget,
+        latest_extensions_widget,
+        check_custom_nodes_dependencies_widget,   # Only ComfyUI
+        change_webui_widget,
+        detailed_download_widget
+    ],
+    layout={'justify_content': 'space-between'}
+)
 
 controlnet_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'cnet')
 controlnet_widget = factory.create_dropdown(controlnet_options, 'ControlNet:', 'none')
@@ -176,9 +185,18 @@ def update_change_webui(change, widget):
     commandline_arguments_widget.value = commandline_arguments
     
     if selected_webui == 'ComfyUI':
+        latest_extensions_widget.layout.display = 'none'
+        latest_extensions_widget.value = False
+        check_custom_nodes_dependencies_widget.layout.display = 'inline-block'
         Extensions_url_widget.description = 'Custom Nodes:'
     else:
+        latest_extensions_widget.layout.display = 'inline-block'
+        latest_extensions_widget.value = True
+        check_custom_nodes_dependencies_widget.layout.display = 'none'
         Extensions_url_widget.description = 'Extensions:'
+
+# Initialize visibility of the check dependencies widget
+check_custom_nodes_dependencies_widget.layout.display = 'none'  # Initially hidden
 
 def update_XL_options(change, widget):
     selected = change['new']
@@ -205,7 +223,7 @@ factory.connect_widgets([(XL_models_widget, 'value')], [update_XL_options])
 
 SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',
-      'latest_webui', 'latest_extensions', 'change_webui', 'detailed_download',
+      'latest_webui', 'latest_extensions', 'check_custom_nodes_dependencies', 'change_webui', 'detailed_download',
       'controlnet', 'controlnet_num', 'commit_hash',
       'civitai_token', 'huggingface_token', 'zrok_token', 'commandline_arguments',
       'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'custom_file_urls'

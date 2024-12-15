@@ -149,7 +149,8 @@ with tunnel:
     if UI != 'ComfyUI':
         get_ipython().system(f'python launch.py {commandline_arguments}')
     else:
-        get_ipython().system('python install-deps.py')
+        if check_custom_nodes_dependencies:
+            get_ipython().system('python install-deps.py')
         print("Installing dependencies for ComfyUI from requirements.txt...")
         subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         clear_output(wait=True)
