@@ -178,6 +178,7 @@ PREFIXES = {
     "control": control_dir,
     "upscale": upscale_dir,
     "adetailer": adetailer_dir,
+    "clip": clip_dir,
     "config": WEBUI
 }
 for path in PREFIXES.values():

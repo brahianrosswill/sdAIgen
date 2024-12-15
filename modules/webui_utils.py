@@ -42,8 +42,11 @@ def _set_webui_paths(ui):
     extension_dir = webui / extension
     upscale_dir = models / upscale
     control_dir = models / ('controlnet' if ui == 'ComfyUI' else 'ControlNet')
-    adetailer_dir = models / 'adetailer'
     output_dir = webui / webui_output
+    
+    # other
+    adetailer_dir = models / 'adetailer'
+    clip_dir = models / ('clip' if ui == 'ComfyUI' else 'text_encoder')
 
     paths = {
         'model_dir': str(model_dir),
@@ -54,6 +57,7 @@ def _set_webui_paths(ui):
         'control_dir': str(control_dir),
         'upscale_dir': str(upscale_dir),
         'adetailer_dir': str(adetailer_dir),
+        'clip_dir': str(clip_dir),
         'output_dir': str(output_dir)
     }
     
