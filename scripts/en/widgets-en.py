@@ -85,14 +85,14 @@ vae_num_widget = factory.create_text('Vae Number:', '', 'Enter vae numbers for t
 additional_header = factory.create_header('Additionally')
 latest_webui_widget = factory.create_checkbox('Update WebUI', True)
 latest_extensions_widget = factory.create_checkbox('Update Extensions', True)
-check_custom_nodes_dependencies_widget = factory.create_checkbox('Check Custom-Nodes Dependencies', True)
+check_custom_nodes_deps_widget = factory.create_checkbox('Check Custom-Nodes Dependencies', True)
 change_webui_widget = factory.create_dropdown(['A1111', 'ReForge', 'ComfyUI', 'Forge'], 'WebUI:', 'A1111', layout={'width': 'auto'})
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Detailed Download:', 'off', layout={'width': 'auto'})
 choose_changes_widget = factory.create_hbox(
     [
         latest_webui_widget,
         latest_extensions_widget,
-        check_custom_nodes_dependencies_widget,   # Only ComfyUI
+        check_custom_nodes_deps_widget,   # Only ComfyUI
         change_webui_widget,
         detailed_download_widget
     ],
@@ -187,16 +187,16 @@ def update_change_webui(change, widget):
     if selected_webui == 'ComfyUI':
         latest_extensions_widget.layout.display = 'none'
         latest_extensions_widget.value = False
-        check_custom_nodes_dependencies_widget.layout.display = 'inline-block'
+        check_custom_nodes_deps_widget.layout.display = 'inline-block'
         Extensions_url_widget.description = 'Custom Nodes:'
     else:
         latest_extensions_widget.layout.display = 'inline-block'
         latest_extensions_widget.value = True
-        check_custom_nodes_dependencies_widget.layout.display = 'none'
+        check_custom_nodes_deps_widget.layout.display = 'none'
         Extensions_url_widget.description = 'Extensions:'
 
 # Initialize visibility of the check dependencies widget
-check_custom_nodes_dependencies_widget.layout.display = 'none'  # Initially hidden
+check_custom_nodes_deps_widget.layout.display = 'none'  # Initially hidden
 
 def update_XL_options(change, widget):
     selected = change['new']
@@ -223,7 +223,7 @@ factory.connect_widgets([(XL_models_widget, 'value')], [update_XL_options])
 
 SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',
-      'latest_webui', 'latest_extensions', 'check_custom_nodes_dependencies', 'change_webui', 'detailed_download',
+      'latest_webui', 'latest_extensions', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
       'controlnet', 'controlnet_num', 'commit_hash',
       'civitai_token', 'huggingface_token', 'zrok_token', 'commandline_arguments',
       'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'custom_file_urls'
