@@ -60,7 +60,7 @@ async def download_configuration():
     extensions_list = [
         ## ANXETY Edits
         "https://github.com/anxety-solo/webui_timer timer",
-        "https://github.com/anxety-solo/cattpuccin-theme",
+        "https://github.com/anxety-solo/anxety-theme",
         
         ## OTHER | ON
         "https://github.com/gutris1/sd-image-info Image-Info",
