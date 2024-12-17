@@ -9,10 +9,10 @@ from pathlib import Path
 import subprocess
 import requests
 import logging
-import os
-import re
 import time
 import json
+import os
+import re
 
 # Constants
 HOME = Path.home()

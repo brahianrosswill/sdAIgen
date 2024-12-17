@@ -29,9 +29,9 @@
 <summary>Установленные Расширения</summary>
 
 - [adetailer](https://github.com/Bing-su/adetailer)
+- [anxety-theme](https://github.com/anxety-solo/anxety-theme)
 - [aspect-ratio-helper](https://github.com/thomasasfk/sd-webui-aspect-ratio-helper)
 - [canvas-zoom](https://github.com/richrobber2/canvas-zoom)
-- [cattpuccin](https://github.com/catppuccin/stable-diffusion-webui)
 - [CivitAi-Browser-plus](https://github.com/BlafKing/sd-civitai-browser-plus) 
 - [Config-Presets](https://github.com/Zyin055/Config-Presets)
 - [ControlNet](https://github.com/Mikubill/sd-webui-controlnet)

@@ -55,7 +55,7 @@ webui_selection = {
     'A1111': "--xformers --enable-insecure-extension-access --disable-console-progressbars --no-half-vae",
     'ReForge': "--xformers --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars",
     'ComfyUI': "--dont-print-server --preview-method auto --use-pytorch-cross-attention",
-    'Forge': "--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars"
+    'Forge': "--opt-sdp-attention --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars"    # Remove: --disable-xformers 
 }
 
 # Initialize the WidgetFactory
