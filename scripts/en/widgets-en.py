@@ -52,10 +52,10 @@ def read_model_data(file_path, data_type):
         return ['none', 'ALL'] + cnet_names
 
 webui_selection = {
-    'A1111': "--xformers --enable-insecure-extension-access --disable-console-progressbars --no-half-vae",
-    'ReForge': "--xformers --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars",
+    'A1111': "--xformers --enable-insecure-extension-access --no-half-vae",
+    'ReForge': "--xformers --cuda-stream --pin-shared-memory --enable-insecure-extension-access",
     'ComfyUI': "--dont-print-server --preview-method auto --use-pytorch-cross-attention",
-    'Forge': "--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars"
+    'Forge': "--opt-sdp-attention --cuda-stream --cuda-malloc --pin-shared-memory --enable-insecure-extension-access"  # Remove: --disable-xformers 
 }
 
 # Initialize the WidgetFactory

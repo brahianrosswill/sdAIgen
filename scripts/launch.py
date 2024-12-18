@@ -137,9 +137,9 @@ with tunnel:
     os.chdir(WEBUI)
     commandline_arguments += f' --port={tunnel_port}'
     
-    # dark theme append
+    # Default args append
     if UI != 'ComfyUI':
-        commandline_arguments += ' --theme dark'
+        commandline_arguments += ' --disable-console-progressbars --theme dark'
     
     # NSFW filter for Kaggle
     if ENV_NAME == "Kaggle" and UI != 'ComfyUI':
