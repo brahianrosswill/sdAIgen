@@ -1,6 +1,19 @@
+/* Other */ 
+.gradio-container {
+  /*
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  */
+  padding: 15px !important;
+}
+
+
+/* Main */
 #txt2img_gallery, #img2img_gallery{
     /* Output height */
-    height: 680px;
+    height: 650px;
 }
 
 #txt2img_results, #img2img_results{
@@ -49,7 +62,6 @@
 div.compact {
     gap: 5px !important;
 }
-
 
 .tab-nav.scroll-hide.svelte-1g805jl {
     row-gap: 5px !important;

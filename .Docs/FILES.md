@@ -1,6 +1,6 @@
 # File Descriptions in the Repository
 
-## Directory -> `_configs\_`
+## Directory -> `_configs_`
 - Customization files, styles and other files for the UI
 
 ## Directory -> `CSS`

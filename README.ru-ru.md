@@ -58,6 +58,10 @@
 
 </details>
 
+## 🚧 FAQ:
+- [ ] Add basic...
+- [Old information](https://rentry.co/anxety-sdw-faq-ru)
+
 <div align="center">
 	<h6>Некоторые скрипты взяты у <a href="https://github.com/gutris1">gutris1</a>.</h6>
 </div>
