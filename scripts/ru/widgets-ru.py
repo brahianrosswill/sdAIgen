@@ -102,7 +102,7 @@ choose_changes_widget = factory.create_hbox(
 controlnet_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'cnet')
 controlnet_widget = factory.create_dropdown(controlnet_options, 'ControlNet:', 'none')
 controlnet_num_widget = factory.create_text('Номер ControlNet:', '', 'Введите номера моделей ControlNet для скачивания.')
-commit_hash_widget = factory.create_text('Commit Hash:')
+git_checkout_widget = factory.create_text('Git Checkout:', '', 'Переключение между `ветвями` или `коммитами`'.)
 civitai_token_widget = factory.create_text('Токен CivitAI:', '', 'Введите свой API-токен CivitAi.')
 huggingface_token_widget = factory.create_text('Токен HuggingFace:')
 
@@ -114,6 +114,7 @@ commandline_arguments_widget = factory.create_text('Аргументы:', webui_
 
 additional_widget_list = [
     additional_header, choose_changes_widget, HR, controlnet_widget, controlnet_num_widget,
+    git_checkout_widget,
     civitai_token_widget, huggingface_token_widget, zrok_widget, HR, commandline_arguments_widget
 ]
 
@@ -224,7 +225,7 @@ factory.connect_widgets([(XL_models_widget, 'value')], [update_XL_options])
 SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',
       'latest_webui', 'latest_extensions', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
-      'controlnet', 'controlnet_num', 'commit_hash',
+      'controlnet', 'controlnet_num', 'git_checkout',
       'civitai_token', 'huggingface_token', 'zrok_token', 'commandline_arguments',
       'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'custom_file_urls'
 ]

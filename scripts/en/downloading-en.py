@@ -148,15 +148,22 @@ with capture.capture_output():
     get_ipython().system("sed -i '9,37d' {WEBUI}/extensions/Encrypt-Image/javascript/encrypt_images_info.js # Removes the weird text in webui")
 
 
-## Version switching
-if commit_hash:
-    print('⏳ Time Machine Activation...', end="")
+## Version switching | Switching between branches and commits
+if git_checkout:
+    print('⏳ Activating Time Machine...', end="")
     with capture.capture_output():
         get_ipython().run_line_magic('cd', '{WEBUI}')
         get_ipython().system('git config --global user.email "you@example.com"')
         get_ipython().system('git config --global user.name "Your Name"')
-        get_ipython().system('git reset --hard {commit_hash}')
-    print(f"\r⌛️ Time Machine activated! Current commit: \033[34m{commit_hash}\033[0m")
+        get_ipython().system(f'git checkout {git_checkout}')
+    
+    # Check current status
+    current_branch = get_ipython().getoutput('git rev-parse --abbrev-ref HEAD')[0]  # Get the current branch
+    if current_branch == 'HEAD':
+        current_commit = get_ipython().getoutput('git rev-parse HEAD')[0]  # Get the current commit
+        print(f"\r⌛️ Done! Current commit: \033[34m{current_commit}\033[0m")
+    else:
+        print(f"\r⌛️ Done! Current branch: \033[34m{current_branch}\033[0m")
 
 
 # Get XL or 1.5 models list
