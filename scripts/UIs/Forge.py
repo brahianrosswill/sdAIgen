@@ -64,6 +64,7 @@ async def download_configuration():
         
         ## OTHER | ON
         "https://github.com/gutris1/sd-image-info Image-Info",
+        "https://github.com/gutris1/sd-encrypt-image Encrypt-Image",
 
         ## OTHER | OFF
         # "https://github.com/Bing-su/adetailer Adetailer",
@@ -74,7 +75,6 @@ async def download_configuration():
         # "https://github.com/Mikubill/sd-webui-controlnet ControlNet",
         # "https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing",
         ## "https://github.com/hako-mikan/sd-webui-regional-prompter Regional-Prompter",
-        # "https://github.com/viyiviyi/sd-encrypt-image Encrypt-Image",
         # "https://github.com/gutris1/sd-image-info Image-Info",
         # "https://github.com/gutris1/sd-hub SD-Hub",
         # "https://github.com/ilian6806/stable-diffusion-webui-state State",

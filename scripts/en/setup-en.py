@@ -143,6 +143,27 @@ def display_info(env, scr_folder):
 
 # ==================== ENVIRONMENT ====================
 
+def key_or_value_exists(filepath, key=None, value=None):
+    """Checks for the existence of a key or value in a JSON file."""
+    if not os.path.exists(filepath):
+        return False
+    with open(filepath, 'r') as f:
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError:
+            return False
+
+    if key:
+        keys = key.split('.')
+        for k in keys:
+            if isinstance(data, dict) and k in data:
+                data = data[k]
+            else:
+                return False
+        return (data == value) if value is not None else True
+    else:
+        return False
+
 def detect_environment():
     environments = {
         'COLAB_GPU': 'Google Colab',
@@ -192,8 +213,10 @@ def get_start_timer():
     return int(time.time() - 5)
 
 def create_environment_data(env, scr_folder, lang, branch):
+    file_path = scr_folder / 'settings.json'
+
     scr_folder.mkdir(parents=True, exist_ok=True)
-    install_deps = importlib.util.find_spec('xformers') is not None
+    install_deps = key_or_value_exists(file_path, 'ENVIRONMENT.install_deps', True)
     start_timer = get_start_timer()
 
     return {
@@ -203,7 +226,8 @@ def create_environment_data(env, scr_folder, lang, branch):
             'env_name': env,
             'install_deps': install_deps,
             'home_path': str(scr_folder.parent),
-            'scr_path': str(scr_folder),
+            'venv_path': str(scr_folder.parent) + '/venv',
+            'scr_path': str(scr_folder), 
             'start_timer': start_timer,
             'public_ip': ''
         }

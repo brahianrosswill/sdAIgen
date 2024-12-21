@@ -23,6 +23,7 @@ SCR_PATH = Path(HOME / 'ANXETY')
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 LANG = read_json(SETTINGS_PATH, 'ENVIRONMENT.lang')
 ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
+VENV = HOME / 'venv'
 
 UI = read_json(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
@@ -46,7 +47,45 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-# ================ LIBRARIES V3 ================
+# ================ LIBRARIES V4 ================
+def setup_venv():
+    """The main function to customize the virtual environment."""
+    header = "--header='User-Agent: Mozilla/5.0' --allow-overwrite=true"
+    args = "--optimize-concurrent-downloads --console-log-level=error --summary-interval=1 --stderr=true -c -x16 -s16 -k1M -j5"
+    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/venv-torch241-cu121-kfa.tar.lz4"
+    fn = Path(url).name
+    
+    command_venv = f'aria2c {header} {args} -d {HOME} -o {fn} {url}'
+    subprocess.run(command_venv, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    # Installing dependencies
+    install_commands = []
+    if ENV_NAME == 'Google Colab':
+        install_commands = ["apt -y install python3.10-venv", "apt -y install lz4"]
+    else:
+        install_commands = ["pip install ipywidgets jupyterlab_widgets --upgrade", "apt -y install lz4"]
+    
+    for cmd in install_commands:
+        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    # Unpacking and cleaning
+    os.chdir(HOME)
+    get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
+    Path(fn).unlink()
+
+    get_ipython().system(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python* {HOME}/{fn}')
+
+    # Create a virtual environment
+    venv_commands = [
+        f'python3 -m venv {VENV}',
+        f'{VENV}/bin/python3 -m pip install -q -U --force-reinstall pip'
+    ]
+    if ENV_NAME == 'Google Colab':
+        venv_commands.append(f'{VENV}/bin/pip3 install -q ipykernel')
+
+    for cmd in venv_commands:
+        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
 def install_packages(install_lib):
     for index, (package, install_cmd) in enumerate(install_lib.items(), start=1):
         print(f"\r[{index}/{len(install_lib)}] \033[32m>>\033[0m Installing \033[33m{package}\033[0m..." + " "*35, end='')
@@ -66,34 +105,41 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
     print("💿 Installing the libraries, this will take some time:")
 
     install_lib = {
-        # "aria2": "apt -y install aria2",
         "aria2": "pip install aria2",
         "localtunnel": "npm install -g localtunnel",
+        "pv": "apt -y install pv"
     }
-    if controlnet != 'none':
-        install_lib["insightface"] = "pip install insightface"
+    # if controlnet != 'none':
+    #     install_lib["insightface"] = "pip install insightface"
 
     additional_libs = {
         "Google Colab": {
-            "xformers": "pip install xformers==0.0.28.post1 --no-deps"
+            # "xformers": "pip install xformers==0.0.28.post1 --no-deps"
         },
         "Kaggle": {
-            "openssl": "conda install -y openssh",
-            "xformers": "pip install xformers==0.0.28.post3 --no-deps",
-            "torch": "pip install torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121"
+            # "openssl": "conda install -y openssh",
+            # "xformers": "pip install xformers==0.0.28.post1 --no-deps",
+            # "torch": "pip install torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121"
         }
     }
 
     if ENV_NAME in additional_libs:
         install_lib.update(additional_libs[ENV_NAME])
 
+    # Main Deps
     install_packages(install_lib)
     download_additional_packages(SCR_PATH)
-
     clear_output()
+
+    # VENV
+    print("💿 Installing VENV, this will take some time...")
+    setup_venv()
+    clear_output()
+
+    # update settings
     update_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
 
-    print("🍪 The libraries are installed!")
+    print("🍪 The libraries and VENV are installed!")
     time.sleep(2)
     clear_output()
 
@@ -144,8 +190,8 @@ if latest_webui or latest_extensions:
 with capture.capture_output():
     # --- Umi-Wildcard ---
     get_ipython().system("sed -i '521s/open=\\(False\\|True\\)/open=False/' {WEBUI}/extensions/Umi-AI-Wildcards/scripts/wildcard_recursive.py  # Closed accordion by default")
-    # --- Encrypt-Image ---
-    get_ipython().system("sed -i '9,37d' {WEBUI}/extensions/Encrypt-Image/javascript/encrypt_images_info.js # Removes the weird text in webui")
+    # # --- Encrypt-Image ---
+    # get_ipython().system("sed -i '9,37d' {WEBUI}/extensions/Encrypt-Image/javascript/encrypt_images_info.js # Removes the weird text in webui")
 
 
 ## Version switching
