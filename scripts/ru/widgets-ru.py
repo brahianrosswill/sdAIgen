@@ -165,17 +165,15 @@ custom_download_widgets = [
     Extensions_url_widget,
     custom_file_urls_widget
 ]
-button_widgets = [save_button]
 
 # Create Boxes
 model_box = factory.create_vbox(model_widgets, class_names=["container"])
 vae_box = factory.create_vbox(vae_widgets, class_names=["container"])
 additional_box = factory.create_vbox(additional_widgets, class_names=["container"])
 custom_download_box = factory.create_vbox(custom_download_widgets, class_names=["container", "container_cdl"])
-button_box = factory.create_hbox(button_widgets)
 
-WIDGET_LIST = factory.create_vbox([model_box, vae_box, additional_box, custom_download_box, button_box],
-                                  layouts=[{'width': '1080px'}])
+WIDGET_LIST = factory.create_vbox([model_box, vae_box, additional_box, custom_download_box, save_button],
+                                  layouts=[{'width': '1080px'}]*4)    # style for the first four elements
 factory.display(WIDGET_LIST)
 
 # ================ CALLBACK FUNCTION ================

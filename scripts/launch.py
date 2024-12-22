@@ -14,7 +14,6 @@ import json
 import os
 import re
 
-
 # Constants
 HOME = Path.home()
 SCR_PATH = HOME / 'ANXETY'
@@ -138,9 +137,10 @@ paths_to_check = {
 }
 update_config_paths(f'{WEBUI}/config.json', paths_to_check)
 
-print(f"🔧 WebUI: \033[34m{UI} \033[0m")
-
 # Launching the tunnel
+launcher = 'main.py' if UI == 'ComfyUI' else 'launch.py'
+password = 'vo9fdxgc0zkvghqwzrlz6rk2o00h5sc7'
+
 with tunnel:
     os.chdir(WEBUI)
     commandline_arguments += f' --port={tunnel_port}'
@@ -148,21 +148,20 @@ with tunnel:
     # Default args append
     if UI != 'ComfyUI':
         commandline_arguments += ' --disable-console-progressbars --theme dark'
+        # NSFW filter for Kaggle
+        if ENV_NAME == "Kaggle":
+            commandline_arguments += f' --encrypt-pass={password} --api'
     
-    # NSFW filter for Kaggle
-    if ENV_NAME == "Kaggle" and UI != 'ComfyUI':
-        commandline_arguments += f' --encrypt-pass={tunnel_port} --api'
-
     ## Launch
-    if UI != 'ComfyUI':
-        get_ipython().system(f'{py} launch.py {commandline_arguments}')
-    else:
+    if UI == 'ComfyUI':
         if check_custom_nodes_deps:
             get_ipython().system('{py} install-deps.py')
         print("Installing dependencies for ComfyUI from requirements.txt...")
         subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         clear_output(wait=True)
-        get_ipython().system(f'{py} main.py {commandline_arguments}')
+
+    print(f"🔧 WebUI: \033[34m{UI} \033[0m")
+    get_ipython().system(f'{py} {launcher} {commandline_arguments}')
 
 # Print session duration
 timer = float(open(f'{WEBUI}/static/timer.txt', 'r').read())
