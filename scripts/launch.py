@@ -141,6 +141,9 @@ update_config_paths(f'{WEBUI}/config.json', paths_to_check)
 launcher = 'main.py' if UI == 'ComfyUI' else 'launch.py'
 password = 'vo9fdxgc0zkvghqwzrlz6rk2o00h5sc7'
 
+# Ыуегз pinggy timer
+get_ipython().system(f'echo -n {int(time.time())+(3600+15)} > {WEBUI}/static/timer-pinggy.txt')
+
 with tunnel:
     os.chdir(WEBUI)
     commandline_arguments += f' --port={tunnel_port}'
