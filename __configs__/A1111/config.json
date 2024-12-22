@@ -132,5 +132,6 @@
         "batch",
         "scripts"
     ],
-    "canvas_zoom_brush_outline": true
+    "canvas_zoom_brush_outline": true,
+    "custom_api_key": "65b66176dcf284b266579de57fbdc024"
 }
