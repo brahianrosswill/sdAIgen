@@ -52,10 +52,10 @@ def read_model_data(file_path, data_type):
         return ['none', 'ALL'] + cnet_names
 
 webui_selection = {
-    'A1111': "--xformers --enable-insecure-extension-access --no-half-vae",
-    'ReForge': "--xformers --cuda-stream --pin-shared-memory --enable-insecure-extension-access",
+    'A1111': "--xformers --no-half-vae",
+    'ReForge': "--xformers --cuda-stream --pin-shared-memory",
     'ComfyUI': "--dont-print-server --preview-method auto --use-pytorch-cross-attention",
-    'Forge': "--opt-sdp-attention --cuda-stream --cuda-malloc --pin-shared-memory --enable-insecure-extension-access"  # Remove: --disable-xformers 
+    'Forge': "--opt-sdp-attention --cuda-stream --cuda-malloc --pin-shared-memory"  # Remove: --disable-xformers 
 }
 
 # Initialize the WidgetFactory
@@ -86,7 +86,7 @@ additional_header = factory.create_header('Дополнительно')
 latest_webui_widget = factory.create_checkbox('Обновить WebUI', True)
 latest_extensions_widget = factory.create_checkbox('Обновить Расширения', True)
 check_custom_nodes_deps_widget = factory.create_checkbox('Чекать зависимости Custom-Nodes', True)
-change_webui_widget = factory.create_dropdown(['A1111', 'ReForge', 'ComfyUI', 'Forge'], 'WebUI:', 'A1111', layout={'width': 'auto'})
+change_webui_widget = factory.create_dropdown(list(webui_selection.keys()), 'WebUI:', 'A1111', layout={'width': 'auto'})
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Подробная Загрузка:', 'off', layout={'width': 'auto'})
 choose_changes_widget = factory.create_hbox(
     [

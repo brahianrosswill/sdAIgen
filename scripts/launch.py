@@ -150,7 +150,7 @@ with tunnel:
     
     # Default args append
     if UI != 'ComfyUI':
-        commandline_arguments += ' --disable-console-progressbars --theme dark'
+        commandline_arguments += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
         # NSFW filter for Kaggle
         if ENV_NAME == "Kaggle":
             commandline_arguments += f' --encrypt-pass={password} --api'
