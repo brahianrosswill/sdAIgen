@@ -388,18 +388,23 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
         civitai = CivitAiAPI(civitai_token)
         data = civitai.fetch_data(url)
 
-        if data:
-            model_type, model_name = civitai.get_model_info(data, url, file_name)
-            download_url = civitai.get_download_url(data, url)
-            clean_url, url = civitai.get_full_and_clean_download_url(download_url)
-            image_url, image_name = civitai.get_image_info(data, model_name, model_type)
-            # fix name error | split NoneType
-            file_name = model_name
-        
-            # DL PREVIEW IMAGES | CIVITAI
-            if image_url and image_name:
-                command = ["aria2c"] + aria2_args.split() + ["-d", dst_dir, "-o", image_name, image_url]
-                subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if data is None:
+            return    # Terminate the function if no data is received
+        if civitai.check_early_access(data):
+            return    # Exit if the model requires payment
+
+        # model info
+        model_type, model_name = civitai.get_model_info(data, url, file_name)
+        download_url = civitai.get_download_url(data, url)
+        clean_url, url = civitai.get_full_and_clean_download_url(download_url)
+        image_url, image_name = civitai.get_image_info(data, model_name, model_type)
+        # fix name error | split NoneType
+        file_name = model_name
+
+        # DL PREVIEW IMAGES | CIVITAI
+        if image_url and image_name:
+            command = ["aria2c"] + aria2_args.split() + ["-d", dst_dir, "-o", image_name, image_url]
+            subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     elif 'github' in url or 'huggingface.co' in url:
         if file_name and '.' not in file_name:
