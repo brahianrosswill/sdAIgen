@@ -36,6 +36,7 @@ class CivitAiAPI:
 
             return requests.get(f"{self.base_url}/model-versions/{version_id}").json()
         except (KeyError, IndexError, requests.RequestException) as e:
+            print(f'\033[31m---' * 25)
             print(f"\033[31m[CivitAI API Error]:\033[0m {e}")
             return None
 
@@ -45,7 +46,7 @@ class CivitAiAPI:
         data = self._get_model_data(url)
 
         if not data:
-            print("\033[31m[Data Info]:\033[0m Failed to retrieve data from the API.\n")
+            print("\033[31m[Data Info]:\033[0m Failed to retrieve data from the API.")
             return None
 
         return data
@@ -57,11 +58,12 @@ class CivitAiAPI:
             model_id = data.get("modelId")
             version_id = data.get("id")
 
-            print("\033[31m[CivitAI API]:\033[0m The model is in early access and requires payment for downloading.\n")
+            print(f'\n' + '\033[31m---' * 25)
+            print("\033[34m[CivitAI API]:\033[0m The model is in early access and requires payment for downloading.")
 
             if model_id and version_id:
                 page = f"https://civitai.com/models/{model_id}?modelVersionId={version_id}"
-                print("\033[32m[CivitAI Page]:\033[0m", page)
+                print(f"\033[32m[CivitAI Page]:\033[0m {page}\n")
             return True
         return False
 

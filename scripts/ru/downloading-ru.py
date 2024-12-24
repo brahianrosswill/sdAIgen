@@ -252,10 +252,10 @@ def handle_error_output(line, error_codes, error_messages):
         formatted_line = re.sub(r'(\|\s*)(ERR)(\s*\|)', r'\1\033[31m\2\033[0m\3', line)
         error_messages.append(formatted_line)
 
-def monitor_aria2_download(header, args, dst_dir, out, url):
+def monitor_aria2_download(args, dst_dir, out, url):
     """Starts aria2c and intercepts the output to display the download progress."""
     try:
-        command = f"aria2c {header} {args} -d {dst_dir} {out} '{url}'"
+        command = f"{args} -d {dst_dir} {out} '{url}'"
         process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         error_codes = []
@@ -306,7 +306,7 @@ def _center_text(text, terminal_width=45):
     padding = (terminal_width - len(text)) // 2
     return f"{' ' * padding}{text}{' ' * padding}"
 
-def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
+def format_output(url, dst_dir, file_name, image_url=None, image_name=None, paid_model=None):
     info = _center_text(f"[{file_name.split('.')[0]}]")
     sep_line = '---' * 20
 
@@ -320,7 +320,7 @@ def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
 
 ''' Main Download Code '''
 
-def _strip_url(url):
+def _STRIP_URL(url):
     """Removes unnecessary parts from the URL for correct downloading."""
     if "huggingface.co" in url:
         url = url.replace('/blob/', '/resolve/')
@@ -332,7 +332,18 @@ def _strip_url(url):
 
     return url
 
-def _unpack_zip_files():
+def _GET_FILE_NAME(url):
+    file_name_match = re.search(r'\[(.*?)\]', url)
+    if file_name_match:
+        return file_name_match.group(1)
+
+    file_name_parse = urlparse(url)
+    if any(domain in file_name_parse.netloc for domain in ["civitai.com", "drive.google.com"]):
+        return None
+
+    return Path(file_name_parse.path).name
+
+def _UNPUCK_ZIP():
     """Extracts all ZIP files in the directories specified in PREFIXES."""
     for directory in PREFIXES.values():
         for root, _, files in os.walk(directory):
@@ -344,28 +355,13 @@ def _unpack_zip_files():
                         zip_ref.extractall(extract_path)
                     os.remove(zip_path)
 
-def download(url):
-    links_and_paths = [link_or_path.strip() for link_or_path in url.split(',') if link_or_path.strip()]
-
-    for link_or_path in links_and_paths:
-        if any(link_or_path.lower().startswith(prefix) for prefix in PREFIXES):
-            _handle_manual_download(link_or_path)
-        else:
-            url, dst_dir, file_name = link_or_path.split()
-            manual_download(url, dst_dir, file_name)
-
-    # Unpacking ZIP files
-    _unpack_zip_files()
-
-def _handle_manual_download(url):
+def _handle_manual_download(link):
     """Handles downloads for URLs with prefixes."""
-    url_parts = url.split(':', 1)
+    url_parts = link.split(':', 1)
     prefix, path = url_parts[0], url_parts[1]
 
-    file_name_match = re.search(r'\[(.*?)\]', path)
-    file_name = file_name_match.group(1) if file_name_match else None
-    if file_name:
-        path = re.sub(r'\[.*?\]', '', path)
+    file_name = _GET_FILE_NAME(path)
+    path = re.sub(r'\[.*?\]', '', path)
 
     if prefix in PREFIXES:
         dir = PREFIXES[prefix]
@@ -377,13 +373,32 @@ def _handle_manual_download(url):
         else:
             extension_repo.append((path, file_name))
 
+def download(line):
+    links = [link.strip() for link in line.split(',') if link.strip()]
+
+    for link in links:
+        link = _STRIP_URL(link)
+
+        if any(link.lower().startswith(prefix) for prefix in PREFIXES):
+            _handle_manual_download(link)
+        else:
+            url, dst_dir, file_name = link.split()
+            manual_download(url, dst_dir, file_name)
+
+    # Unpacking ZIP files
+    _UNPUCK_ZIP()
+
 def manual_download(url, dst_dir, file_name=None, prefix=None):
-    hf_header = f"--header='Authorization: Bearer {huggingface_token}'" if huggingface_token else ""
-    aria2_header = "--header='User-Agent: Mozilla/5.0' --allow-overwrite=true"
-    aria2_args = "--optimize-concurrent-downloads --console-log-level=error --summary-interval=1 --stderr=true -c -x16 -s16 -k1M -j5"
+    aria2_args = (
+        "aria2c --header='User-Agent: Mozilla/5.0' "
+        "--optimize-concurrent-downloads --console-log-level=error --summary-interval=1 --stderr=true "
+        "-c -x16 -s16 -k1M -j5"
+    )
+    if huggingface_token and "huggingface.co" in url:
+        aria2_args += f" --header='Authorization: Bearer {huggingface_token}'"
 
-    clean_url = _strip_url(url)
-
+    clean_url = url
+    image_url, image_name = None, None
     if 'civitai' in url:
         civitai = CivitAiAPI(civitai_token)
         data = civitai.fetch_data(url)
@@ -398,42 +413,25 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
         download_url = civitai.get_download_url(data, url)
         clean_url, url = civitai.get_full_and_clean_download_url(download_url)
         image_url, image_name = civitai.get_image_info(data, model_name, model_type)
-        # fix name error | split NoneType
-        file_name = model_name
 
         # DL PREVIEW IMAGES | CIVITAI
         if image_url and image_name:
-            command = ["aria2c"] + aria2_args.split() + ["-d", dst_dir, "-o", image_name, image_url]
+            command = shlex.split(aria2_args) + ["-d", dst_dir, "-o", image_name, image_url]
             subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    elif 'github' in url or 'huggingface.co' in url:
-        if file_name and '.' not in file_name:
-            file_extension = f"{clean_url.split('/')[-1].split('.', 1)[1]}"
-            file_name = f"{file_name}.{file_extension}"
-        if not file_name:
-            file_name = clean_url.split("/")[-1]
-
     ## Formatted info output
-    try:
-        format_output(clean_url, dst_dir, file_name, image_url, image_name)
-    except UnboundLocalError:
-        format_output(clean_url, dst_dir, file_name, None, None)
+    format_output(clean_url, dst_dir, file_name, image_url, image_name)
 
-    ## fix token init in url
-    if 'civitai' in url:
-        clean_url = url
+    _run_aria2c(aria2_args, prefix, url, dst_dir, file_name)
 
-    _run_aria2c(prefix, clean_url, dst_dir, file_name, aria2_args, hf_header if 'huggingface' in url else aria2_header)
-
-def _run_aria2c(prefix, url, dst_dir, file_name=None, args="", header=""):
+def _run_aria2c(args, prefix, url, dst_dir, file_name=None):
     """Starts the download using aria2c."""
     file_path = os.path.join(dst_dir, file_name)
     if os.path.exists(file_path) and prefix == 'config':
         os.remove(file_path)
 
     out = f"-o '{file_name}'" if file_name else ""
-    # get_ipython().system(f"aria2c {header} {args} -d {dst_dir} {out} '{url}'")
-    monitor_aria2_download(header, args, dst_dir, out, url)
+    monitor_aria2_download(args, dst_dir, out, url)
 
 ''' SubModels - Added URLs '''
 
@@ -493,10 +491,10 @@ def handle_submodels(selection, num_selection, model_dict, dst_dir, url):
         url += f"{submodel['url']} {submodel['dst_dir']} {submodel['name']}, "
     return url
 
-url = ""
-url = handle_submodels(model, model_num, model_list, model_dir, url)
-url = handle_submodels(vae, vae_num, vae_list, vae_dir, url)
-url = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir, url)
+line = ""
+line = handle_submodels(model, model_num, model_list, model_dir, line)
+line = handle_submodels(vae, vae_num, vae_list, vae_dir, line)
+line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir, line)
 
 ''' file.txt - added urls '''
 
@@ -505,7 +503,7 @@ def process_file_download(file_url, prefixes, unique_urls):
     current_tag = None
 
     if file_url.startswith("http"):
-        file_url = file_url.replace("/blob/", "/raw/")
+        file_url = _STRIP_URL(file_url)
         response = requests.get(file_url)
         lines = response.text.split('\n')
     else:
@@ -514,9 +512,6 @@ def process_file_download(file_url, prefixes, unique_urls):
 
     for line in lines:
         line = line.strip()
-
-        # if any(f'# {tag}' in line.lower() for tag in prefixes):
-        #     current_tag = next((tag for tag in prefixes if tag in line.lower()), None)
 
         for prefix in prefixes.keys():
             if f'# {prefix}'.lower() in line.lower():
@@ -538,12 +533,12 @@ file_urls = ""
 unique_urls = set()
 
 if custom_file_urls:
-    for custom_file_url in custom_file_urls.replace(',', '').split():
-        if not custom_file_url.endswith('.txt'):
-            custom_file_url += '.txt'
+    for custom_files in custom_file_urls.replace(',', '').split():
+        if not custom_files.endswith('.txt'):
+            custom_files += '.txt'
 
         try:
-            file_urls += process_file_download(custom_file_url, PREFIXES, unique_urls)
+            file_urls += process_file_download(custom_files, PREFIXES, unique_urls)
         except FileNotFoundError:
             pass
 
@@ -554,15 +549,15 @@ prefixed_urls = [
     for prefix, url in zip(PREFIXES.keys(), urls)
     if url for url in url.replace(',', '').split()
 ]
-url += ", ".join(prefixed_urls) + ", " + file_urls
+line += ", ".join(prefixed_urls) + ", " + file_urls
 
 if detailed_download == "on":
     print("\n\n\033[33m# ====== Подробная Загрузка ====== #\n\033[0m")
-    download(url)
+    download(line)
     print("\n\033[33m# =============================== #\n\033[0m")
 else:
     with capture.capture_output():
-        download(url)
+        download(line)
 
 print("\r🏁 Скачивание Завершено!" + " "*15)
 
