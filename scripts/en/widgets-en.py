@@ -107,7 +107,7 @@ civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Enter your Civ
 huggingface_token_widget = factory.create_text('HuggingFace Token:')
 
 zrok_token_widget = factory.create_text('Zrok Token:')
-zrok_button = factory.create_html('<a href="https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU" target="_blank">Register Zrok Token</a>', class_names=["button", "button_ngrok"])
+zrok_button = factory.create_html('<a href="https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU" target="_blank">Register Zrok Token</a>', class_names=["button", "button_zrok"])
 zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 
 commandline_arguments_widget = factory.create_text('Arguments:', webui_selection['A1111'])

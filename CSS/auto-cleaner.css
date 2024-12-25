@@ -134,7 +134,7 @@ hr {
     background-image: radial-gradient(circle at top left, purple 10%, violet 90%);
     background-size: 200% 200%;
     background-position: left bottom;
-    transition: background 0.5s ease-in-out, transform 0.3s ease;
+    transition: background 0.5s ease, transform 0.3s ease;
 }
 .cleaner_button:hover {
     cursor: pointer;
