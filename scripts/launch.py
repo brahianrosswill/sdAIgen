@@ -142,7 +142,7 @@ launcher = 'main.py' if UI == 'ComfyUI' else 'launch.py'
 password = 'vo9fdxgc0zkvghqwzrlz6rk2o00h5sc7'
 
 # Setup pinggy timer
-get_ipython().system(f'echo -n {int(time.time())+(3600+15)} > {WEBUI}/static/timer-pinggy.txt')
+get_ipython().system(f'echo -n {int(time.time())+(3600+30)} > {WEBUI}/static/timer-pinggy.txt')
 
 with tunnel:
     os.chdir(WEBUI)

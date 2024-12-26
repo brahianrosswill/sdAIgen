@@ -409,15 +409,22 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
             return    # Exit if the model requires payment
 
         # model info
-        model_type, model_name = civitai.get_model_info(data, url, file_name)
+        model_type, file_name = civitai.get_model_info(data, url, file_name)    # model_name -> file_name
         download_url = civitai.get_download_url(data, url)
         clean_url, url = civitai.get_full_and_clean_download_url(download_url)
-        image_url, image_name = civitai.get_image_info(data, model_name, model_type)
+        image_url, image_name = civitai.get_image_info(data, file_name, model_type)
 
         # DL PREVIEW IMAGES | CIVITAI
         if image_url and image_name:
             command = shlex.split(aria2_args) + ["-d", dst_dir, "-o", image_name, image_url]
             subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    elif 'github' in url or 'huggingface.co' in url:
+        if file_name and '.' not in file_name:
+            file_extension = f"{clean_url.split('/')[-1].split('.', 1)[1]}"
+            file_name = f"{file_name}.{file_extension}"
+        if not file_name:
+            file_name = clean_url.split("/")[-1]
 
     ## Formatted info output
     format_output(clean_url, dst_dir, file_name, image_url, image_name)
