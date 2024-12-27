@@ -346,10 +346,17 @@ class Tunnel:
     def display_urls(self) -> None:
         """Display the collected URLs."""
         with self.urls_lock:
-            print()  # space
+            width = 110
+
+            # Print the header
+            print("\n\033[32m+" + "=" * (width - 2) + "+\033[0m\n")
+
+            # Print each URL
             for url, note, name in self.urls:
                 print(f"\033[32m 🔗 Tunnel \033[0m{name} \033[32mURL: \033[0m{url} {note if note else ''}")
-            print()  # space
+
+            # Print the footer
+            print("\n\033[32m+" + "=" * (width - 2) + "+\033[0m\n")
 
             if self.callback:
                 self.invoke_callback(self.callback, self.urls)
