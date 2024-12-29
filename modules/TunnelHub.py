@@ -347,13 +347,14 @@ class Tunnel:
         """Display the collected URLs."""
         with self.urls_lock:
             width = 110
+            tunnel_name_width = max(len(name) for _, _, name in self.urls) if self.urls else 6
 
             # Print the header
             print("\n\033[32m+" + "=" * (width - 2) + "+\033[0m\n")
 
             # Print each URL
             for url, note, name in self.urls:
-                print(f"\033[32m 🔗 Tunnel \033[0m{name} \033[32mURL: \033[0m{url} {note if note else ''}")
+                print(f"\033[32m 🔗 Tunnel \033[0m{name:<{tunnel_name_width}}  \033[32mURL: \033[0m{url} {note if note else ''}")
 
             # Print the footer
             print("\n\033[32m+" + "=" * (width - 2) + "+\033[0m\n")
