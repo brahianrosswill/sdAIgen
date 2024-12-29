@@ -28,13 +28,6 @@ def read_model_data(file_path, data_type):
     Reads model, VAE, or ControlNet data from the specified file.
 
     The function loads data from a Python script and returns the corresponding list of model names based on the specified data type.
-
-    Parameters:
-    ----------
-    file_path : str
-        The path to the file containing model data in Python format.
-    data_type : str
-        The type of data to extract: "model", "vae", or "cnet".
     """
     local_vars = {}
     

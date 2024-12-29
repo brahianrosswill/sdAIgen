@@ -6,6 +6,7 @@ from CivitaiAPI import CivitAiAPI                           # CivitAI API
 
 from IPython.display import clear_output
 from IPython.utils import capture
+from urllib.parse import urlparse
 from datetime import timedelta
 from pathlib import Path
 import subprocess
@@ -13,6 +14,7 @@ import requests
 import zipfile
 import shlex
 import time
+import json
 import sys
 import re
 import os
@@ -51,7 +53,7 @@ locals().update(settings)
 def setup_venv():
     """The main function to customize the virtual environment."""
     header = "--header='User-Agent: Mozilla/5.0' --allow-overwrite=true"
-    args = "--optimize-concurrent-downloads --console-log-level=error --summary-interval=1 --stderr=true -c -x16 -s16 -k1M -j5"
+    args = "--optimize-concurrent-downloads --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5"
     url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/venv-torch241-cu121-kfa.tar.lz4"
     fn = Path(url).name
     
@@ -80,18 +82,9 @@ def setup_venv():
         f'python3 -m venv {VENV}',
         f'{VENV}/bin/python3 -m pip install -q -U --force-reinstall pip'
     ]
-    if ENV_NAME == 'Google Colab':
-        venv_commands.append(f'{VENV}/bin/pip3 install -q ipykernel')
 
     for cmd in venv_commands:
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-def install_packages(install_lib):
-    for index, (package, install_cmd) in enumerate(install_lib.items(), start=1):
-        print(f"\r[{index}/{len(install_lib)}] \033[32m>>\033[0m Installing \033[33m{package}\033[0m..." + " "*35, end='')
-        result = subprocess.run(install_cmd, shell=True, capture_output=True)
-        if result.returncode != 0:
-            print(f"\n\033[31mError installing {package}: {result.stderr.decode()}\033[0m")
 
 def download_additional_packages(SCR_PATH):
     commands = [
@@ -101,23 +94,25 @@ def download_additional_packages(SCR_PATH):
     for command in commands:
         subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
-    print("💿 Установка библиотек займет немного времени:")
+def install_packages(install_lib):
+    for index, (package, install_cmd) in enumerate(install_lib.items(), start=1):
+        print(f"\r[{index}/{len(install_lib)}] \033[32m>>\033[0m Installing \033[33m{package}\033[0m..." + " "*35, end='')
+        result = subprocess.run(install_cmd, shell=True, capture_output=True)
+        if result.returncode != 0:
+            print(f"\n\033[31mError installing {package}: {result.stderr.decode()}\033[0m")
 
+if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
     install_lib = {
         "aria2": "pip install aria2",
         "localtunnel": "npm install -g localtunnel",
         "pv": "apt -y install pv"
     }
-    # if controlnet != 'none':
-    #     install_lib["insightface"] = "pip install insightface"
 
     additional_libs = {
         "Google Colab": {
             # "xformers": "pip install xformers==0.0.28.post1 --no-deps"
         },
         "Kaggle": {
-            # "openssl": "conda install -y openssh",
             # "xformers": "pip install xformers==0.0.28.post1 --no-deps",
             # "torch": "pip install torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121"
         }
@@ -127,12 +122,13 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
         install_lib.update(additional_libs[ENV_NAME])
 
     # Main Deps
+    print("💿 Установка библиотек займет немного времени.")
     install_packages(install_lib)
     download_additional_packages(SCR_PATH)
     clear_output()
 
     # VENV
-    print("💿 Установка VENV, это займет некоторое время...")
+    print("♻️ Установка VENV, это займет некоторое время...")
     setup_venv()
     clear_output()
 

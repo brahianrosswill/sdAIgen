@@ -176,7 +176,7 @@ def detect_environment():
 
 # ==================== MODULES ====================
 
-def clear_module_cache(modules_folder):
+def _clear_module_cache(modules_folder):
     for module_name in list(sys.modules.keys()):
         module = sys.modules[module_name]
         if hasattr(module, '__file__') and module.__file__ and module.__file__.startswith(str(modules_folder)):
@@ -184,7 +184,8 @@ def clear_module_cache(modules_folder):
     importlib.invalidate_caches()
 
 def setup_module_folder(scr_folder):
-    clear_module_cache(scr_folder)
+    _clear_module_cache(scr_folder)
+
     modules_folder = scr_folder / "modules"
     modules_folder.mkdir(parents=True, exist_ok=True)
     if str(modules_folder) not in sys.path:
@@ -216,7 +217,7 @@ def create_environment_data(env, scr_folder, lang, branch):
     file_path = scr_folder / 'settings.json'
 
     scr_folder.mkdir(parents=True, exist_ok=True)
-    install_deps = key_or_value_exists(file_path, 'ENVIRONMENT.install_deps', True)
+    install_deps = key_or_value_exists(file_path, 'ENVIRONMENT.install_deps', True) and (scr_folder.parent / 'venv').exists()
     start_timer = get_start_timer()
 
     return {
@@ -226,7 +227,7 @@ def create_environment_data(env, scr_folder, lang, branch):
             'env_name': env,
             'install_deps': install_deps,
             'home_path': str(scr_folder.parent),
-            'venv_path': str(scr_folder.parent) + '/venv',
+            'venv_path': str(scr_folder.parent / 'venv'),
             'scr_path': str(scr_folder), 
             'start_timer': start_timer,
             'public_ip': ''

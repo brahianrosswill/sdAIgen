@@ -1,5 +1,5 @@
 <div align="center">
-<img width="1000px" height="auto" src="https://raw.githubusercontent.com/anxety-solo/sdAIgen/dev/.Docs/Imgs/sample.png"/></br>
+<img width="1080px" height="auto" src="https://raw.githubusercontent.com/anxety-solo/sdAIgen/dev/.Docs/Imgs/sample.png"/></br>
 <h1>~ ANXETY | Stable Diffusion WebUI | NoteBook V2 ~</h1>
 	
 [English](README.md) | Русский

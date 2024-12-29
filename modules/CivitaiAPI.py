@@ -1,4 +1,4 @@
-''' CivitAi API | by ANXETY'''
+""" CivitAi API | by ANXETY """
 
 from urllib.parse import urlparse, parse_qs
 import requests
