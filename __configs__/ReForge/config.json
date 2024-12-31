@@ -1,4 +1,5 @@
 {
+    "notification_audio": false,
     "aria2_flags": "--optimize-concurrent-downloads --console-log-level=error --summary-interval=10 -j5 -x16 -s16 -k1M -c",
     "unpack_zip": true,
     "ad_max_models": 6,
