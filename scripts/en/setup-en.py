@@ -22,6 +22,7 @@ SETTINGS_PATH = SCR_PATH / 'settings.json'
 def display_info(env, scr_folder):
     content = f"""
     <div id="text-container">
+      <span>❄️</span>
       <span>A</span>
       <span>N</span>
       <span>X</span>
@@ -40,6 +41,7 @@ def display_info(env, scr_folder):
       <span>&nbsp;</span>
       <span>V</span>
       <span>2</span>
+      <span>❄️</span>
     </div>
 
     <div id="message-container">
@@ -50,7 +52,7 @@ def display_info(env, scr_folder):
 
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
-
+    
     #text-container, #message-container {{
       display: flex;
       flex-direction: column;
@@ -59,14 +61,18 @@ def display_info(env, scr_folder):
       margin: 0;
       padding: 5px 0;
       user-select: none;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
     }}
-
+    
     #text-container {{
       display: flex;
       flex-direction: row;
       align-items: center;
+      justify-content: center;
     }}
-
+    
     #text-container > span {{
       font-size: 4vw;
       display: inline-block;
@@ -76,14 +82,14 @@ def display_info(env, scr_folder):
       filter: blur(3px);
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }}
-
+    
     #text-container.loaded > span {{
       color: #FFFFFF;
       opacity: 1;
       transform: translateY(0);
       filter: blur(0);
     }}
-
+    
     #message-container > span {{
       font-size: 2vw;
       color: #FF7A00;
@@ -92,19 +98,19 @@ def display_info(env, scr_folder):
       filter: blur(3px);
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }}
-
+    
     #message-container.loaded > span {{
       color: #FFFFFF;
       opacity: 1;
       transform: translateY(0);
       filter: blur(0);
     }}
-
+    
     .env {{
       color: #FFA500;
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }}
-
+    
     .files-location {{
       color: #FF99C2;
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -139,7 +145,76 @@ def display_info(env, scr_folder):
     </script>
     """
 
+    SF = """
+    <script>
+    // Create style for snowflakes
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .snowflake {
+        position: fixed; /* Use fixed positioning to stay within the viewport */
+        background-color: white;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        pointer-events: none;
+        opacity: 0.8;
+        will-change: transform, opacity; /* Optimize for animation */
+      }
+      body {
+        overflow: hidden; /* Prevent scrollbars */
+        margin: 0; /* Remove default margin */
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Function to create snowflakes
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      snowflake.className = 'snowflake';
+      
+      // Set random size
+      const size = Math.random() * 5 + 3; // Size from 3 to 8 pixels
+      snowflake.style.width = size + 'px';
+      snowflake.style.height = size + 'px';
+
+      // Position the snowflake
+      snowflake.style.left = Math.random() * window.innerWidth + 'px';
+      snowflake.style.top = -size + 'px'; // Start just above the screen
+
+      // Set random opacity between 0.1 and 0.5
+      const opacity = Math.random() * 0.4 + 0.1; // Opacity from 0.1 to 0.5
+      snowflake.style.opacity = opacity;
+
+      // Set random fall duration and angle (up to 25 degrees)
+      const fallDuration = Math.random() * 3 + 2; // Random fall duration (from 2 to 5 seconds)
+      const angle = (Math.random() * 50 - 25) * (Math.PI / 180); // Angle from -25 to 25 degrees
+      const horizontalMovement = Math.sin(angle) * (window.innerHeight / 2); // Horizontal shift
+      const verticalMovement = Math.cos(angle) * (window.innerHeight + 10); // Vertical shift
+
+      document.body.appendChild(snowflake);
+
+      // Animation for falling with horizontal movement
+      snowflake.animate([
+        { transform: `translate(0, 0)`, opacity: 1 },
+        { transform: `translate(${horizontalMovement}px, ${verticalMovement}px)`, opacity: 0 } // Fade out
+      ], {
+        duration: fallDuration * 1000,
+        easing: 'linear',
+        fill: 'forwards'
+      });
+
+      // Also remove the snowflake after falling
+      setTimeout(() => {
+        snowflake.remove();
+      }, fallDuration * 1000);
+    }
+
+    // Start snowfall
+    setInterval(createSnowflake, 50); // Create a snowflake every 50 ms for increased quantity
+    </script>
+    """
+
     display(HTML(content))
+    display(HTML(SF))
 
 # ==================== ENVIRONMENT ====================
 
