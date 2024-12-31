@@ -170,10 +170,14 @@ if latest_webui or latest_extensions:
             get_ipython().run_line_magic('cd', '{WEBUI}')
             get_ipython().system('git restore .')
             get_ipython().system('git pull -X theirs --rebase --autostash')
+            # reset
+            update_json(SETTINGS_PATH, 'WIDGETS.latest_webui', False)
 
         ## Update extensions
         if latest_extensions:
             get_ipython().system('{\'for dir in \' + WEBUI + \'/extensions/*/; do cd \\"$dir\\" && git reset --hard && git pull; done\'}')
+            # reset
+            update_json(SETTINGS_PATH, 'WIDGETS.latest_extensions', False)
     print(f"\r✨ Обновление {action} Завершено!")
 
 
