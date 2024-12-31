@@ -277,23 +277,23 @@ a {
 
 .container,
 .button_save {
-    animation: showedWidgets 1s forwards ease-in-out;
+    animation: showedWidgets 0.8s forwards ease;
 }
 
 .container.hide,
 .button_save.hide {
-    animation: hideWidgets 0.5s forwards ease-in-out;
+    animation: hideWidgets 0.5s forwards ease;
 }
 
 @keyframes showedWidgets {
     0% {
         transform: translate3d(-65%, 15%, 0) scale(0) rotate(15deg);
-        filter: blur(25px) grayscale(1) brightness(0.3);
+        filter: blur(25px) brightness(0.3);
         opacity: 0;
     }
     100% {
         transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-        filter: blur(0) grayscale(0) brightness(1);
+        filter: blur(0) brightness(1);
         opacity: 1;
     }
 }
@@ -301,12 +301,12 @@ a {
 @keyframes hideWidgets {
     0% {
         transform: translate3d(0, 0, 0) scale(1) rotate3d(1, 0, 0, 0deg);
-        filter: blur(0) grayscale(0) brightness(1);
+        filter: blur(0) brightness(1);
         opacity: 1;
     }
     100% {
         transform: translate3d(0, 5%, 0) scale(0.9) rotate3d(1, 0, 0, 90deg);
-        filter: blur(15px) grayscale(1) brightness(0.5);
+        filter: blur(15px) brightness(0.5);
         opacity: 0;
     }
 }
