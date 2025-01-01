@@ -21,38 +21,45 @@ SETTINGS_PATH = SCR_PATH / 'settings.json'
 # ================ BEAUTIFUL TEXT :3 ================
 def display_info(env, scr_folder):
     content = f"""
-    <div id="text-container">
-      <span>❄️</span>
-      <span>A</span>
-      <span>N</span>
-      <span>X</span>
-      <span>E</span>
-      <span>T</span>
-      <span>Y</span>
-      <span>&nbsp;</span>
-      <span>S</span>
-      <span>D</span>
-      <span>-</span>
-      <span>W</span>
-      <span>E</span>
-      <span>B</span>
-      <span>U</span>
-      <span>I</span>
-      <span>&nbsp;</span>
-      <span>V</span>
-      <span>2</span>
-      <span>❄️</span>
-    </div>
+    <div id="snow-container">
+      <div id="text-container">
+        <span>❄️</span>
+        <span>A</span>
+        <span>N</span>
+        <span>X</span>
+        <span>E</span>
+        <span>T</span>
+        <span>Y</span>
+        <span>&nbsp;</span>
+        <span>S</span>
+        <span>D</span>
+        <span>-</span>
+        <span>W</span>
+        <span>E</span>
+        <span>B</span>
+        <span>U</span>
+        <span>I</span>
+        <span>&nbsp;</span>
+        <span>V</span>
+        <span>2</span>
+        <span>❄️</span>
+      </div>
 
-    <div id="message-container">
-      <span>Готово! Теперь вы можете запустить ячейки ниже. ☄️</span>
-      <span>Среда выполнения: <span class="env">{env}</span></span>
-      <span>Расположение файлов: <span class="files-location">{scr_folder}</span></span>
+      <div id="message-container">
+          <span>Готово! Теперь вы можете запустить ячейки ниже. ☄️</span>
+          <span>Среда выполнения: <span class="env">{env}</span></span>
+          <span>Расположение файлов: <span class="files-location">{scr_folder}</span></span>
+      </div>
     </div>
 
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
-    
+
+    #snow-container {{
+      position: relative; /* Make this container the positioning context for snowflakes */
+      overflow: hidden; /* Hide overflow to keep snowflakes within bounds */
+    }}
+
     #text-container, #message-container {{
       display: flex;
       flex-direction: column;
@@ -65,14 +72,14 @@ def display_info(env, scr_folder):
       align-items: center;
       text-align: center;
     }}
-    
+
     #text-container {{
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: center;
     }}
-    
+
     #text-container > span {{
       font-size: 4vw;
       display: inline-block;
@@ -82,14 +89,14 @@ def display_info(env, scr_folder):
       filter: blur(3px);
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }}
-    
+
     #text-container.loaded > span {{
       color: #FFFFFF;
       opacity: 1;
       transform: translateY(0);
       filter: blur(0);
     }}
-    
+
     #message-container > span {{
       font-size: 2vw;
       color: #FF7A00;
@@ -98,19 +105,19 @@ def display_info(env, scr_folder):
       filter: blur(3px);
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }}
-    
+
     #message-container.loaded > span {{
       color: #FFFFFF;
       opacity: 1;
       transform: translateY(0);
       filter: blur(0);
     }}
-    
+
     .env {{
       color: #FFA500;
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }}
-    
+
     .files-location {{
       color: #FF99C2;
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -134,7 +141,6 @@ def display_info(env, scr_folder):
           span.style.transitionDelay = `${{index * 50}}ms`;
         }});
 
-
         // Set a timeout to add the 'loaded' class to both containers after a short delay
         setTimeout(() => {{
           textContainer.classList.add('loaded');
@@ -151,7 +157,7 @@ def display_info(env, scr_folder):
     const style = document.createElement('style');
     style.innerHTML = `
       .snowflake {
-        position: fixed; /* Use fixed positioning to stay within the viewport */
+        position: absolute; /* Change to absolute positioning */
         background-color: white;
         border-radius: 50%;
         box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
@@ -159,15 +165,20 @@ def display_info(env, scr_folder):
         opacity: 0.8;
         will-change: transform, opacity; /* Optimize for animation */
       }
-      body {
-        overflow: hidden; /* Prevent scrollbars */
-        margin: 0; /* Remove default margin */
-      }
     `;
     document.head.appendChild(style);
 
+    // Function to clear existing snowflakes
+    function clearSnowflakes() {
+      const existingSnowflakes = document.querySelectorAll('.snowflake');
+      existingSnowflakes.forEach(snowflake => {
+        snowflake.remove();
+      });
+    }
+
     // Function to create snowflakes
     function createSnowflake() {
+      const snowContainer = document.getElementById('snow-container');
       const snowflake = document.createElement('div');
       snowflake.className = 'snowflake';
       
@@ -176,9 +187,10 @@ def display_info(env, scr_folder):
       snowflake.style.width = size + 'px';
       snowflake.style.height = size + 'px';
 
-      // Position the snowflake
-      snowflake.style.left = Math.random() * window.innerWidth + 'px';
-      snowflake.style.top = -size + 'px'; // Start just above the screen
+      // Position the snowflake within the snow container
+      const containerRect = snowContainer.getBoundingClientRect();
+      snowflake.style.left = Math.random() * (containerRect.width - size) + 'px';
+      snowflake.style.top = -size + 'px'; // Start just above the container
 
       // Set random opacity between 0.1 and 0.5
       const opacity = Math.random() * 0.4 + 0.1; // Opacity from 0.1 to 0.5
@@ -187,10 +199,10 @@ def display_info(env, scr_folder):
       // Set random fall duration and angle (up to 25 degrees)
       const fallDuration = Math.random() * 3 + 2; // Random fall duration (from 2 to 5 seconds)
       const angle = (Math.random() * 50 - 25) * (Math.PI / 180); // Angle from -25 to 25 degrees
-      const horizontalMovement = Math.sin(angle) * (window.innerHeight / 2); // Horizontal shift
-      const verticalMovement = Math.cos(angle) * (window.innerHeight + 10); // Vertical shift
+      const horizontalMovement = Math.sin(angle) * (containerRect.height / 2); // Horizontal shift
+      const verticalMovement = Math.cos(angle) * (containerRect.height + 10); // Vertical shift
 
-      document.body.appendChild(snowflake);
+      snowContainer.appendChild(snowflake); // Append snowflake to snow container
 
       // Animation for falling with horizontal movement
       snowflake.animate([
@@ -208,7 +220,8 @@ def display_info(env, scr_folder):
       }, fallDuration * 1000);
     }
 
-    // Start snowfall
+    // Clear existing snowflakes and then start snowfall
+    clearSnowflakes();
     setInterval(createSnowflake, 50); // Create a snowflake every 50 ms for increased quantity
     </script>
     """
