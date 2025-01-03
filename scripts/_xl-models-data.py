@@ -23,7 +23,7 @@ vae_list = {
 controlnet_list = {
     "01. Control-Union XL": [
         {"url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors", "name": "controlnet_union_sdxl_v1.safetensors"},
-        {"url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/config.json}
+        {"url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/config.json"}
     ],
     "02. Control-Union-Pro XL": [
         {"url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model_promax.safetensors", "name": "controlnet_union_pro_sdxl.safetensors"},
