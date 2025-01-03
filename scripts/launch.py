@@ -117,7 +117,8 @@ tunnel = Tunnel(tunnel_port)
 tunnel.logger.setLevel(logging.DEBUG)
 
 #environ
-# os.environ['PATH'] = f'{VENV}/bin:' + os.environ['PATH']
+if f'{VENV}/bin' not in os.environ['PATH']:
+    os.environ['PATH'] = f'{VENV}/bin:' + os.environ['PATH']
 os.environ["PYTHONWARNINGS"] = "ignore"
 
 # Setup tunnels

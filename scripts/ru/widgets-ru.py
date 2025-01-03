@@ -134,6 +134,7 @@ Vae_url_widget = factory.create_text('Vae:')
 LoRA_url_widget = factory.create_text('LoRa:')
 Embedding_url_widget = factory.create_text('Embedding:')
 Extensions_url_widget = factory.create_text('Extensions:')
+ADetailer_url_widget = factory.create_text('ADetailer:')
 custom_file_urls_widget = factory.create_text('Файл (txt):')
 
 # --- Save Button ---
@@ -156,6 +157,7 @@ custom_download_widgets = [
     LoRA_url_widget,
     Embedding_url_widget,
     Extensions_url_widget,
+    ADetailer_url_widget,
     custom_file_urls_widget
 ]
 
@@ -183,7 +185,8 @@ def update_change_webui(change, widget):
         Extensions_url_widget.description = 'Custom Nodes:'
     else:
         latest_extensions_widget.layout.display = 'inline-block'
-        latest_extensions_widget.value = True
+        result = read_json(SETTINGS_PATH, 'WIDGETS.latest_extensions')
+        latest_extensions_widget.value = result or True
         check_custom_nodes_deps_widget.layout.display = 'none'
         Extensions_url_widget.description = 'Extensions:'
 
@@ -218,7 +221,7 @@ SETTINGS_KEYS = [
       'latest_webui', 'latest_extensions', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
       'controlnet', 'controlnet_num', 'commit_hash',
       'civitai_token', 'huggingface_token', 'zrok_token', 'commandline_arguments',
-      'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'custom_file_urls'
+      'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'ADetailer_url', 'custom_file_urls'
 ]
 
 def save_settings():

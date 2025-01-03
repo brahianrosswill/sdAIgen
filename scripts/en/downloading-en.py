@@ -66,6 +66,7 @@ def setup_venv():
         install_commands = ["apt -y install python3.10-venv", "apt -y install lz4"]
     else:
         install_commands = ["pip install ipywidgets jupyterlab_widgets --upgrade", "apt -y install lz4"]
+        get_ipython().system('rm -f /usr/lib/python3.10/sitecustomize.py')
     
     for cmd in install_commands:
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -100,7 +101,7 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
         "pv": "apt -y install pv",
         # tunnels
         "localtunnel": "npm install -g localtunnel",
-        "lt": "curl -s -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && chmod +x /usr/bin/cl",
+        "cl": "curl -s -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && chmod +x /usr/bin/cl",
         "zrok": "curl -sLO https://github.com/openziti/zrok/releases/download/v0.4.32/zrok_0.4.32_linux_amd64.tar.gz && tar -xzf zrok_0.4.32_linux_amd64.tar.gz -C /usr/bin && rm -f zrok_0.4.32_linux_amd64.tar.gz"
     }
 
@@ -217,9 +218,9 @@ PREFIXES = {
     "lora": lora_dir,
     "embed": embed_dir,
     "extension": extension_dir,
+    "adetailer": adetailer_dir,
     "control": control_dir,
     "upscale": upscale_dir,
-    "adetailer": adetailer_dir,
     "clip": clip_dir,
     "config": WEBUI
 }
@@ -545,7 +546,7 @@ if custom_file_urls:
             pass
 
 # URL prefixing
-urls = (Model_url, Vae_url, LoRA_url, Embedding_url, Extensions_url)
+urls = (Model_url, Vae_url, LoRA_url, Embedding_url, Extensions_url, ADetailer_url)
 prefixed_urls = [
     f"{prefix}:{url.strip()}"
     for prefix, url in zip(PREFIXES.keys(), urls)

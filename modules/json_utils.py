@@ -36,7 +36,8 @@ def read_json(filepath, key, default=None):
     """Reads a value by key from a JSON file, supporting nested structures."""
     data = _read_json(filepath)
     keys = key.split('.')
-    return _get_nested_value(data, keys) or default
+    result = _get_nested_value(data, keys)
+    return result if result is not None else default
 
 def save_json(filepath, key, value):
     """Saves a value by key in a JSON file, supporting nested structures."""

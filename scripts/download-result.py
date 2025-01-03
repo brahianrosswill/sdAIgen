@@ -39,7 +39,7 @@ locals().update(settings)
 # ====================== WIDGETS =====================
 HR = widgets.HTML('<hr class="divider-line">')
 HEADER_DL = 'DOWNLOAD RESULTS'
-VERSION = 'v0.51'
+VERSION = 'v0.53'
 
 factory = WidgetFactory()
 
@@ -51,6 +51,7 @@ EXCLUDED_EXTENSIONS = {'.txt', '.yaml', '.log'}
 
 ## Functions
 def output_container_generator(header, items, is_grid=False):
+    """Create a container widget for output items."""
     header_widget = factory.create_html(f'<div class="header-output-title">{header} ➤</div>')
     content_widgets = [factory.create_html(f'<div class="output-item">{item}</div>') for item in items]
 
@@ -60,11 +61,25 @@ def output_container_generator(header, items, is_grid=False):
     return factory.create_vbox([header_widget, content_container]).add_class("output-section")
 
 def get_files_list(directory, extensions):
+    """List files in a directory with specific extensions, excluding certain types."""
     if not os.path.isdir(directory):
         return []  # Return empty list if directory does not exist
     return [file for file in os.listdir(directory) if file.endswith(extensions) and not file.endswith(tuple(EXCLUDED_EXTENSIONS))]
 
+def get_all_files_list(directory, extensions):
+    """Get all files in the directory and its subdirectories."""
+    if not os.path.isdir(directory):
+        return []  # Return empty list if directory does not exist
+    
+    files_list = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith(extensions) and not file.endswith(tuple(EXCLUDED_EXTENSIONS)):
+                files_list.append(file)  # Store only the file name
+    return files_list
+
 def get_folders_list(directory):
+    """List folders in a directory, excluding hidden folders."""
     if not os.path.isdir(directory):
         return []  # Return empty list if directory does not exist
     return [
@@ -73,6 +88,7 @@ def get_folders_list(directory):
     ]
 
 def get_controlnets_list(directory, filter_pattern):
+    """List ControlNet files matching a specific pattern."""
     if not os.path.isdir(directory):
         return []  # Return empty list if directory does not exist
     filter_name = re.compile(filter_pattern)
@@ -103,6 +119,9 @@ loras_widget = output_container_generator('LoRAs', loras_list)
 extensions_list = get_folders_list(extension_dir)
 extension_type = 'Nodes' if UI == 'ComfyUI' else 'Extensions'
 extensions_widget = output_container_generator(extension_type, extensions_list, is_grid=True)
+# ADetailers
+adetailer_list = get_all_files_list(adetailer_dir, ('.safetensors', '.pt'))
+adetailer_widget = output_container_generator('ADetailers', adetailer_list)
 # ControlNet
 controlnets_list = get_controlnets_list(control_dir, r'^[^_]*_[^_]*_[^_]*_(.*)_fp16\.safetensors')
 controlnets_widget = output_container_generator('ControlNets', controlnets_list)
@@ -114,6 +133,7 @@ widgets_dict = {
     embeddings_widget: embeddings_list,
     loras_widget: loras_list,
     extensions_widget: extensions_list,
+    adetailer_widget: adetailer_list,
     controlnets_widget: controlnets_list
 }
 

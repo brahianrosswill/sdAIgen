@@ -70,7 +70,7 @@ a {
     transition: all 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
 .container_cdl.expanded {
-    height: 270px;
+    height: 305px;
 }
 
 
