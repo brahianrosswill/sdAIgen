@@ -21,13 +21,8 @@ vae_list = {
 ## CONTROLNET
 
 controlnet_list = {
-    "01. Control-Union XL": [
-        {"url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors", "name": "controlnet_union_sdxl_v1.safetensors"},
-        {"url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/config.json"}
-    ],
-    "02. Control-Union-Pro XL": [
-        {"url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model_promax.safetensors", "name": "controlnet_union_pro_sdxl.safetensors"},
-        {"url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/config_promax.json"}
+    "0. Control-Union-ProMax XL": [
+        {"url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model_promax.safetensors", "name": "ControlNet_UNION_SDXL_ProMax.safetensors"}
     ],
     "1. Kohya Controllite XL Blur": [
         {"url": "https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/kohya_controllllite_xl_blur.safetensors"},

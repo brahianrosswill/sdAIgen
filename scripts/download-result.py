@@ -47,7 +47,7 @@ factory = WidgetFactory()
 factory.load_css(widgets_css)
 
 # Define extensions to filter out
-EXCLUDED_EXTENSIONS = {'.txt', '.yaml', '.log'}
+EXCLUDED_EXTENSIONS = {'.txt', '.yaml', '.log', '.json'}
 
 ## Functions
 def output_container_generator(header, items, is_grid=False):
