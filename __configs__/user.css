@@ -1,72 +1,63 @@
 /* Other */ 
 .gradio-container {
-  /*
-    padding-top: 20px !important;
-    padding-bottom: 20px !important;
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-  */
   padding: 15px !important;
 }
 
-
 /* Main */
-#txt2img_gallery, #img2img_gallery{
-    /* Output height */
-    height: 650px;
+#txt2img_gallery, 
+#img2img_gallery {
+  height: 650px; /* Output height */
 }
 
-#txt2img_results, #img2img_results{
-    /* Output width */
-    min-width: 50%;
+#txt2img_results, 
+#img2img_results {
+  min-width: 50%; /* Output width */
 }
 
-#tabs > .tab-nav > button.selected {
-    color: var(--block-title-text-color);
+#txt2img_gallery > .grid-wrap, 
+#txt2img_gallery > .preview,
+#img2img_gallery > .grid-wrap, 
+#img2img_gallery > .preview {
+  max-height: none;
 }
 
-#txt2img_gallery > .grid-wrap, #txt2img_gallery > .preview,
-#img2img_gallery > .grid-wrap, #img2img_gallery > .preview{
-    max-height: none;
-}
-
-#txt2img_extra_networks:not(div), #img2img_extra_networks:not(div){
+#txt2img_extra_networks:not(div), 
+#img2img_extra_networks:not(div) {
   order: 1 !important;
 }
 
 #setting_show_progress_every_n_steps > div.wrap > div > label > span {
-    white-space: nowrap;
-    overflow: hidden;
-    width: 220px;
-    text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 220px;
+  text-overflow: ellipsis;
 }
 
 /* Fixing Sampling steps covered up on phone */
-
 @media screen and (min-width: 420px) {
-    #sampler_selection_txt2img, #sampler_selection_img2img {
-      flex-direction: row;
-    }
+  #sampler_selection_txt2img, 
+  #sampler_selection_img2img {
+    flex-direction: row;
+  }
 }
 
 @media screen and (max-width: 420px) {
-    #sampler_selection_txt2img, #sampler_selection_img2img {
-      flex-direction: column;
-    }
+  #sampler_selection_txt2img, 
+  #sampler_selection_img2img {
+    flex-direction: column;
+  }
 }
 
-#txt2img_script_container > * .block.padded, #img2img_script_container > * .block.padded {
+#txt2img_script_container > * .block.padded, 
+#img2img_script_container > * .block.padded {
   padding: 10px !important;
 }
 
-div.compact {
-    gap: 5px !important;
-}
-
 .tab-nav.scroll-hide.svelte-1g805jl {
-    row-gap: 5px !important;
+  row-gap: 5px !important;
 }
 
-#txt2img_script_container > div, #img2img_script_container > div {
-    margin-bottom: 10px;
+#txt2img_script_container > div, 
+#img2img_script_container > div {
+  margin-bottom: 10px;
 }

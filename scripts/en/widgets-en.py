@@ -185,8 +185,7 @@ def update_change_webui(change, widget):
         Extensions_url_widget.description = 'Custom Nodes:'
     else:
         latest_extensions_widget.layout.display = 'inline-block'
-        result = read_json(SETTINGS_PATH, 'WIDGETS.latest_extensions')
-        latest_extensions_widget.value = result or True
+        latest_extensions_widget.value = True
         check_custom_nodes_deps_widget.layout.display = 'none'
         Extensions_url_widget.description = 'Extensions:'
 
