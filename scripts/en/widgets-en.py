@@ -117,7 +117,8 @@ custom_download_header_popup = factory.create_html('''
 <div class="header" style="cursor: pointer;" onclick="toggleContainer()">Custom Download</div>
 <div class="info" id="info_dl">INFO</div>
 <div class="popup">
-    Separate multiple URLs with a comma/space. For a <span class="file_name">custom name</span> file/extension, specify it with <span class="braces">[]</span> after the URL without spaces.
+    Separate multiple URLs with a comma/space.
+    For a <span class="file_name">custom name</span> file/extension, specify it with <span class="braces">[]</span> after the URL without spaces.
     <span style="color: #ff9999">For files, be sure to specify</span> - <span class="extension">Filename Extension.</span>
     <div class="sample">
         <span class="sample_label">Example for File:</span>

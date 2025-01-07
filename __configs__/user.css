@@ -3,6 +3,10 @@
   padding: 15px !important;
 }
 
+div.compact {
+  gap: 6px !important;
+}
+
 /* Main */
 #txt2img_gallery, 
 #img2img_gallery {
