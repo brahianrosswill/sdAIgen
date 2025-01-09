@@ -100,8 +100,8 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
         "aria2": "pip install aria2",
         "pv": "apt -y install pv",
         # tunnels
-        "localtunnel": "npm install -g localtunnel",
-        "cl": "curl -s -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && chmod +x /usr/bin/cl",
+        # "localtunnel": "npm install -g localtunnel",
+        "cloudflared": "curl -s -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && chmod +x /usr/bin/cl",
         "zrok": "curl -sLO https://github.com/openziti/zrok/releases/download/v0.4.32/zrok_0.4.32_linux_amd64.tar.gz && tar -xzf zrok_0.4.32_linux_amd64.tar.gz -C /usr/bin && rm -f zrok_0.4.32_linux_amd64.tar.gz"
     }
 

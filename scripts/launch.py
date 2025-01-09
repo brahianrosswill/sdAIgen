@@ -72,12 +72,12 @@ def setup_tunnels(tunnel_port, public_ipv4):
     tunnels = [
         {
             "command": f"cl tunnel --url localhost:{tunnel_port}",
-            "name": "cl",
+            "name": "Cloudflared",
             "pattern": re.compile(r"[\w-]+\.trycloudflare\.com")
         },
         {
             "command": f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{tunnel_port} a.pinggy.io",
-            "name": "pinggy",
+            "name": "Pinggy",
             "pattern": re.compile(r"[\w-]+\.a\.free\.pinggy\.link")
         }
     ]
@@ -94,7 +94,7 @@ def setup_tunnels(tunnel_port, public_ipv4):
         os.system(f'zrok enable {zrok_token} &> /dev/null')
         tunnels.append({
             "command": f"zrok share public http://localhost:{tunnel_port}/ --headless",
-            "name": "zrok",
+            "name": "Zrok",
             "pattern": re.compile(r"[\w-]+\.share\.zrok\.io")
         })
 
