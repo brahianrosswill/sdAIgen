@@ -357,7 +357,7 @@ class Tunnel:
                 print(f"\033[32m 🔗 Tunnel \033[0m{name:<{tunnel_name_width}}  \033[32mURL: \033[0m{url} {note if note else ''}")
 
             # Print the footer
-            print("\n\033[32m+" + "=" * (width - 2) + "+\033[0m")
+            print("\n\033[32m+" + "=" * (width - 2) + "+\033[0m\n")
 
             if self.callback:
                 self.invoke_callback(self.callback, self.urls)

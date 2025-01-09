@@ -1,5 +1,5 @@
 {
-    "aria2_flags": "--optimize-concurrent-downloads --console-log-level=error --summary-interval=10 -j5 -x16 -s16 -k1M -c",
+    "aria2_flags": "--optimize-concurrent-downloads --console-log-level=error -j5 -x16 -s16 -k1M -c",
     "unpack_zip": true,
     "ad_max_models": 6,
     "control_net_unit_count": 6,
@@ -137,5 +137,8 @@
     "show_progress_every_n_steps": 2,
     "live_previews_image_format": "webp",
     "live_preview_refresh_period": 100.0,
-    "live_preview_fast_interrupt": true
+    "live_preview_fast_interrupt": true,
+    "extra_networks_card_width": 200.0,
+    "extra_networks_card_height": 300.0,
+    "extra_networks_card_text_scale": 0.8
 }

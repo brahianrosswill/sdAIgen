@@ -188,14 +188,14 @@ with capture.capture_output():
 
 ## Version switching
 if commit_hash:
-    print('⏳ Time Machine Activation...', end="")
+    print('🐛 Time machine activation...', end="")
     with capture.capture_output():
         get_ipython().run_line_magic('cd', '{WEBUI}')
         get_ipython().system('git config --global user.email "you@example.com"')
         get_ipython().system('git config --global user.name "Your Name"')
         get_ipython().system('git reset --hard {commit_hash}')
         get_ipython().system('git pull origin {commit_hash}')    # Get last changes in branch
-    print(f"\r⌛️ Time Machine activated! Current commit: \033[34m{commit_hash}\033[0m")
+    print(f"\r🐛 Time machine activated! Current commit: \033[34m{commit_hash}\033[0m")
 
 
 # Get XL or 1.5 models list

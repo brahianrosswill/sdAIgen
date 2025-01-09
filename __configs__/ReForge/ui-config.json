@@ -16,8 +16,8 @@
     "img2img/Denoising strength/value": 0.4,
     "img2img/Control Mode/value": "My prompt is more important",
     "customscript/xyz_grid.py/txt2img/Include Sub Images/value": true,
-    "customscript/prompt_matrix.py/txt2img/Grid margins (px)/value": 2,
-    "customscript/xyz_grid.py/txt2img/Grid margins (px)/value": 2,
+    "customscript/prompt_matrix.py/txt2img/Grid margins (px)/value": 5,
+    "customscript/xyz_grid.py/txt2img/Grid margins (px)/value": 5,
     "civitai_interface/NSFW content/value": true,
     "civitai_interface/Tile count:/value": 28,
     "customscript/wildcard_recursive.py/txt2img/Enable UmiAI/value": false
