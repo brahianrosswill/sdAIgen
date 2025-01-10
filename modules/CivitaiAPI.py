@@ -53,8 +53,6 @@ class CivitAiAPI:
 
     def check_early_access(self, data):
         """Check if the model is in early access and requires payment."""
-        # early_access = data.get("earlyAccessConfig")
-        # if early_access and early_access.get("chargeForDownload", False):
         early_access = data.get("earlyAccessEndsAt", None)
         if early_access:
             model_id = data.get("modelId")

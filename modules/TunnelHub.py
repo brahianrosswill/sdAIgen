@@ -148,7 +148,7 @@ class Tunnel:
         if not self._is_running:
             raise RuntimeError("Tunnel is not running")
 
-        self.logger.info(f"\n\033[32m💣 Tunnels:\033[0m \033[34m{self.get_tunnel_names()}\033[0m \033[31mKilled.\033[0m")
+        self.logger.info(f"\n\033[32m💣 Tunnels:\033[0m \033[34m{self.get_tunnel_names()}\033[0m -> \033[31mKilled.\033[0m")
         self.stop_event.set()
         self.terminate_processes()
         self.join_threads()

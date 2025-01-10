@@ -65,7 +65,7 @@ def update_config_paths(config_path, paths_to_check):
         for key, expected_value in paths_to_check.items():
             if key in config_data and config_data[key] != expected_value:
                 sed_command = f"sed -i 's|\"{key}\": \".*\"|\"{key}\": \"{expected_value}\"|' {config_path}"
-                os.system(sed_command)
+                get_ipython().system(sed_command)
 
 def setup_tunnels(tunnel_port, public_ipv4):
     """Setup tunneling commands based on available packages and configurations."""
@@ -85,13 +85,13 @@ def setup_tunnels(tunnel_port, public_ipv4):
     if is_package_installed('localtunnel'):
         tunnels.append({
             "command": f"lt --port {tunnel_port}",
-            "name": "lt",
+            "name": "Localtunnel",
             "pattern": re.compile(r"[\w-]+\.loca\.lt"),
             "note": f"Password : \033[32m{public_ipv4}\033[0m rerun cell if 404 error."
         })
 
     if zrok_token:
-        os.system(f'zrok enable {zrok_token} &> /dev/null')
+        get_ipython().system(f'zrok enable {zrok_token} &> /dev/null')
         tunnels.append({
             "command": f"zrok share public http://localhost:{tunnel_port}/ --headless",
             "name": "Zrok",
@@ -113,10 +113,10 @@ if not public_ipv4:
     update_json(SETTINGS_PATH, "ENVIRONMENT.public_ip", public_ipv4)
 
 tunnel_port = 8188 if UI == 'ComfyUI' else 7860
-tunnel = Tunnel(tunnel_port)
-tunnel.logger.setLevel(logging.DEBUG)
+Tunnel = Tunnel(tunnel_port)
+Tunnel.logger.setLevel(logging.DEBUG)
 
-#environ
+# environ
 if f'{VENV}/bin' not in os.environ['PATH']:
     os.environ['PATH'] = f'{VENV}/bin:' + os.environ['PATH']
 os.environ["PYTHONWARNINGS"] = "ignore"
@@ -145,7 +145,7 @@ password = 'vo9fdxgc0zkvghqwzrlz6rk2o00h5sc7'
 # Setup pinggy timer
 get_ipython().system(f'echo -n {int(time.time())+(3600+20)} > {WEBUI}/static/timer-pinggy.txt')
 
-with tunnel:
+with Tunnel:
     os.chdir(WEBUI)
     commandline_arguments += f' --port={tunnel_port}'
     
@@ -157,15 +157,18 @@ with tunnel:
             commandline_arguments += f' --encrypt-pass={password} --api'
     
     ## Launch
-    if UI == 'ComfyUI':
-        if check_custom_nodes_deps:
-            get_ipython().system('{py} install-deps.py')
-        print("Installing dependencies for ComfyUI from requirements.txt...")
-        subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        clear_output(wait=True)
+    try:
+        if UI == 'ComfyUI':
+            if check_custom_nodes_deps:
+                get_ipython().system('{py} install-deps.py')
+            print("Installing dependencies for ComfyUI from requirements.txt...")
+            subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            clear_output(wait=True)
 
-    print(f"🔧 WebUI: \033[34m{UI} \033[0m")
-    get_ipython().system(f'{py} {launcher} {commandline_arguments}')
+        print(f"🔧 WebUI: \033[34m{UI} \033[0m")
+        get_ipython().system(f'{py} {launcher} {commandline_arguments}')
+    except KeyboardInterrupt:
+        pass
 
 # Print session duration
 timer = float(open(f'{WEBUI}/static/timer.txt', 'r').read())
@@ -173,4 +176,4 @@ time_since_start = str(timedelta(seconds=time.time() - timer)).split('.')[0]
 print(f"\n⌚️ You have been conducting this session for - \033[33m{time_since_start}\033[0m")
 
 if zrok_token:
-    os.system('zrok disable &> /dev/null')
+    get_ipython().system('zrok disable &> /dev/null')
