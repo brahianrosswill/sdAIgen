@@ -99,6 +99,10 @@ commit_hash_widget = factory.create_text('Commit Hash:', '', 'Переключе
 civitai_token_widget = factory.create_text('Токен CivitAI:', '', 'Введите свой API-токен CivitAi.')
 huggingface_token_widget = factory.create_text('Токен HuggingFace:')
 
+ngrok_token_widget = factory.create_text('Токен Ngrok:')
+ngrok_button = factory.create_html('<a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank">Получить Ngrok Токен</a>', class_names=["button", "button_zrok"])
+ngrok_widget = factory.create_hbox([ngrok_token_widget, ngrok_button])
+
 zrok_token_widget = factory.create_text('Токен Zrok:')
 zrok_button = factory.create_html('<a href="https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU" target="_blank">Зарегать Zrok Токен</a>', class_names=["button", "button_zrok"])
 zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
@@ -106,10 +110,17 @@ zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 commandline_arguments_widget = factory.create_text('Аргументы:', webui_selection['A1111'])
 
 additional_widget_list = [
-    additional_header, choose_changes_widget, HR, controlnet_widget, controlnet_num_widget,
+    additional_header,
+    choose_changes_widget,
+    HR,
+    controlnet_widget, controlnet_num_widget,
     commit_hash_widget,
-    civitai_token_widget, huggingface_token_widget, zrok_widget, HR, commandline_arguments_widget
+    civitai_token_widget, huggingface_token_widget, zrok_widget, ngrok_widget,
+    HR,
+    commandline_arguments_widget
 ]
+# if ENV_NAME == "Google Colab": # remove ngrok from colab
+#     additional_widget_list.remove(ngrok_widget)
 
 # --- CUSTOM DOWNLOAD ---
 """Create Custom-Download Selection widgets."""
@@ -220,7 +231,7 @@ SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',
       'latest_webui', 'latest_extensions', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
       'controlnet', 'controlnet_num', 'commit_hash',
-      'civitai_token', 'huggingface_token', 'zrok_token', 'commandline_arguments',
+      'civitai_token', 'huggingface_token', 'zrok_token', 'ngrok_token', 'commandline_arguments',
       'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'ADetailer_url', 'custom_file_urls'
 ]
 
