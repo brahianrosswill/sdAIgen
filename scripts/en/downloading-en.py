@@ -81,7 +81,8 @@ def setup_venv():
     # Create a virtual environment
     venv_commands = [
         f'python3 -m venv {VENV}',
-        f'{VENV}/bin/python3 -m pip install -q -U --force-reinstall pip'
+        f'{VENV}/bin/python3 -m pip install -q -U --force-reinstall pip',
+        f'{VENV}/bin/pip uninstall -qy ngrok pyngrok'
     ]
 
     for cmd in venv_commands:
