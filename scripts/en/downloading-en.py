@@ -82,7 +82,7 @@ def setup_venv():
     venv_commands = [
         f'python3 -m venv {VENV}',
         f'{VENV}/bin/python3 -m pip install -q -U --force-reinstall pip',
-        f'{VENV}/bin/pip uninstall -qy ngrok pyngrok'
+        f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
     ]
 
     for cmd in venv_commands:
