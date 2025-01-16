@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 import requests
 import logging
+import shlex
 import time
 import json
 import yaml
@@ -68,33 +69,38 @@ def update_config_paths(config_path, paths_to_check):
                 sed_command = f"sed -i 's|\"{key}\": \".*\"|\"{key}\": \"{expected_value}\"|' {config_path}"
                 get_ipython().system(sed_command)
                 
+def trash_checkpoints():
+    dirs = ["A1111", "ReForge", "ComfyUI", "Forge"]
+    paths = [Path(HOME) / name for name in dirs]
+
+    for path in paths:
+        cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
+        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                
 ## === Tunnel Functions ===
 def _zrok_enable(token):
-    enable = f'zrok enable {token} &> /dev/null'
-    disable = 'zrok disable &> /dev/null'
-    zrok_env = HOME / '.zrok/environment.json'
+    zrok_env_path = Path(HOME) / '.zrok/environment.json'
 
-    if zrok_env.exists():
-        with open(zrok_env, 'r') as f:
+    current_token = None
+    if zrok_env_path.exists():
+        with open(zrok_env_path, 'r') as f:
             current_token = json.load(f).get('zrok_token')
-        if current_token != token:
-            get_ipython().system(disable)
-            get_ipython().system(enable)
-    else:
-        get_ipython().system(enable)
+
+    if current_token != token:
+        get_ipython().system('zrok disable &> /dev/null')
+    get_ipython().system(f'zrok enable {token} &> /dev/null')
 
 def _ngrok_auth(token):
-    auth = f'ngrok config add-authtoken {token}'
-    yml = HOME / '.config/ngrok/ngrok.yml'
+    yml_path = Path(ROOT) / '.config/ngrok/ngrok.yml'
 
-    if yml.exists():
-        with open(yml, 'r') as f:
+    current_token = None
+    if yml_path.exists():
+        with open(yml_path, 'r') as f:
             current_token = yaml.safe_load(f).get('agent', {}).get('authtoken')
-        if current_token != token:
-            get_ipython().system(auth)
-    else:
-        get_ipython().system(auth)
 
+    if current_token != token:
+        get_ipython().system(f'ngrok config add-authtoken {token}')
+        
 def setup_tunnels(tunnel_port, public_ipv4):
     """Setup tunneling commands based on available packages and configurations."""
     tunnels = [
@@ -170,11 +176,13 @@ clear_output()
 paths_to_check = {
     "tagger_hf_cache_dir": f"{WEBUI}/models/interrogators/",
     "ad_extra_models_dir": adetailer_dir,
-    "sd_checkpoint_hash": "",
-    "sd_model_checkpoint": "",
-    "sd_vae": "None"
+    # "sd_checkpoint_hash": "",
+    # "sd_model_checkpoint": "",
+    # "sd_vae": "None"
 }
 update_config_paths(f'{WEBUI}/config.json', paths_to_check)
+## Remove '.ipynb_checkpoints' dirs in UI
+trash_checkpoints()
 
 # Launching the tunnel
 launcher = 'main.py' if UI == 'ComfyUI' else 'launch.py'

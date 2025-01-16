@@ -49,7 +49,7 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-# ================ LIBRARIES V4 ================
+# ================ LIBRARIES | VENV ================
 def setup_venv():
     """The main function to customize the virtual environment."""
     header = "--header='User-Agent: Mozilla/5.0' --allow-overwrite=true"
@@ -563,10 +563,6 @@ else:
 print("\r🏁 Download Complete!" + " "*15)
 
 
-# Cleaning shit after downloading...
-get_ipython().system('find {webui_path} -type d -name ".ipynb_checkpoints" -exec rm -r {{}} \\; >/dev/null 2>&1')
-
-
 ## Install of Custom extensions
 def _clone_repository(repo, repo_name, extension_dir):
     """Clones the repository to the specified directory."""
@@ -582,6 +578,7 @@ if extension_repo:
         for repo, repo_name in extension_repo:
             _clone_repository(repo, repo_name, extension_dir)
     print(f"\r📦 Installed '{len(extension_repo)}' custom {extension_type}!")
+
 
 ## List Models and stuff
 get_ipython().run_line_magic('run', f'{SCRIPTS}/download-result.py')
