@@ -83,7 +83,6 @@ async def download_configuration():
         # "https://github.com/Tsukreya/Umi-AI-Wildcards",
         # "https://github.com/picobyte/stable-diffusion-webui-wd14-tagger wd14-tagger"
     ]
-    os.makedirs(EXTS, exist_ok=True)
     os.chdir(EXTS)
 
     tasks = []
@@ -97,8 +96,8 @@ async def download_configuration():
     await asyncio.gather(*tasks)
 
 def unpack_webui():
-    zip_path = f"{SCR_PATH}/{UI}.zip"
-    get_ipython().system(f'aria2c --console-log-level=error -c -x 16 -s 16 -k 1M {REPO_URL} -d {SCR_PATH} -o {UI}.zip')
+    zip_path = f"{HOME}/{UI}.zip"
+    m_download(f'{REPO_URL} {HOME} {UI}.zip')
     get_ipython().system(f'unzip -q -o {zip_path} -d {WEBUI}')
     get_ipython().system(f'rm -rf {zip_path}')
 

@@ -324,7 +324,6 @@ def create_environment_data(env, scr_folder, lang, branch):
 
 def process_files(scr_path, files_dict, branch, parent_folder=''):
     file_list = []
-    repo = 'sdAIgen'
 
     for folder, contents in files_dict.items():
         folder_path = scr_path / parent_folder / folder
@@ -332,7 +331,7 @@ def process_files(scr_path, files_dict, branch, parent_folder=''):
 
         if isinstance(contents, list):
             for file in contents:
-                file_url = urljoin(f"https://raw.githubusercontent.com/anxety-solo/{repo}/{branch}/", f"{parent_folder}{folder}/{file}")
+                file_url = urljoin(f"https://raw.githubusercontent.com/anxety-solo/sdAIgen/{branch}/", f"{parent_folder}{folder}/{file}")
                 file_path = folder_path / file
                 file_list.append((file_url, file_path))
 
@@ -351,7 +350,7 @@ async def download_files_async(scr_path, lang, branch):
     files_dict = {
         'CSS': ['main-widgets.css', 'download-result.css', 'auto-cleaner.css'],
         'JS': ['main-widgets.js'],
-        'modules': ['json_utils.py', 'webui_utils.py', 'widget_factory.py', 'TunnelHub.py', 'CivitaiAPI.py'],
+        'modules': ['json_utils.py', 'webui_utils.py', 'widget_factory.py', 'TunnelHub.py', 'CivitaiAPI.py', 'Manager.py'],
         'scripts': {
             'UIs': ['A1111.py', 'ReForge.py', 'ComfyUI.py', 'Forge.py'],
             lang: [f'widgets-{lang}.py', f'downloading-{lang}.py'],

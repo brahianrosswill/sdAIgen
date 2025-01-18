@@ -3,6 +3,7 @@
 from json_utils import read_json, save_json, update_json    # JSON (main)
 from webui_utils import handle_setup_timer                  # WEBUI
 from CivitaiAPI import CivitAiAPI                           # CivitAI API
+from Manager import m_download                              # Every Download
 
 from IPython.display import clear_output
 from IPython.utils import capture
@@ -52,13 +53,10 @@ locals().update(settings)
 # ================ LIBRARIES | VENV ================
 def setup_venv():
     """The main function to customize the virtual environment."""
-    header = "--header='User-Agent: Mozilla/5.0' --allow-overwrite=true"
-    args = "--optimize-concurrent-downloads --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5"
     url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/venv-torch241-cu121-kfa.tar.lz4"
     fn = Path(url).name
-    
-    command_venv = f'aria2c {header} {args} -d {HOME} -o {fn} {url}'
-    subprocess.run(shlex.split(command_venv), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    m_download(f'{url} {HOME} {fn}')
 
     # Installing dependencies
     install_commands = []
@@ -92,7 +90,7 @@ def setup_venv():
     # Create a virtual environment
     venv_commands = [
         f'python3 -m venv {VENV}',
-        f'{VENV}/bin/python3 -m pip install -q -U --force-reinstall pip',
+        f'{VENV}/bin/python3 -m pip install -U --force-reinstall pip',
         f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
     ]
 
@@ -110,6 +108,7 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
     install_lib = {
         ## libs
         "aria2": "pip install aria2",
+        "gdown": "pip install gdown",
         # "pv": "apt -y install pv",
         ## tunnels
         "localtunnel": "npm install -g localtunnel",
@@ -195,9 +194,6 @@ if latest_webui or latest_extensions:
 with capture.capture_output():
     # --- Umi-Wildcard ---
     get_ipython().system("sed -i '521s/open=\\(False\\|True\\)/open=False/' {WEBUI}/extensions/Umi-AI-Wildcards/scripts/wildcard_recursive.py  # Closed accordion by default")
-    # # --- Encrypt-Image ---
-    # get_ipython().system("sed -i '9,37d' {WEBUI}/extensions/Encrypt-Image/javascript/encrypt_images_info.js # Removes the weird text in webui")
-
 
 ## Version switching
 if commit_hash:
