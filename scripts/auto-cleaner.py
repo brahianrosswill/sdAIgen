@@ -11,6 +11,7 @@ import json
 import time
 import os
 
+
 # Constants
 HOME = Path.home()
 SCR_PATH = HOME / 'ANXETY'
@@ -18,6 +19,7 @@ SETTINGS_PATH = SCR_PATH / 'settings.json'
 
 CSS = SCR_PATH / 'CSS'
 cleaner_css = CSS / 'auto-cleaner.css'
+
 
 # Initialize WidgetFactory
 factory = WidgetFactory()

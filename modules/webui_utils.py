@@ -4,8 +4,8 @@ import os
 
 # Constants
 HOME = Path.home()
-SETTINGS_PATH = HOME / 'ANXETY' / 'settings.json'
 SCR_PATH = HOME / 'ANXETY'
+SETTINGS_PATH = HOME / 'ANXETY' / 'settings.json'
 
 WEBUI_PATHS = {
     'A1111': ('Stable-diffusion', 'VAE', 'Lora', 'embeddings', 'extensions', 'ESRGAN', 'outputs'),

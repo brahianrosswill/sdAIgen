@@ -10,6 +10,7 @@ import time
 import re
 import os
 
+
 # Constants
 HOME = Path.home()
 SCR_PATH = Path(HOME / 'ANXETY')
@@ -19,6 +20,7 @@ UI = read_json(SETTINGS_PATH, 'WEBUI.current')
 
 CSS = SCR_PATH / 'CSS'
 widgets_css = CSS / 'download-result.css'
+
 
 def load_settings(path):
     """Load settings from a JSON file."""

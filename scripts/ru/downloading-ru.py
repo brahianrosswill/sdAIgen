@@ -20,18 +20,23 @@ import sys
 import re
 import os
 
+
+CD = os.chdir
+ipySys = get_ipython().system
+ipyRun = get_ipython().run_line_magic
+
 # Constants
 HOME = Path.home()
+VENV = HOME / 'venv'
 SCR_PATH = Path(HOME / 'ANXETY')
+SCRIPTS = SCR_PATH / 'scripts'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
+
 LANG = read_json(SETTINGS_PATH, 'ENVIRONMENT.lang')
 ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
-VENV = HOME / 'venv'
-
 UI = read_json(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
 
-SCRIPTS = SCR_PATH / 'scripts'
 
 # ============ loading settings V5 =============
 def load_settings(path):
@@ -68,12 +73,12 @@ def setup_venv():
             'sudo rm -rf /usr/local/lib/python3.10',
             'sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10'
         ]:
-            get_ipython().system(blyat)
+            ipySys(blyat)
 
         install_commands = ["apt -y install python3.10-venv"]
     else:
         install_commands = ["pip install ipywidgets jupyterlab_widgets --upgrade"]
-        get_ipython().system('rm -f /usr/lib/python3.10/sitecustomize.py')
+        ipySys('rm -f /usr/lib/python3.10/sitecustomize.py')
 
     install_commands.extend(["apt -y install lz4 pv"])
     
@@ -81,11 +86,11 @@ def setup_venv():
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     # Unpacking and cleaning
-    os.chdir(HOME)
-    get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
+    CD(HOME)
+    ipySys(f'pv {fn} | lz4 -d | tar xf -')
     Path(fn).unlink()
 
-    get_ipython().system(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python*')
+    ipySys(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python*')
 
     # Create a virtual environment
     venv_commands = [
@@ -117,19 +122,6 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
         "ngrok": "curl -sLo ngrok.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz && tar -xzf ngrok.tgz && sudo mv ngrok /usr/bin/ngrok && sudo chmod +x /usr/bin/ngrok && rm -f ngrok.tgz" 
     }
 
-    additional_libs = {
-        "Google Colab": {
-            # "xformers": "pip install xformers==0.0.28.post1 --no-deps"
-        },
-        "Kaggle": {
-            # "xformers": "pip install xformers==0.0.28.post1 --no-deps",
-            # "torch": "pip install torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121"
-        }
-    }
-
-    if ENV_NAME in additional_libs:
-        install_lib.update(additional_libs[ENV_NAME])
-
     # Main Deps
     print("💿 Установка библиотек займет немного времени.")
     install_packages(install_lib)
@@ -154,7 +146,7 @@ if not os.path.exists(WEBUI):
     start_install = time.time()
     print(f"⌚ Распаковка Stable Diffusion... | WEBUI: \033[34m{UI}\033[0m", end='')
 
-    get_ipython().run_line_magic('run', f'{SCRIPTS}/UIs/{UI}.py')
+    ipyRun('run', f'{SCRIPTS}/UIs/{UI}.py')
     handle_setup_timer(WEBUI, start_timer)		# Setup timer (for ncpt timer-extensions)
 
     install_time = time.time() - start_install
@@ -175,35 +167,35 @@ if latest_webui or latest_extensions:
     action = "WebUI и Расширений" if latest_webui and latest_extensions else ("WebUI" if latest_webui else "Расширений")
     print(f"⌚️ Обновление {action}...", end='')
     with capture.capture_output():
-        get_ipython().system('git config --global user.email "you@example.com"')
-        get_ipython().system('git config --global user.name "Your Name"')
+        ipySys('git config --global user.email "you@example.com"')
+        ipySys('git config --global user.name "Your Name"')
 
         ## Update Webui
         if latest_webui:
-            get_ipython().run_line_magic('cd', '{WEBUI}')
-            get_ipython().system('git restore .')
-            get_ipython().system('git pull -X theirs --rebase --autostash')
+            CD(WEBUI)
+            ipySys('git restore .')
+            ipySys('git pull -X theirs --rebase --autostash')
 
         ## Update extensions
         if latest_extensions:
-            get_ipython().system('{\'for dir in \' + WEBUI + \'/extensions/*/; do cd \\"$dir\\" && git reset --hard && git pull; done\'}')
+            ipySys('{\'for dir in \' + WEBUI + \'/extensions/*/; do cd \\"$dir\\" && git reset --hard && git pull; done\'}')
     print(f"\r✨ Обновление {action} Завершено!")
 
 
 # === FIXING EXTENSIONS ===
 with capture.capture_output():
     # --- Umi-Wildcard ---
-    get_ipython().system("sed -i '521s/open=\\(False\\|True\\)/open=False/' {WEBUI}/extensions/Umi-AI-Wildcards/scripts/wildcard_recursive.py  # Closed accordion by default")
+    ipySys("sed -i '521s/open=\\(False\\|True\\)/open=False/' {WEBUI}/extensions/Umi-AI-Wildcards/scripts/wildcard_recursive.py  # Closed accordion by default")
 
 ## Version switching
 if commit_hash:
     print('🔄 Переключаемся на указанную версию...', end="")
     with capture.capture_output():
-        get_ipython().run_line_magic('cd', '{WEBUI}')
-        get_ipython().system('git config --global user.email "you@example.com"')
-        get_ipython().system('git config --global user.name "Your Name"')
-        get_ipython().system('git reset --hard {commit_hash}')
-        get_ipython().system('git pull origin {commit_hash}')    # Get last changes in branch
+        CD(WEBUI)
+        ipySys('git config --global user.email "you@example.com"')
+        ipySys('git config --global user.name "Your Name"')
+        ipySys('git reset --hard {commit_hash}')
+        ipySys('git pull origin {commit_hash}')    # Get last changes in branch
     print(f"\r🔄 Переключение завершено! Текущий коммит: \033[34m{commit_hash}\033[0m")
 
 
@@ -575,7 +567,7 @@ def _clone_repository(repo, repo_name, extension_dir):
     """Clones the repository to the specified directory."""
     repo_name = repo_name or repo.split('/')[-1]
     command = f'cd {extension_dir} && git clone --depth 1 --recursive {repo} {repo_name} && cd {repo_name} && git fetch'
-    get_ipython().system(command)
+    ipySys(command)
     
 extension_type = 'нодов' if UI == 'ComfyUI' else 'расширений'
 
@@ -588,4 +580,4 @@ if extension_repo:
 
 
 ## List Models and stuff
-get_ipython().run_line_magic('run', f'{SCRIPTS}/download-result.py')
+ipyRun('run', f'{SCRIPTS}/download-result.py')

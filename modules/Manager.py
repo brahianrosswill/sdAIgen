@@ -5,6 +5,7 @@ Originated from: https://github.com/gutris1/segsmaker/blob/main/script/SM/nenen8
 Author: gutris1 https://github.com/gutris1
 """
 
+
 from json_utils import read_json   # JSON (main)
 
 import os
@@ -17,6 +18,8 @@ import subprocess
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 
+
+CD = os.chdir
 
 # Constants
 HOME = Path.home()
@@ -156,11 +159,11 @@ def process_download(line, log, unzip):
         path, filename = handle_path_and_filename(parts)
         if path:
             path.mkdir(parents=True, exist_ok=True)
-            os.chdir(path)
+            CD(path)
 
         execute_download_command(url, filename, aria2_command, is_special_domain, is_google_drive, log, unzip)
     finally:
-        os.chdir(current_dir)
+        CD(current_dir)
 
 def handle_path_and_filename(parts):
     """Handle extraction of path and filename from parts."""
@@ -185,9 +188,10 @@ def execute_download_command(url, filename, aria2_command, is_special_domain, is
             url = api._get_download_url(data)
             filename = get_file_name(url, filename)
 
-            # Checking for early access and paid model | CivitAI API
-            if data and api._check_early_access(data):
-                return
+            if data is None:
+                return    # Terminate the function if no data is received
+            if api._check_early_access(data):
+                return    # Exit if the model requires payment
         else:
             if not filename:
                 filename = get_file_name(url, filename)

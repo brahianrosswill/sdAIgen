@@ -24,11 +24,7 @@ widgets_js = JS / 'main-widgets.js'
 
 # ====================== WIDGETS =====================
 def read_model_data(file_path, data_type):
-    """
-    Reads model, VAE, or ControlNet data from the specified file.
-
-    The function loads data from a Python script and returns the corresponding list of model names based on the specified data type.
-    """
+    """Reads model, VAE, or ControlNet data from the specified file."""
     local_vars = {}
     
     with open(file_path) as f:

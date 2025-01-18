@@ -16,18 +16,23 @@ import yaml
 import os
 import re
 
+
+CD = os.chdir
+ipySys = get_ipython().system
+
 # Constants
 HOME = Path.home()
+VENV = HOME / 'venv'
 SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
+ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 UI = read_json(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
-ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
-VENV = read_json(SETTINGS_PATH, 'ENVIRONMENT.venv_path')
 
 # USER VENV
 py = Path(VENV) / 'bin/python3'
+
 
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -67,7 +72,7 @@ def update_config_paths(config_path, paths_to_check):
         for key, expected_value in paths_to_check.items():
             if key in config_data and config_data[key] != expected_value:
                 sed_command = f"sed -i 's|\"{key}\": \".*\"|\"{key}\": \"{expected_value}\"|' {config_path}"
-                get_ipython().system(sed_command)
+                ipySys(sed_command)
                 
 def trash_checkpoints():
     dirs = ["A1111", "ReForge", "ComfyUI", "Forge"]
@@ -87,8 +92,8 @@ def _zrok_enable(token):
             current_token = json.load(f).get('zrok_token')
 
     if current_token != token:
-        get_ipython().system('zrok disable &> /dev/null')
-    get_ipython().system(f'zrok enable {token} &> /dev/null')
+        ipySys('zrok disable &> /dev/null')
+    ipySys(f'zrok enable {token} &> /dev/null')
 
 def _ngrok_auth(token):
     yml_path = Path(ROOT) / '.config/ngrok/ngrok.yml'
@@ -99,7 +104,7 @@ def _ngrok_auth(token):
             current_token = yaml.safe_load(f).get('agent', {}).get('authtoken')
 
     if current_token != token:
-        get_ipython().system(f'ngrok config add-authtoken {token}')
+        ipySys(f'ngrok config add-authtoken {token}')
         
 def setup_tunnels(tunnel_port, public_ipv4):
     """Setup tunneling commands based on available packages and configurations."""
@@ -189,10 +194,10 @@ launcher = 'main.py' if UI == 'ComfyUI' else 'launch.py'
 password = 'vo9fdxgc0zkvghqwzrlz6rk2o00h5sc7'
 
 # Setup pinggy timer
-get_ipython().system(f'echo -n {int(time.time())+(3600+20)} > {WEBUI}/static/timer-pinggy.txt')
+ipySys(f'echo -n {int(time.time())+(3600+20)} > {WEBUI}/static/timer-pinggy.txt')
 
 with TunnelingService:
-    os.chdir(WEBUI)
+    CD(WEBUI)
     commandline_arguments += f' --port={tunnel_port}'
     
     # Default args append
@@ -206,13 +211,13 @@ with TunnelingService:
     try:
         if UI == 'ComfyUI':
             if check_custom_nodes_deps:
-                get_ipython().system('{py} install-deps.py')
+                ipySys('{py} install-deps.py')
             print("Installing dependencies for ComfyUI from requirements.txt...")
             subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             clear_output(wait=True)
 
         print(f"🔧 WebUI: \033[34m{UI} \033[0m")
-        get_ipython().system(f'{py} {launcher} {commandline_arguments}')
+        ipySys(f'{py} {launcher} {commandline_arguments}')
     except KeyboardInterrupt:
         pass
 

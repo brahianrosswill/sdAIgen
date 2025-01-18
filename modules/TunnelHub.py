@@ -5,6 +5,7 @@ Originated from: https://github.com/gutris1/segsmaker/blob/main/script/SM/cupang
 Author: gutris1 https://github.com/gutris1
 """
 
+
 import logging
 import re
 import shlex

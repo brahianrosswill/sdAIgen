@@ -20,6 +20,7 @@
 - **json_utils.py**: Utilities for handling JSON data.
 - **TunnelHub.py**: Module for managing tunnels.
 - **widget_factory.py**: Factory for creating ipywidgets.
+- **Manager.py**: Adding quick functions for downloading and cloning git repositories: `m_download` & `m_clone`.
 
 ## Directory -> `scripts`
 
