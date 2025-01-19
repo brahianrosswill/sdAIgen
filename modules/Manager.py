@@ -30,89 +30,6 @@ cai_token = read_json(SETTINGS_PATH, 'WIDGETS.civitai_token') or "65b66176dcf284
 hf_token = read_json(SETTINGS_PATH, 'WIDGETS.huggingface_token') or ""
 
 
-## ================ Class ================
-class CivitAiAPI:
-    def __init__(self, civitai_token=None, log=False):
-        self.token = civitai_token or cai_token
-        self.base_url = "https://civitai.com/api/v1"
-        self.log = log
-
-    def _log(self, message):
-        """Log messages if logging is enabled."""
-        if self.log:
-            print(message)
-
-    def _prepare_url(self, url):
-        """Prepare the URL for API requests by adding the token."""
-        if not self.token:
-            return url
-        url = url.split('?token=')[0] if '?token=' in url else url
-        if '?type=' in url:
-            return url.replace('?type=', f'?token={self.token}&type=')
-        return f"{url}?token={self.token}"
-
-    def _get_model_data(self, url):
-        """Retrieve model data from the API."""
-        try:
-            if "civitai.com/models/" in url:
-                if '?modelVersionId=' in url:
-                    version_id = url.split('?modelVersionId=')[1]
-                else:
-                    model_id = url.split('/models/')[1].split('/')[0]
-                    model_data = requests.get(f"{self.base_url}/models/{model_id}").json()
-                    version_id = model_data['modelVersions'][0].get('id')
-            else:
-                version_id = url.split('/models/')[1].split('/')[0]
-
-            return requests.get(f"{self.base_url}/model-versions/{version_id}").json()
-        except (KeyError, IndexError, requests.RequestException) as e:
-            self._log(f"> \033[31m[CivitAI API Error]:\033[0m  {e}")
-            return None
-
-    def _check_early_access(self, data):
-        """Check if the model is in early access and requires payment."""
-        early_access = data.get("earlyAccessEndsAt", None)
-        if early_access:
-            model_id = data.get("modelId")
-            version_id = data.get("id")
-
-            self._log(f"\n> \033[34m[CivitAI API]:\033[0m The model is in early access and requires payment for downloading.")
-            if model_id and version_id:
-                page = f"https://civitai.com/models/{model_id}?modelVersionId={version_id}"
-                self._log(f"> \033[32m[CivitAI Page]:\033[0m {page}\n")
-            return True
-        return False
-
-    def _get_model_name(self, data, url, file_name):
-        """Extract model name from the data."""
-        model_name = data['files'][0]['name']
-
-        if 'type=' in url:
-            url_model_type = parse_qs(urlparse(url).query).get('type', [''])[0].lower()
-            if 'vae' in url_model_type:
-                model_name = data['files'][1]['name']
-
-        if file_name and '.' not in file_name:
-            file_extension = model_name.split('.')[-1]
-            model_name = f"{file_name}.{file_extension}"
-        elif file_name:
-            model_name = file_name
-        return model_name
-
-    def _get_download_url(self, data):
-        """Return the download URL from the data."""
-        if data and 'files' in data:
-            download_url = data['files'][1]['downloadUrl'] if len(data['files']) > 1 else data.get('downloadUrl')
-            return f"{download_url}{'&' if '?' in download_url else '?'}token={self.token}"
-        return None
-
-    def fetch_data(self, url):
-        """Main method to fetch data from CivitAi API."""
-        url = self._prepare_url(url)
-        data = self._get_model_data(url)
-        return data
-
-
 ## ================ Download ================
 def m_download(line, log=False, unzip=False):
     """Download files from a comma-separated list of URLs or file paths.
@@ -182,22 +99,9 @@ def execute_download_command(url, filename, aria2_command, is_special_domain, is
     """Download a file from various sources (CivitAI, Google Drive, or general URLs) 
     using the appropriate method (aria2, gdown, or curl)."""
     if is_special_domain:
-        if "civitai.com" in url:
-            api = CivitAiAPI(cai_token, log)
-            data = api.fetch_data(url)
-            url = api._get_download_url(data)
-            filename = get_file_name(url, filename)
-
-            if data is None:
-                return    # Terminate the function if no data is received
-            if api._check_early_access(data):
-                return    # Exit if the model requires payment
-        else:
-            if not filename:
-                filename = get_file_name(url, filename)
-
         command = f"{aria2_command} '{url}'"
-
+        if not filename:
+            filename = get_file_name(urlparse)
         if filename:
             command += f" -o '{filename}'"
         monitor_aria2_download(command, filename, url, log)
@@ -215,24 +119,61 @@ def execute_download_command(url, filename, aria2_command, is_special_domain, is
 
 def clean_url(url):
     """Clean and format URLs to ensure correct access."""
-    if "huggingface.co" in url:
+    if "civitai.com" in url:
+        if '?token=' in url:
+            url = url.split('?token=')[0]
+        if '?type=' in url:
+            url = url.replace('?type=', f'?token={cai_token}&type=')
+        else:
+            url = f"{url}?token={cai_token}"
+        
+        try:
+            if "civitai.com/models/" in url:
+                if '?modelVersionId=' in url:
+                    version_id = url.split('?modelVersionId=')[1]
+                    response = requests.get(f"https://civitai.com/api/v1/model-versions/{version_id}")
+                else:
+                    model_id = url.split('/models/')[1].split('/')[0]
+                    response = requests.get(f"https://civitai.com/api/v1/models/{model_id}")
+
+                data = response.json()
+
+                if response.status_code != 200:
+                      print(f"> \033[31m[CivitAI API Error]:\033[0m {response.status_code} - {response.text}")
+                      return None
+
+                early_access = data.get("earlyAccessEndsAt", None)
+                if early_access:
+                    model_id = data.get("modelId")
+                    version_id = data.get("id")
+                    
+                    print(f"\n> \033[34m[CivitAI API]:\033[0m The model is in early access and requires payment for downloading.")
+                    if model_id and version_id:
+                        page = f"https://civitai.com/models/{model_id}?modelVersionId={version_id}"
+                        print(f"> \033[32m[CivitAI Page]:\033[0m {page}\n")
+                    return None
+
+                download_url = data["downloadUrl"] if "downloadUrl" in data else data["modelVersions"][0]["downloadUrl"]
+                return f"{download_url}?token={cai_token}"
+        except Exception as e:
+            print(f"> \033[31m[Error]:\033[0m  {e}")
+            return None
+
+    elif "huggingface.co" in url:
         if '/blob/' in url:
             url = url.replace('/blob/', '/resolve/')
         if '?' in url:
             url = url.split('?')[0]
+
     elif "github.com" in url:
         if '/blob/' in url:
             url = url.replace('/blob/', '/raw/')
+
     return url
 
-def get_file_name(url, fline_name=None):
+def get_file_name(url):
     """Get the file name based on the URL."""
-    api = CivitAiAPI(cai_token)
-
-    if "civitai.com" in url:
-        data = api.fetch_data(url)
-        return api._get_model_name(data, url, fline_name)
-    elif "drive.google.com" in url:
+    if any(domain in url for domain in ["civitai.com", "drive.google.com"]):
         return None
     else:
         return Path(urlparse(url).path).name

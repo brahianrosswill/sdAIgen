@@ -231,75 +231,6 @@ for path in PREFIXES.values():
 
 ''' Formatted Info Output '''
 
-def format_output_line(line):
-    """Format a line of output with ANSI color codes."""
-    line = re.sub(r'\[', "\033[35m【\033[0m", line)
-    line = re.sub(r'\]', "\033[35m】\033[0m", line)
-    line = re.sub(r'(#)(\w+)', r'\1\033[32m\2\033[0m', line)
-    line = re.sub(r'(\(\d+%\))', r'\033[36m\1\033[0m', line)
-    line = re.sub(r'(CN:)(\d+)', r'\1\033[34m\2\033[0m', line)
-    line = re.sub(r'(DL:)(\d+\w+)', r'\1\033[32m\2\033[0m', line)
-    line = re.sub(r'(ETA:)(\d+\w+)', r'\1\033[33m\2\033[0m', line)
-    return line
-
-def handle_error_output(line, error_codes, error_messages):
-    """Check and collect error messages from the output."""
-    if 'errorCode' in line or 'Exception' in line:
-        error_codes.append(line)
-    if '|' in line and 'ERR' in line:
-        formatted_line = re.sub(r'(\|\s*)(ERR)(\s*\|)', r'\1\033[31m\2\033[0m\3', line)
-        error_messages.append(formatted_line)
-
-def monitor_aria2_download(args, dst_dir, out, url):
-    """Starts aria2c and intercepts the output to display the download progress."""
-    try:
-        command = f"{args} -d {dst_dir} {out} '{url}'"
-        process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-        error_codes = []
-        error_messages = []
-        result = ""
-        br = False
-
-        while True:
-            lines = process.stderr.readline()
-            if lines == '' and process.poll() is not None:
-                break
-
-            if lines:
-                result += lines
-
-                for output_line in lines.splitlines():
-                    handle_error_output(lines, error_codes, error_messages)
-
-                    if re.match(r'\[#\w{6}\s.*\]', output_line):
-                        formatted_line = format_output_line(output_line)
-                        for line in lines:
-                            print(f"\r{' ' * 180}\r{formatted_line}", end="")
-                            sys.stdout.flush()
-                        br = True
-                        break
-
-        # Print collected error messages
-        for error in error_codes + error_messages:
-            print(f" {error}")
-
-        if br:
-            print()
-
-        # Print final status
-        stripe = result.find("======+====+===========")
-        if stripe != -1:
-            for line in result[stripe:].splitlines():
-                if '|' in line and 'OK' in line:
-                    formatted_line = re.sub(r'(\|\s*)(OK)(\s*\|)', r'\1\033[32m\2\033[0m\3', line)
-                    print(f" {formatted_line}")
-
-        process.wait()
-
-    except KeyboardInterrupt:
-        print("\n\nDownload interrupted.")
-
 def _center_text(text, terminal_width=45):
     padding = (terminal_width - len(text)) // 2
     return f"{' ' * padding}{text}{' ' * padding}"
@@ -387,14 +318,6 @@ def download(line):
     _UNPUCK_ZIP()
 
 def manual_download(url, dst_dir, file_name=None, prefix=None):
-    aria2_args = (
-        "aria2c --header='User-Agent: Mozilla/5.0' "
-        "--optimize-concurrent-downloads --console-log-level=error --summary-interval=1 --stderr=true "
-        "-c -x16 -s16 -k1M -j5"
-    )
-    if huggingface_token and "huggingface.co" in url:
-        aria2_args += f" --header='Authorization: Bearer {huggingface_token}'"
-
     clean_url = url
     image_url, image_name = None, None
     if 'civitai' in url:
@@ -414,8 +337,7 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
 
         # DL PREVIEW IMAGES | CIVITAI
         if image_url and image_name:
-            command = shlex.split(aria2_args) + ["-d", dst_dir, "-o", image_name, image_url]
-            subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            m_download(f"{image_url} {dst_dir} {image_name}")
 
     elif 'github' in url or 'huggingface.co' in url:
         if file_name and '.' not in file_name:
@@ -427,16 +349,12 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     ## Formatted info output
     format_output(clean_url, dst_dir, file_name, image_url, image_name)
 
-    _run_aria2c(aria2_args, prefix, url, dst_dir, file_name)
+    # Downloading
+    # file_path = os.path.join(dst_dir, file_name)
+    # if os.path.exists(file_path) and prefix == 'config':
+    #     os.remove(file_path)
 
-def _run_aria2c(args, prefix, url, dst_dir, file_name=None):
-    """Starts the download using aria2c."""
-    file_path = os.path.join(dst_dir, file_name)
-    if os.path.exists(file_path) and prefix == 'config':
-        os.remove(file_path)
-
-    out = f"-o '{file_name}'" if file_name else ""
-    monitor_aria2_download(args, dst_dir, out, url)
+    m_download(f"{url} {dst_dir} {file_name}", log=True)
 
 ''' SubModels - Added URLs '''
 
