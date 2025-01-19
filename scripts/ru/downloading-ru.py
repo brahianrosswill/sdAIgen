@@ -66,7 +66,6 @@ def setup_venv():
     # Installing dependencies
     install_commands = []
     if ENV_NAME == 'Google Colab':
-        """
         # I agree with the author of the correction here ;3
         for blyat in [
             'sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python',
@@ -75,7 +74,6 @@ def setup_venv():
             'sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10'
         ]:
             ipySys(blyat)
-        """
 
         install_commands = ["apt -y install python3.10-venv"]
     else:
@@ -96,9 +94,10 @@ def setup_venv():
 
     # Create a virtual environment
     venv_commands = [
-        f'python3.10 -m venv {VENV}',
+    #     f'python3.10 -m venv {VENV}',
+        f'python3 -m venv {VENV}',
         f'{VENV}/bin/python3 -m pip install -U --force-reinstall pip',
-        f'{VENV}/bin/python3 -m pip install ipykernel',
+    #     f'{VENV}/bin/python3 -m pip install ipykernel',
         f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
     ]
     if UI in ['Forge', 'ComfyUI']:
