@@ -1,14 +1,14 @@
 ## MODEL
 
 model_list = {
-    "1. Nova [Anime] [V7] [XL]": [
-        {"url": "https://civitai.com/api/download/models/994669", "name": "Nova_V7.safetensors"}
+    "1. Nova IL [Anime] [V3] [XL]": [
+        {"url": "https://civitai.com/api/download/models/1225516", "name": "NovaIL_V3.safetensors"}
     ],
     "2. NoobAI [Anime] [VP-1.0] [XL]": [
         {"url": "https://civitai.com/api/download/models/1190596", "name": "NoobAI_VP10.safetensors"}
     ],
-    "3. WAI-illustrious [Anime] [V8] [XL]": [
-        {"url": "https://civitai.com/api/download/models/1183765", "name": "WAI-illustrious_V8.safetensors"}
+    "3. WAI-illustrious [Anime] [V9] [XL]": [
+        {"url": "https://civitai.com/api/download/models/1283437", "name": "WAI-illustrious_V9.safetensors"}
     ]
 
 }
