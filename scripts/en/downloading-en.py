@@ -58,7 +58,7 @@ locals().update(settings)
 # ================ LIBRARIES | VENV ================
 def setup_venv():
     """The main function to customize the virtual environment."""
-    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/venv-torch241-cu121-kfa.tar.lz4"
+    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/venv-torch251-cu121-Kfac.tar.lz4"
     fn = Path(url).name
 
     m_download(f'{url} {HOME} {fn}')
