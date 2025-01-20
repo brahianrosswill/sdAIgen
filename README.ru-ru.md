@@ -59,7 +59,6 @@
 </details>
 
 ## 🚧 FAQ:
-- [ ] Add basic...
 - [Old information](https://rentry.co/anxety-sdw-faq-ru)
 
 <div align="center">

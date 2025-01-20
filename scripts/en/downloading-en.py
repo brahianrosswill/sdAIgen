@@ -122,7 +122,6 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
         ## libs
         "aria2": "pip install aria2",
         "gdown": "pip install gdown",
-        # "pv": "apt -y install pv",
         ## tunnels
         "localtunnel": "npm install -g localtunnel",
         "cloudflared": "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64; chmod +x /usr/bin/cl",

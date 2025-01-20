@@ -59,7 +59,6 @@ English | [Русский](README.ru-ru.md)
 </details>
 
 ## 🚧 FAQ:
-- [ ] Add basic...
 - [Old information](https://rentry.co/anxety-sdw-faq-en)
 
 <div align="center">

@@ -182,9 +182,9 @@ clear_output()
 paths_to_check = {
     "tagger_hf_cache_dir": f"{WEBUI}/models/interrogators/",
     "ad_extra_models_dir": adetailer_dir,
-    # "sd_checkpoint_hash": "",
-    # "sd_model_checkpoint": "",
-    # "sd_vae": "None"
+    "sd_checkpoint_hash": "",
+    "sd_model_checkpoint": "",
+    "sd_vae": "None"
 }
 update_config_paths(f'{WEBUI}/config.json', paths_to_check)
 ## Remove '.ipynb_checkpoints' dirs in UI
@@ -212,7 +212,7 @@ with TunnelingService:
     try:
         if UI == 'ComfyUI':
             if check_custom_nodes_deps:
-                ipySys('{py} install-deps.py')
+                ipySys(f'{py} install-deps.py')
             print("Installing dependencies for ComfyUI from requirements.txt...")
             subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             clear_output(wait=True)
