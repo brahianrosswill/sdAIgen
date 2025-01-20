@@ -4,6 +4,7 @@ from json_utils import read_json, save_json, update_json
 from TunnelHub import Tunnel
 
 from IPython.display import clear_output
+from IPython import get_ipython
 from datetime import timedelta
 from pathlib import Path
 import subprocess

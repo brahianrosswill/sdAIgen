@@ -8,6 +8,7 @@ from Manager import m_download                              # Every Download
 from IPython.display import clear_output
 from IPython.utils import capture
 from urllib.parse import urlparse
+from IPython import get_ipython
 from datetime import timedelta
 from pathlib import Path
 import subprocess

@@ -5,6 +5,7 @@ from Manager import m_download, m_clone         # Every Download | Clone
 
 from IPython.display import clear_output
 from IPython.utils import capture
+from IPython import get_ipython
 from pathlib import Path
 import subprocess
 import asyncio
