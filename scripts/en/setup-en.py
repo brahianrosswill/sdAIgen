@@ -4,21 +4,25 @@ from IPython.display import display, HTML, clear_output
 from urllib.parse import urljoin
 from pathlib import Path
 from tqdm import tqdm
-import importlib.util
+import nest_asyncio
 import importlib
-import json
+import argparse
+import asyncio
+import aiohttp
 import time
+import json
 import sys
 import os
-
-import argparse 
 
 # Constants
 HOME = Path.home()
 SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
-# ================ BEAUTIFUL TEXT :3 ================
+# Initialize async support for Jupyter
+nest_asyncio.apply()
+
+# ==================== DISPLAY ====================
 def display_info(env, scr_folder):
     content = f"""
     <div id="snow-container">
@@ -126,26 +130,26 @@ def display_info(env, scr_folder):
 
     <script>
     function initAnimation() {{
-        const textContainer = document.getElementById('text-container');
-        const messageContainer = document.getElementById('message-container');
-        const textSpans = textContainer.querySelectorAll('span');
-        const messageSpans = messageContainer.querySelectorAll('span');
+      const textContainer = document.getElementById('text-container');
+      const messageContainer = document.getElementById('message-container');
+      const textSpans = textContainer.querySelectorAll('span');
+      const messageSpans = messageContainer.querySelectorAll('span');
 
-        // Set transition delay for each span in the text container
-        textSpans.forEach((span, index) => {{
-          span.style.transitionDelay = `${{index * 25}}ms`;
-        }});
+      // Set transition delay for each span in the text container
+      textSpans.forEach((span, index) => {{
+        span.style.transitionDelay = `${{index * 25}}ms`;
+      }});
 
-        // Set transition delay for each span in the message container
-        messageSpans.forEach((span, index) => {{
-          span.style.transitionDelay = `${{index * 50}}ms`;
-        }});
+      // Set transition delay for each span in the message container
+      messageSpans.forEach((span, index) => {{
+        span.style.transitionDelay = `${{index * 50}}ms`;
+      }});
 
-        // Set a timeout to add the 'loaded' class to both containers after a short delay
-        setTimeout(() => {{
-          textContainer.classList.add('loaded');
-          messageContainer.classList.add('loaded');
-        }}, 250);
+      // Set a timeout to add the 'loaded' class to both containers after a short delay
+      setTimeout(() => {{
+        textContainer.classList.add('loaded');
+        messageContainer.classList.add('loaded');
+      }}, 250);
     }}
     initAnimation();
     </script>
@@ -232,8 +236,8 @@ def display_info(env, scr_folder):
 # ==================== ENVIRONMENT ====================
 
 def key_or_value_exists(filepath, key=None, value=None):
-    """Checks for the existence of a key or value in a JSON file."""
-    if not os.path.exists(filepath):
+    """Check for the existence of a key or value in a JSON file."""
+    if not filepath.exists():
         return False
     with open(filepath, 'r') as f:
         try:
@@ -249,10 +253,10 @@ def key_or_value_exists(filepath, key=None, value=None):
             else:
                 return False
         return (data == value) if value is not None else True
-    else:
-        return False
+    return False
 
 def detect_environment():
+    """Detect the current runtime environment."""
     environments = {
         'COLAB_GPU': 'Google Colab',
         'KAGGLE_URL_BASE': 'Kaggle'
@@ -264,7 +268,8 @@ def detect_environment():
 
 # ==================== MODULES ====================
 
-def _clear_module_cache(modules_folder):
+def clear_module_cache(modules_folder):
+    """Clear the module cache for modules in the specified folder."""
     for module_name in list(sys.modules.keys()):
         module = sys.modules[module_name]
         if hasattr(module, '__file__') and module.__file__ and module.__file__.startswith(str(modules_folder)):
@@ -272,8 +277,8 @@ def _clear_module_cache(modules_folder):
     importlib.invalidate_caches()
 
 def setup_module_folder(scr_folder):
-    _clear_module_cache(scr_folder)
-
+    """Set up the module folder by clearing the cache and adding it to sys.path."""
+    clear_module_cache(scr_folder)
     modules_folder = scr_folder / "modules"
     modules_folder.mkdir(parents=True, exist_ok=True)
     if str(modules_folder) not in sys.path:
@@ -281,7 +286,9 @@ def setup_module_folder(scr_folder):
 
 # ==================== FILE HANDLING ====================
 
+""" Working with the environment """
 def save_environment_to_json(data, scr_folder):
+    """Save environment data to a JSON file."""
     file_path = scr_folder / 'settings.json'
     existing_data = {}
     
@@ -295,6 +302,7 @@ def save_environment_to_json(data, scr_folder):
         json.dump(existing_data, json_file, indent=4)
 
 def get_start_timer():
+    """Get the start timer from settings or default to current time minus 5 seconds."""
     if SETTINGS_PATH.exists():
         with open(SETTINGS_PATH, 'r') as f:
             settings = json.load(f)
@@ -302,10 +310,8 @@ def get_start_timer():
     return int(time.time() - 5)
 
 def create_environment_data(env, scr_folder, lang, branch):
-    file_path = scr_folder / 'settings.json'
-
-    scr_folder.mkdir(parents=True, exist_ok=True)
-    install_deps = key_or_value_exists(file_path, 'ENVIRONMENT.install_deps', True) and (scr_folder.parent / 'venv').exists()
+    """Create a dictionary with environment data."""
+    install_deps = key_or_value_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
     start_timer = get_start_timer()
 
     return {
@@ -322,7 +328,9 @@ def create_environment_data(env, scr_folder, lang, branch):
         }
     }
 
+""" Working with downloading files """
 def process_files(scr_path, files_dict, branch, parent_folder=''):
+    """Recursively process files and create a list of their URLs and paths."""
     file_list = []
 
     for folder, contents in files_dict.items():
@@ -341,12 +349,14 @@ def process_files(scr_path, files_dict, branch, parent_folder=''):
     return file_list
 
 async def download_file(session, url, path):
+    """Download a file asynchronously."""
     async with session.get(url) as response:
         response.raise_for_status()
         with open(path, 'wb') as f:
             f.write(await response.read())
 
 async def download_files_async(scr_path, lang, branch):
+    """Download files asynchronously based on the provided structure."""
     files_dict = {
         'CSS': ['main-widgets.css', 'download-result.css', 'auto-cleaner.css'],
         'JS': ['main-widgets.js'],
@@ -361,9 +371,7 @@ async def download_files_async(scr_path, lang, branch):
     file_list = process_files(scr_path, files_dict, branch)
     
     async with aiohttp.ClientSession() as session:
-        tasks = []
-        for file_url, file_path in file_list:
-            tasks.append(download_file(session, file_url, file_path))
+        tasks = [download_file(session, file_url, file_path) for file_url, file_path in file_list]
         
         for future in tqdm(asyncio.as_completed(tasks), total=len(tasks), desc="Downloading files", unit="file"):
             await future
@@ -372,12 +380,8 @@ async def download_files_async(scr_path, lang, branch):
 
 # ======================= MAIN ======================
 
-import aiohttp
-import asyncio
-import nest_asyncio
-nest_asyncio.apply()
-
 async def main_async():
+    """Main asynchronous function to run the script."""
     parser = argparse.ArgumentParser(description='Download script for ANXETY.')
     parser.add_argument('-l', '--lang', type=str, default='en', help='Language to be used (default: en)')
     parser.add_argument('-b', '--branch', type=str, default='main', help='Branch to download files from (default: main)')
@@ -394,7 +398,7 @@ async def main_async():
     env_data = create_environment_data(env, SCR_PATH, args.lang, args.branch)
     save_environment_to_json(env_data, SCR_PATH)
 
-    display_info(env, SCR_PATH)   # display info text :3
+    display_info(env, SCR_PATH)   # display info text
 
 if __name__ == "__main__":
     asyncio.run(main_async())

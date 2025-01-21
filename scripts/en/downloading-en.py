@@ -39,6 +39,92 @@ UI = read_json(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
 
 
+# ================ LIBRARIES | VENV ================
+
+def run_command(command, suppress_output=True):
+    """Run a shell command and optionally suppress output."""
+    subprocess.run(shlex.split(command), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+def install_dependencies(commands):
+    """Run a list of installation commands."""
+    for cmd in commands:
+        run_command(cmd)
+
+def setup_venv():
+    """Customize the virtual environment."""
+    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/venv-torch251-cu121-Kfac.tar.lz4"
+    fn = Path(url).name
+
+    m_download(f'{url} {HOME} {fn}')
+
+    # Install dependencies based on environment
+    install_commands = []
+    if ENV_NAME == 'Google Colab':
+        install_commands.append("apt -y install python3.10-venv")
+    else:
+        install_commands.extend([
+            "pip install ipywidgets jupyterlab_widgets --upgrade",
+            "rm -f /usr/lib/python3.10/sitecustomize.py"
+        ])
+
+    install_commands.append("apt -y install lz4 pv")
+    install_dependencies(install_commands)
+
+    # Unpack and clean
+    CD(HOME)
+    ipySys(f'pv {fn} | lz4 -d | tar xf -')
+    Path(fn).unlink()
+    ipySys(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python*')
+
+    # Create a virtual environment
+    python_command = 'python3.10' if ENV_NAME == 'Google Colab' else 'python3'
+    venv_commands = [
+        f'{python_command} -m venv {VENV}',
+        f'{VENV}/bin/python3 -m pip install -U --force-reinstall pip',
+        f'{VENV}/bin/python3 -m pip install ipykernel',
+        f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
+    ]
+    if UI in ['Forge', 'ComfyUI']:
+        venv_commands.append(f'{VENV}/bin/python3 -m pip uninstall -y transformers')
+
+    install_dependencies(venv_commands)
+
+def install_packages(install_lib):
+    """Install packages from the provided library dictionary."""
+    for index, (package, install_cmd) in enumerate(install_lib.items(), start=1):
+        print(f"\r[{index}/{len(install_lib)}] \033[32m>>\033[0m Installing \033[33m{package}\033[0m..." + " " * 35, end='')
+        result = subprocess.run(install_cmd, shell=True, capture_output=True)
+        if result.returncode != 0:
+            print(f"\n\033[31mError installing {package}: {result.stderr.decode()}\033[0m")
+
+# Check and install dependencies
+if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
+    install_lib = {
+        ## Libs
+        "aria2": "pip install aria2",
+        "gdown": "pip install gdown",
+        ## Tunnels
+        "localtunnel": "npm install -g localtunnel",
+        "cloudflared": "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64; chmod +x /usr/bin/cl",
+        "zrok": "wget -qO zrok_0.4.44_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz; tar -xzf zrok_0.4.44_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_0.4.44_linux_amd64.tar.gz",
+        "ngrok": "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
+    }
+
+    print("💿 Installing the libraries will take a bit of time.")
+    install_packages(install_lib)
+    clear_output()
+    update_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
+
+# Check and setup virtual environment
+if not VENV.exists(): 
+    print("♻️ Installing VENV, this will take some time...")
+    setup_venv()
+    clear_output()
+
+# print("🍪 The libraries and VENV are installed!")
+# time.sleep(2)
+# clear_output()
+ 
 # ============ loading settings V5 =============
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -55,96 +141,6 @@ def load_settings(path):
 # Load settings
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
-
-# ================ LIBRARIES | VENV ================
-def setup_venv():
-    """The main function to customize the virtual environment."""
-    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/venv-torch251-cu121-Kfac.tar.lz4"
-    fn = Path(url).name
-
-    m_download(f'{url} {HOME} {fn}')
-
-    # Installing dependencies
-    install_commands = []
-    if ENV_NAME == 'Google Colab':
-        """
-        # I agree with the author of the correction here ;3
-        for blyat in [
-            'sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python',
-            'sudo ln -sf /usr/bin/python3.10 /usr/bin/python3',
-            'sudo rm -rf /usr/local/lib/python3.10',
-            'sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10'
-        ]:
-            ipySys(blyat)
-        """
-
-        install_commands = ["apt -y install python3.10-venv"]
-    else:
-        install_commands = ["pip install ipywidgets jupyterlab_widgets --upgrade"]
-        ipySys('rm -f /usr/lib/python3.10/sitecustomize.py')
-
-    install_commands.extend(["apt -y install lz4 pv"])
-    
-    for cmd in install_commands:
-        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    # Unpacking and cleaning
-    CD(HOME)
-    ipySys(f'pv {fn} | lz4 -d | tar xf -')
-    Path(fn).unlink()
-
-    ipySys(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python*')
-
-    # Create a virtual environment
-    python_command = 'python3.10' if ENV_NAME == 'Google Colab' else 'python3'    # BAN!
-    venv_commands = [
-    #     f'python3 -m venv {VENV}',
-        f'{python_command} -m venv {VENV}',
-        f'{VENV}/bin/python3 -m pip install -U --force-reinstall pip',
-        f'{VENV}/bin/python3 -m pip install ipykernel',
-        f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
-    ]
-    if UI in ['Forge', 'ComfyUI']:
-        venv_commands.append(f'{VENV}/bin/python3 -m pip uninstall -y transformers')
-
-    for cmd in venv_commands:
-        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-def install_packages(install_lib):
-    for index, (package, install_cmd) in enumerate(install_lib.items(), start=1):
-        print(f"\r[{index}/{len(install_lib)}] \033[32m>>\033[0m Installing \033[33m{package}\033[0m..." + " "*35, end='')
-        result = subprocess.run(install_cmd, shell=True, capture_output=True)
-        if result.returncode != 0:
-            print(f"\n\033[31mError installing {package}: {result.stderr.decode()}\033[0m")
-
-if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
-    install_lib = {
-        ## libs
-        "aria2": "pip install aria2",
-        "gdown": "pip install gdown",
-        ## tunnels
-        "localtunnel": "npm install -g localtunnel",
-        "cloudflared": "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64; chmod +x /usr/bin/cl",
-        "zrok": "wget -qO zrok_0.4.44_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz; tar -xzf zrok_0.4.44_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_0.4.44_linux_amd64.tar.gz",
-        "ngrok": "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz" 
-    }
-
-    # Main Deps
-    print("💿 Installing the libraries, this will take some time.")
-    install_packages(install_lib)
-    clear_output()
-
-    # VENV
-    print("♻️ Installing VENV, this will take some time...")
-    setup_venv()
-    clear_output()
-
-    # update settings
-    update_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
-
-    print("🍪 The libraries and VENV are installed!")
-    time.sleep(2)
-    clear_output()
 
 # =================== WEBUI ===================
 start_timer = read_json(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
