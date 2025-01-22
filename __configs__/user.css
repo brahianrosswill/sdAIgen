@@ -37,6 +37,7 @@ div.compact {
   text-overflow: ellipsis;
 }
 
+
 /* Fixing Sampling steps covered up on phone */
 @media screen and (min-width: 420px) {
   #sampler_selection_txt2img, 

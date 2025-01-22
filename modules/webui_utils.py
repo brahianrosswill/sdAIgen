@@ -1,4 +1,7 @@
-from json_utils import read_json, save_json, update_json
+""" WebUI Utils Module | by ANXETY """
+
+import json_utils as js    # JSON
+
 from pathlib import Path
 import os
 
@@ -16,14 +19,14 @@ WEBUI_PATHS = {
 
 def update_current_webui(current_value):
     """Update the current WebUI value and save it."""
-    current_stored_value = read_json(SETTINGS_PATH, 'WEBUI.current')
-    latest_value = read_json(SETTINGS_PATH, 'WEBUI.latest', None)
+    current_stored_value = js.read(SETTINGS_PATH, 'WEBUI.current')
+    latest_value = js.read(SETTINGS_PATH, 'WEBUI.latest', None)
 
     if latest_value is None or current_stored_value != current_value:
-        save_json(SETTINGS_PATH, 'WEBUI.latest', current_stored_value)
-        save_json(SETTINGS_PATH, 'WEBUI.current', current_value)
+        js.save(SETTINGS_PATH, 'WEBUI.latest', current_stored_value)
+        js.save(SETTINGS_PATH, 'WEBUI.current', current_value)
 
-    save_json(SETTINGS_PATH, 'WEBUI.webui_path', str(HOME / current_value))
+    js.save(SETTINGS_PATH, 'WEBUI.webui_path', str(HOME / current_value))
     _set_webui_paths(current_value)
 
 def _set_webui_paths(ui):
@@ -61,7 +64,7 @@ def _set_webui_paths(ui):
         'output_dir': str(output_dir)
     }
     
-    update_json(SETTINGS_PATH, 'WEBUI', paths)
+    js.update(SETTINGS_PATH, 'WEBUI', paths)
 
 def handle_setup_timer(webui_path, timer_webui):
     """Handle the setup timer by reading from and writing to a timer file."""

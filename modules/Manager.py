@@ -6,7 +6,7 @@ Author: gutris1 https://github.com/gutris1
 """
 
 
-from json_utils import read_json   # JSON (main)
+import json_utils as js    # JSON
 
 import os
 import re
@@ -26,8 +26,8 @@ HOME = Path.home()
 SCR_PATH = Path(HOME / 'ANXETY')
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
-cai_token = read_json(SETTINGS_PATH, 'WIDGETS.civitai_token') or "65b66176dcf284b266579de57fbdc024"
-hf_token = read_json(SETTINGS_PATH, 'WIDGETS.huggingface_token') or ""
+cai_token = js.read(SETTINGS_PATH, 'WIDGETS.civitai_token') or "65b66176dcf284b266579de57fbdc024"
+hf_token = js.read(SETTINGS_PATH, 'WIDGETS.huggingface_token') or ""
 
 
 ## ================ Download ================

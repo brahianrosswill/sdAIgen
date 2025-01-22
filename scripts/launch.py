@@ -1,7 +1,7 @@
 # ~ launch.py | by ANXETY ~
 
-from json_utils import read_json, save_json, update_json
-from TunnelHub import Tunnel
+from TunnelHub import Tunnel    # Tunneling
+import json_utils as js         # JSON
 
 from IPython.display import clear_output
 from IPython import get_ipython
@@ -27,9 +27,9 @@ VENV = HOME / 'venv'
 SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
-ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
-UI = read_json(SETTINGS_PATH, 'WEBUI.current')
-WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
+ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
+UI = js.read(SETTINGS_PATH, 'WEBUI.current')
+WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
 # USER VENV
 py = Path(VENV) / 'bin/python3'
@@ -39,9 +39,9 @@ def load_settings(path):
     """Load settings from a JSON file."""
     try:
         return {
-            **read_json(path, 'ENVIRONMENT'),
-            **read_json(path, 'WIDGETS'),
-            **read_json(path, 'WEBUI')
+            **js.read(path, 'ENVIRONMENT'),
+            **js.read(path, 'WIDGETS'),
+            **js.read(path, 'WEBUI')
         }
     except (json.JSONDecodeError, IOError) as e:
         print(f"Error loading settings: {e}")
@@ -157,10 +157,10 @@ locals().update(settings)
 print('Please Wait...')
 
 # Get public IP address
-public_ipv4 = read_json(SETTINGS_PATH, "ENVIRONMENT.public_ip", None)
+public_ipv4 = js.read(SETTINGS_PATH, "ENVIRONMENT.public_ip", None)
 if not public_ipv4:
     public_ipv4 = get_public_ip(version='ipv4')
-    update_json(SETTINGS_PATH, "ENVIRONMENT.public_ip", public_ipv4)
+    js.update(SETTINGS_PATH, "ENVIRONMENT.public_ip", public_ipv4)
 
 tunnel_port = 8188 if UI == 'ComfyUI' else 7860
 TunnelingService = Tunnel(tunnel_port)

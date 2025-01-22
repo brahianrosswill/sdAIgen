@@ -1,9 +1,9 @@
 # ~ download.py | by ANXETY ~
 
-from json_utils import read_json, save_json, update_json    # JSON (main)
-from webui_utils import handle_setup_timer                  # WEBUI
-from CivitaiAPI import CivitAiAPI                           # CivitAI API
-from Manager import m_download                              # Every Download
+from webui_utils import handle_setup_timer    # WEBUI
+from CivitaiAPI import CivitAiAPI             # CivitAI API
+from Manager import m_download                # Every Download
+import json_utils as js                       # JSON
 
 from IPython.display import clear_output
 from IPython.utils import capture
@@ -33,10 +33,10 @@ SCR_PATH = Path(HOME / 'ANXETY')
 SCRIPTS = SCR_PATH / 'scripts'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
-LANG = read_json(SETTINGS_PATH, 'ENVIRONMENT.lang')
-ENV_NAME = read_json(SETTINGS_PATH, 'ENVIRONMENT.env_name')
-UI = read_json(SETTINGS_PATH, 'WEBUI.current')
-WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
+LANG = js.read(SETTINGS_PATH, 'ENVIRONMENT.lang')
+ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
+UI = js.read(SETTINGS_PATH, 'WEBUI.current')
+WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
 
 # ================ LIBRARIES | VENV ================
@@ -94,7 +94,7 @@ def install_packages(install_lib):
             print(f"\n\033[31mError installing {package}: {result.stderr.decode()}\033[0m")
 
 # Check and install dependencies
-if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
+if not js.read(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
     install_lib = {
         ## Libs
         "aria2": "pip install aria2",
@@ -109,7 +109,7 @@ if not read_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
     print("💿 Установка библиотек займет немного времени.")
     install_packages(install_lib)
     clear_output()
-    update_json(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
+    js.update(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
 
 # Check and setup virtual environment
 if not VENV.exists(): 
@@ -127,9 +127,9 @@ def load_settings(path):
     """Load settings from a JSON file."""
     try:
         return {
-            **read_json(path, 'ENVIRONMENT'),
-            **read_json(path, 'WIDGETS'),
-            **read_json(path, 'WEBUI')
+            **js.read(path, 'ENVIRONMENT'),
+            **js.read(path, 'WIDGETS'),
+            **js.read(path, 'WEBUI')
         }
     except (json.JSONDecodeError, IOError) as e:
         print(f"Error loading settings: {e}")
@@ -140,7 +140,7 @@ settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
 # =================== WEBUI ===================
-start_timer = read_json(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
+start_timer = js.read(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
 
 if not os.path.exists(WEBUI):
     start_install = time.time()

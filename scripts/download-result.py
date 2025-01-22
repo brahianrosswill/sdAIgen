@@ -1,7 +1,7 @@
 # ~ download-result.py | by ANXETY ~
 
-from json_utils import read_json, save_json, update_json    # JSON (main)
-from widget_factory import WidgetFactory                    # WIDGETS
+from widget_factory import WidgetFactory    # WIDGETS
+import json_utils as js                     # JSON
 
 import ipywidgets as widgets
 from pathlib import Path
@@ -16,7 +16,7 @@ HOME = Path.home()
 SCR_PATH = Path(HOME / 'ANXETY')
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
-UI = read_json(SETTINGS_PATH, 'WEBUI.current')
+UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 
 CSS = SCR_PATH / 'CSS'
 widgets_css = CSS / 'download-result.css'
@@ -26,9 +26,9 @@ def load_settings(path):
     """Load settings from a JSON file."""
     try:
         return {
-            **read_json(path, 'ENVIRONMENT'),
-            **read_json(path, 'WIDGETS'),
-            **read_json(path, 'WEBUI')
+            **js.read(path, 'ENVIRONMENT'),
+            **js.read(path, 'WIDGETS'),
+            **js.read(path, 'WEBUI')
         }
     except (json.JSONDecodeError, IOError) as e:
         print(f"Error loading settings: {e}")

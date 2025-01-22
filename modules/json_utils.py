@@ -1,3 +1,5 @@
+""" Json Utils Module | by ANXETY """
+
 import json
 import os
 
@@ -29,24 +31,23 @@ def _write_json(filepath, data):
     with open(filepath, 'w') as json_file:
         json.dump(data, json_file, indent=4)
 
-# =======================
-## Main Functions
+# ============ Main Functions ============
 
-def read_json(filepath, key, default=None):
+def read(filepath, key, default=None):
     """Reads a value by key from a JSON file, supporting nested structures."""
     data = _read_json(filepath)
     keys = key.split('.')
     result = _get_nested_value(data, keys)
     return result if result is not None else default
 
-def save_json(filepath, key, value):
+def save(filepath, key, value):
     """Saves a value by key in a JSON file, supporting nested structures."""
     data = _read_json(filepath)
     keys = key.split('.')
     _set_nested_value(data, keys, value)
     _write_json(filepath, data)
 
-def update_json(filepath, key, value):
+def update(filepath, key, value):
     """Updates a value by key in a JSON file, supporting nested structures."""
     data = _read_json(filepath)
     keys = key.split('.')
