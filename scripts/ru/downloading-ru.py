@@ -41,14 +41,10 @@ WEBUI = read_json(SETTINGS_PATH, 'WEBUI.webui_path')
 
 # ================ LIBRARIES | VENV ================
 
-def run_command(command, suppress_output=True):
-    """Run a shell command and optionally suppress output."""
-    subprocess.run(shlex.split(command), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
 def install_dependencies(commands):
     """Run a list of installation commands."""
     for cmd in commands:
-        run_command(cmd)
+        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def setup_venv():
     """Customize the virtual environment."""
