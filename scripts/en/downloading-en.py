@@ -146,7 +146,7 @@ if not os.path.exists(WEBUI):
     print(f"⌚ Unpacking Stable Diffusion... | WEBUI: \033[34m{UI}\033[0m", end='')
 
     ipyRun('run', f'{SCRIPTS}/UIs/{UI}.py')
-    handle_setup_timer(WEBUI, start_timer)		# Setup timer (for ncpt timer-extensions)
+    handle_setup_timer(WEBUI, start_timer)		# Setup timer (for timer-extensions)
 
     install_time = time.time() - start_install
     minutes, seconds = divmod(int(install_time), 60)

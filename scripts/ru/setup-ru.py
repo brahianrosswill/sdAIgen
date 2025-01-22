@@ -23,7 +23,7 @@ SETTINGS_PATH = SCR_PATH / 'settings.json'
 nest_asyncio.apply()
 
 # ==================== DISPLAY ====================
-def display_info(env, scr_folder):
+def display_info(env, scr_folder, branch):
     content = f"""
     <div id="snow-container">
       <div id="text-container">
@@ -53,6 +53,7 @@ def display_info(env, scr_folder):
           <span>Готово! Теперь вы можете запустить ячейки ниже. ☄️</span>
           <span>Среда выполнения: <span class="env">{env}</span></span>
           <span>Расположение файлов: <span class="files-location">{scr_folder}</span></span>
+          <span>Текущая ветка: <span class="branch">{branch}</span></span>
       </div>
     </div>
 
@@ -117,15 +118,12 @@ def display_info(env, scr_folder):
       filter: blur(0);
     }}
 
-    .env {{
-      color: #FFA500;
+    .env, .files-location, .branch {{
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }}
-
-    .files-location {{
-      color: #FF99C2;
-      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }}
+    .env {{ color: #FFA500; }}
+    .files-location {{ color: #FF99C2; }}
+    .branch {{ color: #16A543; }}
     </style>
 
     <script>
@@ -398,7 +396,7 @@ async def main_async():
     env_data = create_environment_data(env, SCR_PATH, args.lang, args.branch)
     save_environment_to_json(env_data, SCR_PATH)
 
-    display_info(env, SCR_PATH)   # display info text
+    display_info(env, SCR_PATH, args.branch)   # display info text
 
 if __name__ == "__main__":
     asyncio.run(main_async())
