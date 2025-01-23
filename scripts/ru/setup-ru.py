@@ -374,7 +374,7 @@ async def download_files_async(scr_path, lang, branch):
         for future in tqdm(asyncio.as_completed(tasks), total=len(tasks), desc="Downloading files", unit="file"):
             await future
 
-    clear_output(wait=True)
+    clear_output()
 
 # ======================= MAIN ======================
 

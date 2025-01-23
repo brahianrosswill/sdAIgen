@@ -239,7 +239,7 @@ def save_settings():
 
 def load_settings():
     """Load widget values from settings."""
-    if js.key_or_value_exists(SETTINGS_PATH, 'WIDGETS'):
+    if js.key_exists(SETTINGS_PATH, 'WIDGETS'):
         widget_data = js.read(SETTINGS_PATH, 'WIDGETS')
         for key in SETTINGS_KEYS:
             if key in widget_data:

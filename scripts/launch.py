@@ -226,3 +226,8 @@ with TunnelingService:
 timer = float(open(f'{WEBUI}/static/timer.txt', 'r').read())
 time_since_start = str(timedelta(seconds=time.time() - timer)).split('.')[0]
 print(f"\n⌚️ You have been conducting this session for - \033[33m{time_since_start}\033[0m")
+
+
+## Zrok Disable | PARANOYA
+if zrok_token:
+    ipySys('zrok disable &> /dev/null')

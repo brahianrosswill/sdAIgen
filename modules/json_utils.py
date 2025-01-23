@@ -23,13 +23,24 @@ def _read_json(filepath):
     """Reads JSON data from a file."""
     if not os.path.exists(filepath):
         return {}
-    with open(filepath, 'r') as json_file:
-        return json.load(json_file)
+
+    try:
+        with open(filepath, 'r') as json_file:
+            return json.load(json_file)
+    except json.JSONDecodeError:
+        print(f"Error decoding JSON from file: {filepath}")
+        return {}
+    except Exception as e:
+        print(f"An error occurred while reading the file: {e}")
+        return {}
 
 def _write_json(filepath, data):
     """Writes JSON data to a file."""
-    with open(filepath, 'w') as json_file:
-        json.dump(data, json_file, indent=4)
+    try:
+        with open(filepath, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+    except Exception as e:
+        print(f"An error occurred while writing to the file: {e}")
 
 # ============ Main Functions ============
 
@@ -52,18 +63,23 @@ def update(filepath, key, value):
     data = _read_json(filepath)
     keys = key.split('.')
     current_level = data
+
     for part in keys[:-1]:
         current_level = current_level.setdefault(part, {})
+
     last_key = keys[-1]
     
-    if isinstance(current_level.get(last_key), dict) and isinstance(value, dict):
-        current_level[last_key].update(value)
+    if last_key in current_level:
+        if isinstance(current_level[last_key], dict) and isinstance(value, dict):
+            current_level[last_key].update(value)
+        else:
+            current_level[last_key] = value
     else:
-        current_level[last_key] = value
+        print(f"Key '{last_key}' does not exist. No update performed.")
 
     _write_json(filepath, data)
 
-def key_or_value_exists(filepath, key=None, value=None):
+def key_exists(filepath, key=None, value=None):
     """Checks for the existence of a key or value in a JSON file, supporting nested structures."""
     data = _read_json(filepath)
     keys = key.split('.') if key else []
