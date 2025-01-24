@@ -217,8 +217,8 @@ def update_XL_options(change, widget):
     model_widget.value, vae_widget.value, controlnet_widget.value = default_model_values[selected]
     
 # Connecting widgets
-factory.connect_widgets([(change_webui_widget, 'value')], [update_change_webui])
-factory.connect_widgets([(XL_models_widget, 'value')], [update_XL_options])
+factory.connect_widgets([(change_webui_widget, 'value')], update_change_webui)
+factory.connect_widgets([(XL_models_widget, 'value')], update_XL_options)
 
 ## ============ Load / Save - Settings V3 ============
 

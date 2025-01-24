@@ -87,8 +87,11 @@ class WidgetFactory:
             **kwargs
         )
 
-    def create_dropdown(self, options, description, value, placeholder='', class_names=None, **kwargs):
+    def create_dropdown(self, options, description, value=None, placeholder='', class_names=None, **kwargs):
         """Create a dropdown widget."""
+        if value is None and options:
+            value = options[0]
+            
         return self._create_widget(
             widgets.Dropdown,
             options=options,
@@ -110,7 +113,7 @@ class WidgetFactory:
             **kwargs
         )
 
-    def create_checkbox(self, description, value, class_names=None, **kwargs):
+    def create_checkbox(self, description, value=False, class_names=None, **kwargs):
         """Create a checkbox widget."""
         return self._create_widget(
             widgets.Checkbox,
@@ -176,12 +179,15 @@ class WidgetFactory:
     # CallBack
     def connect_widgets(self, widget_pairs, callbacks):
         """
-        Connects widgets to multiple callback functions for specified property changes.
+        Connect multiple widgets to callback functions for specified property changes.
 
         Parameters:
         - widget_pairs: List of tuples where each tuple contains a widget and the property name to observe.
-        - callbacks: List of callback functions to be called on property change.
+        - callbacks: List of callback functions or a single callback function to be called on property change.
         """
+        if not isinstance(callbacks, list):
+            callbacks = [callbacks]
+
         for widget, property_name in widget_pairs:
             for callback in callbacks:
                 widget.observe(lambda change, widget=widget, callback=callback: callback(change, widget), names=property_name)
