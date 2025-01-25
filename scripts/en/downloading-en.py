@@ -250,13 +250,12 @@ def _STRIP_URL(url):
         url = url.replace('/blob/', '/resolve/')
         if '?' in url:
             url = url.split('?')[0]
-
     elif 'github.com' in url:
         return url.replace('/blob/', '/raw/')
 
     return url
 
-def _GET_FILE_NAME(url):
+def _get_file_name(url):
     file_name_match = re.search(r'\[(.*?)\]', url)
     if file_name_match:
         return file_name_match.group(1)
@@ -267,24 +266,22 @@ def _GET_FILE_NAME(url):
 
     return Path(file_name_parse.path).name
 
-def _UNPUCK_ZIP():
+def _unpack_zips():
     """Extracts all ZIP files in the directories specified in PREFIXES."""
     for directory in PREFIXES.values():
         for root, _, files in os.walk(directory):
             for file in files:
                 if file.endswith(".zip"):
-                    zip_path = os.path.join(root, file)
-                    extract_path = os.path.splitext(zip_path)[0]
+                    zip_path = Path(root) / file
+                    extract_path = zip_path.with_suffix('')
                     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                         zip_ref.extractall(extract_path)
-                    os.remove(zip_path)
+                    zip_path.unlink()  # Using Path.unlink() to remove the file
 
 def _handle_manual_download(link):
     """Handles downloads for URLs with prefixes."""
-    url_parts = link.split(':', 1)
-    prefix, path = url_parts[0], url_parts[1]
-
-    file_name = _GET_FILE_NAME(path)
+    prefix, path = link.split(':', 1)
+    file_name = _get_file_name(path)
     path = re.sub(r'\[.*?\]', '', path)
 
     if prefix in PREFIXES:
@@ -309,39 +306,37 @@ def download(line):
             url, dst_dir, file_name = link.split()
             manual_download(url, dst_dir, file_name)
 
-    # Unpacking ZIP files
-    _UNPUCK_ZIP()
+    # Unpacking ZIPs files
+    _unpack_zips()
 
 def manual_download(url, dst_dir, file_name=None, prefix=None):
     clean_url = url
     image_url, image_name = None, None
+
     if 'civitai' in url:
         civitai = CivitAiAPI(civitai_token)
         data = civitai.fetch_data(url)
 
-        if data is None:
-            return    # Terminate the function if no data is received
-        if civitai.check_early_access(data):
-            return    # Exit if the model requires payment
+        if data is None or civitai.check_early_access(data):
+            return  # Terminate if no data or requires payment
 
-        # model info
-        model_type, file_name = civitai.get_model_info(data, url, file_name)    # model_name -> file_name
+        model_type, file_name = civitai.get_model_info(data, url, file_name)
         download_url = civitai.get_download_url(data, url)
         clean_url, url = civitai.get_full_and_clean_download_url(download_url)
         image_url, image_name = civitai.get_image_info(data, file_name, model_type)
 
-        # DL PREVIEW IMAGES | CIVITAI
+        # Download preview images
         if image_url and image_name:
             m_download(f"{image_url} {dst_dir} {image_name}")
 
     elif 'github' in url or 'huggingface.co' in url:
         if file_name and '.' not in file_name:
-            file_extension = f"{clean_url.split('/')[-1].split('.', 1)[1]}"
+            file_extension = clean_url.split('/')[-1].split('.', 1)[1]
             file_name = f"{file_name}.{file_extension}"
         if not file_name:
             file_name = clean_url.split("/")[-1]
 
-    ## Formatted info output
+    # Formatted info output
     format_output(clean_url, dst_dir, file_name, image_url, image_name)
 
     # Downloading
