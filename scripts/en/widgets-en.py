@@ -8,6 +8,7 @@ import ipywidgets as widgets
 from pathlib import Path
 import os
 
+
 # Constants
 HOME = Path.home()
 SCR_PATH = Path(HOME / 'ANXETY')
@@ -21,7 +22,9 @@ JS = SCR_PATH / 'JS'
 widgets_css = CSS / 'main-widgets.css'
 widgets_js = JS / 'main-widgets.js'
 
-# ====================== WIDGETS =====================
+
+## ======================= WIDGETS =======================
+
 def read_model_data(file_path, data_type):
     """Reads model, VAE, or ControlNet data from the specified file."""
     local_vars = {}
@@ -148,7 +151,7 @@ custom_file_urls_widget = factory.create_text('File (txt):')
 """Create button widgets."""
 save_button = factory.create_button('Save', class_names=["button", "button_save"])
 
-# ================ DISPLAY / SETTINGS ================
+## ================== DISPLAY / SETTINGS =================
 
 factory.load_css(widgets_css)   # load CSS (widgets)
 factory.load_js(widgets_js)     # load JS (widgets)
@@ -178,7 +181,8 @@ WIDGET_LIST = factory.create_vbox([model_box, vae_box, additional_box, custom_do
                                   layouts=[{'width': '1080px'}]*4)    # style for the first four elements
 factory.display(WIDGET_LIST)
 
-# ================ CALLBACK FUNCTION ================
+## ================== CALLBACK FUNCTION ==================
+
 # Callback functions for updating widgets
 def update_change_webui(change, widget):
     selected_webui = change['new']
@@ -220,7 +224,7 @@ def update_XL_options(change, widget):
 factory.connect_widgets([(change_webui_widget, 'value')], update_change_webui)
 factory.connect_widgets([(XL_models_widget, 'value')], update_XL_options)
 
-## ============ Load / Save - Settings V3 ============
+## ============== Load / Save - Settings V3 ==============
 
 SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',

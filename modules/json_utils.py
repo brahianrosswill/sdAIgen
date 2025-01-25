@@ -42,7 +42,7 @@ def _write_json(filepath, data):
     except Exception as e:
         print(f"An error occurred while writing to the file: {e}")
 
-# ============ Main Functions ============
+## =================== Main Functions ====================
 
 def read(filepath, key, default=None):
     """Reads a value by key from a JSON file, supporting nested structures."""

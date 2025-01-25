@@ -14,6 +14,7 @@ import json
 import sys
 import os
 
+
 # Constants
 HOME = Path.home()
 SCR_PATH = HOME / 'ANXETY'
@@ -22,7 +23,9 @@ SETTINGS_PATH = SCR_PATH / 'settings.json'
 # Initialize async support for Jupyter
 nest_asyncio.apply()
 
-# ==================== DISPLAY ====================
+
+## ======================= DISPLAY =======================
+
 def display_info(env, scr_folder, branch):
     content = f"""
     <div id="snow-container">
@@ -231,7 +234,7 @@ def display_info(env, scr_folder, branch):
     display(HTML(content))
     display(HTML(SF))
 
-# ==================== ENVIRONMENT ====================
+## ===================== ENVIRONMENT =====================
 
 def key_or_value_exists(filepath, key=None, value=None):
     """Check for the existence of a key or value in a JSON file."""
@@ -264,7 +267,7 @@ def detect_environment():
             return name
     raise EnvironmentError(f"Unsupported runtime environment. Supported: {', '.join(environments.values())}")
 
-# ==================== MODULES ====================
+## ======================= MODULES =======================
 
 def clear_module_cache(modules_folder):
     """Clear the module cache for modules in the specified folder."""
@@ -282,7 +285,7 @@ def setup_module_folder(scr_folder):
     if str(modules_folder) not in sys.path:
         sys.path.append(str(modules_folder))
 
-# ==================== FILE HANDLING ====================
+## ==================== FILE HANDLING ====================
 
 """ Working with the environment """
 def save_environment_to_json(data, scr_folder):
@@ -376,7 +379,7 @@ async def download_files_async(scr_path, lang, branch):
 
     clear_output()
 
-# ======================= MAIN ======================
+## ========================= MAIN ========================
 
 async def main_async():
     """Main asynchronous function to run the script."""

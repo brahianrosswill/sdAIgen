@@ -35,6 +35,7 @@ WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 py = Path(VENV) / 'bin/python3'
 
 
+## ================ loading settings V5 ==================
 def load_settings(path):
     """Load settings from a JSON file."""
     try:
@@ -46,6 +47,12 @@ def load_settings(path):
     except (json.JSONDecodeError, IOError) as e:
         print(f"Error loading settings: {e}")
         return {}
+        
+# Load settings
+settings = load_settings(SETTINGS_PATH)
+locals().update(settings)
+
+## ======================= Other =========================
 
 def is_package_installed(package_name):
     """Check if a package is installed globally using npm."""
@@ -82,8 +89,9 @@ def trash_checkpoints():
     for path in paths:
         cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                
-## === Tunnel Functions ===
+
+## =================== Tunnel Functions ==================
+
 def _zrok_enable(token):
     zrok_env_path = Path(HOME) / '.zrok/environment.json'
 
@@ -148,11 +156,7 @@ def setup_tunnels(tunnel_port, public_ipv4):
 
     return tunnels
 
-
-## === Main ===
-# Load settings
-settings = load_settings(SETTINGS_PATH)
-locals().update(settings)
+## ========================= Main ========================
 
 print('Please Wait...')
 

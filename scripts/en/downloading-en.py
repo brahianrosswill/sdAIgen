@@ -39,7 +39,7 @@ UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
 
-# ================ LIBRARIES | VENV ================
+## =================== LIBRARIES | VENV ==================
 
 def install_dependencies(commands):
     """Run a list of installation commands."""
@@ -120,8 +120,8 @@ if not VENV.exists():
 # print("🍪 The libraries and VENV are installed!")
 # time.sleep(2)
 # clear_output()
- 
-# ============ loading settings V5 =============
+
+## ================ loading settings V5 ==================
 def load_settings(path):
     """Load settings from a JSON file."""
     try:
@@ -138,7 +138,8 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-# =================== WEBUI ===================
+## ======================== WEBUI ========================
+
 start_timer = js.read(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
 
 if not os.path.exists(WEBUI):

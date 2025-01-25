@@ -22,6 +22,7 @@ CSS = SCR_PATH / 'CSS'
 widgets_css = CSS / 'download-result.css'
 
 
+## ================= loading settings V5 =================
 def load_settings(path):
     """Load settings from a JSON file."""
     try:
@@ -38,7 +39,8 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-# ====================== WIDGETS =====================
+## ======================= WIDGETS =======================
+
 HR = widgets.HTML('<hr class="divider-line">')
 HEADER_DL = 'DOWNLOAD RESULTS'
 VERSION = 'v0.53'

@@ -25,6 +25,7 @@ cleaner_css = CSS / 'auto-cleaner.css'
 factory = WidgetFactory()
 HR = widgets.HTML('<hr>')
 
+## ================ loading settings V5 ==================
 def load_settings(path):
     """Load settings from a JSON file."""
     try:
@@ -44,7 +45,8 @@ locals().update(settings)
 ## Load Css
 factory.load_css(cleaner_css)
 
-# ================ AutoCleaner function ================
+## ================= AutoCleaner function ================
+
 def _update_memory_info():
     disk_space = psutil.disk_usage(os.getcwd())
     total = disk_space.total / (1024 ** 3)
@@ -103,7 +105,8 @@ def execute_button_press(button):
 def hide_button_press(button):
     factory.close(container, class_names=['hide'], delay=0.5)
 
-# ================ AutoCleaner Widgets =================
+## ================= AutoCleaner Widgets =================
+
 factory = WidgetFactory()
 HR = widgets.HTML('<hr>')
 

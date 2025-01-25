@@ -29,8 +29,7 @@ EXTS = js.read(SETTINGS_PATH, 'WEBUI.extension_dir')
 
 CD(HOME)
 
-
-# ==================== WEB UI OPERATIONS ====================
+## ================== WEB UI OPERATIONS ==================
 
 async def _download_file(url, directory, filename):
     os.makedirs(directory, exist_ok=True)
@@ -86,8 +85,7 @@ def unpack_webui():
     ipySys(f'unzip -q -o {zip_path} -d {WEBUI}')
     ipySys(f'rm -rf {zip_path}')
 
-# ==================== MAIN CODE ====================
-
+## ====================== MAIN CODE ======================
 if __name__ == "__main__":
     with capture.capture_output():
         unpack_webui()

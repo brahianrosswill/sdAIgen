@@ -30,7 +30,8 @@ cai_token = js.read(SETTINGS_PATH, 'WIDGETS.civitai_token') or "65b66176dcf284b2
 hf_token = js.read(SETTINGS_PATH, 'WIDGETS.huggingface_token') or ""
 
 
-## ================ Download ================
+## ====================== Download =======================
+
 def m_download(line, log=False, unzip=False):
     """Download files from a comma-separated list of URLs or file paths.
     If a URL points to a .txt file, it reads URLs from that file and processes them."""
@@ -289,7 +290,8 @@ def execute_shell_command(command, log):
         if log:
             print("\n> Canceled")
 
-## ================ Clone ================
+## ======================== Clone ========================
+
 def m_clone(input_source, log=False):
     """Clone repositories from a given source."""
     input_path = Path(input_source).expanduser()
