@@ -184,7 +184,8 @@ if latest_webui or latest_extensions:
 # === FIXING EXTENSIONS ===
 with capture.capture_output():
     # --- Umi-Wildcard ---
-    ipySys("sed -i '521s/open=\\(False\\|True\\)/open=False/' {WEBUI}/extensions/Umi-AI-Wildcards/scripts/wildcard_recursive.py  # Closed accordion by default")
+    ipySys("sed -i '521s/open=\\(False\\|True\\)/open=False/' {WEBUI}/extensions/Umi-AI-Wildcards/scripts/wildcard_recursive.py")    # Closed accordion by default
+
 
 ## Version switching
 if commit_hash:
@@ -353,38 +354,44 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
 ''' SubModels - Added URLs '''
 
 # Separation of merged numbers
-def split_numbers(num_str, max_num):
+def _split_numbers(num_str, max_num):
+    """Split a string of numbers into unique integers."""
+    num_str = num_str.replace(',', ' ').strip()
     unique_numbers = set()
-    nums_str = num_str.replace(',', ' ').strip()
 
-    i = 0
-    while i < len(nums_str):
-        found = False
+    # Handling space-separated and concatenated numbers
+    for part in num_str.split():
+        if part.isdigit():
+            part_int = int(part)
+            if part_int <= max_num:
+                unique_numbers.add(part_int)
+
+    # Handle the case where numbers can be written as concatenates
+    for i in range(len(num_str)):
         for length in range(2, 0, -1):
-            if i + length <= len(nums_str):
-                part = int(nums_str[i:i + length])
-                if part <= max_num:
-                    unique_numbers.add(part)
-                    i += length
-                    found = True
-                    break
-        if not found:
-            break
+            if i + length <= len(num_str):
+                substring = num_str[i:i + length]
+                if substring.isdigit():
+                    part = int(substring)
+                    if part <= max_num:
+                        unique_numbers.add(part)
+                        break
 
     return sorted(unique_numbers)
 
 def add_submodels(selection, num_selection, model_dict, dst_dir):
-    if selection == "none":
-        return []
+    """Add selected submodels based on user selection."""
     selected_models = []
 
-    if selection == "ALL":
+    if selection == "none":
+        return selected_models
+    elif selection == "ALL":
         selected_models = sum(model_dict.values(), [])
     else:
         selected_models.extend(model_dict.get(selection, []))
 
         max_num = len(model_dict)
-        unique_nums = split_numbers(num_selection, max_num)
+        unique_nums = _split_numbers(num_selection, max_num)
 
         for num in unique_nums:
             if 1 <= num <= max_num:
@@ -393,14 +400,15 @@ def add_submodels(selection, num_selection, model_dict, dst_dir):
 
     unique_models = {}
     for model in selected_models:
-        if 'name' not in model and 'huggingface.co' in model['url']:
-            model['name'] = os.path.basename(model['url'])
-        model['dst_dir'] = dst_dir
-        unique_models[model['name']] = model
+        model_name = model.get('name') or os.path.basename(model['url'])
+        model['name'] = model_name
+        model['dst_dir'] = model.get('dst_dir', dst_dir)
+        unique_models[model_name] = model
 
     return list(unique_models.values())
 
 def handle_submodels(selection, num_selection, model_dict, dst_dir, url):
+    """Handle the selection of submodels and construct the URL string."""
     submodels = add_submodels(selection, num_selection, model_dict, dst_dir)
     for submodel in submodels:
         if not inpainting_model and "inpainting" in submodel['name']:
@@ -415,58 +423,55 @@ line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir
 
 ''' file.txt - added urls '''
 
-def process_file_download(file_url, prefixes, unique_urls):
+def process_file_downloads(file_urls, prefixes, unique_urls):
     files_urls = ""
-    current_tag = None
+    
+    for file_url in file_urls:
+        if file_url.startswith("http"):
+            file_url = _STRIP_URL(file_url)
+            response = requests.get(file_url)
+            lines = response.text.splitlines()
+        else:
+            try:
+                with open(file_url, 'r') as file:
+                    lines = file.readlines()
+            except FileNotFoundError:
+                continue
 
-    if file_url.startswith("http"):
-        file_url = _STRIP_URL(file_url)
-        response = requests.get(file_url)
-        lines = response.text.split('\n')
-    else:
-        with open(file_url, 'r') as file:
-            lines = file.readlines()
+        current_tag = None
+        for line in lines:
+            line = line.strip()
+            for prefix in prefixes.keys():
+                if f'# {prefix}'.lower() in line.lower():
+                    current_tag = prefix
+                    break
 
-    for line in lines:
-        line = line.strip()
-
-        for prefix in prefixes.keys():
-            if f'# {prefix}'.lower() in line.lower():
-                current_tag = prefix
-                break
-
-        urls = [url.split('#')[0].strip() for url in line.split(',')]
-        for url in urls:
-            filter_url = url.split('[')[0].strip()    # Take out the unnecessary parts of the URL
-
-            # Check if the URL is unique
-            if url.startswith("http") and filter_url not in unique_urls:
-                files_urls += f"{current_tag}:{url}, "
-                unique_urls.add(filter_url)
+            urls = [url.split('#')[0].strip() for url in line.split(',')]
+            for url in urls:
+                filter_url = url.split('[')[0].strip()
+                if url.startswith("http") and filter_url not in unique_urls:
+                    files_urls += f"{current_tag}:{url}, "
+                    unique_urls.add(filter_url)
 
     return files_urls
 
-file_urls = ""
+file_urls = []
 unique_urls = set()
 
 if custom_file_urls:
-    for custom_files in custom_file_urls.replace(',', '').split():
-        if not custom_files.endswith('.txt'):
-            custom_files += '.txt'
+    file_urls = [f"{custom_file}.txt" if not custom_file.endswith('.txt') else custom_file 
+                 for custom_file in custom_file_urls.replace(',', '').split()]
 
-        try:
-            file_urls += process_file_download(custom_files, PREFIXES, unique_urls)
-        except FileNotFoundError:
-            pass
+file_urls_result = process_file_downloads(file_urls, PREFIXES, unique_urls)
 
 # URL prefixing
 urls = (Model_url, Vae_url, LoRA_url, Embedding_url, Extensions_url, ADetailer_url)
 prefixed_urls = [
     f"{prefix}:{url.strip()}"
     for prefix, url in zip(PREFIXES.keys(), urls)
-    if url for url in url.replace(',', '').split()
+    if url.strip()
 ]
-line += ", ".join(prefixed_urls) + ", " + file_urls
+line += ", ".join(prefixed_urls) + ", " + file_urls_result.strip(', ')
 
 if detailed_download == "on":
     print("\n\n\033[33m# ====== Detailed Download ====== #\n\033[0m")
