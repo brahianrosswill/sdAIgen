@@ -92,6 +92,20 @@ def trash_checkpoints():
 
 ## =================== Tunnel Functions ==================
 
+def check_tunnel_server(url, tunnel_name):
+    """Check if the tunnel server is reachable."""
+    timeout = 3
+    try:
+        response = requests.get(url, timeout=timeout)
+        if response.status_code != 200:
+            print(f"\033[31m[ERROR]: Tunnel '{tunnel_name}' returned status code {response.status_code} at {url}\033[0m")
+            return False
+        print(f"\033[32m[SUCCESS]: Tunnel '{tunnel_name}' is reachable at {url}\033[0m")
+        return True
+    except requests.RequestException as e:
+        print(f"\033[31m[ERROR]: Unable to access the tunnel '{tunnel_name}' at {url}: {e}\033[0m")
+        return False
+
 def _zrok_enable(token):
     zrok_env_path = Path(HOME) / '.zrok/environment.json'
 
@@ -105,7 +119,7 @@ def _zrok_enable(token):
     ipySys(f'zrok enable {token} &> /dev/null')
 
 def _ngrok_auth(token):
-    yml_path = Path(ROOT) / '.config/ngrok/ngrok.yml'
+    yml_path = Path(HOME) / '.config/ngrok/ngrok.yml'
 
     current_token = None
     if yml_path.exists():
@@ -117,48 +131,64 @@ def _ngrok_auth(token):
         
 def setup_tunnels(tunnel_port, public_ipv4):
     """Setup tunneling commands based on available packages and configurations."""
-    tunnels = [
-        {
+    tunnels = []
+    
+    # Check Cloudflared
+    cloudflared_url = 'https://www.cloudflare.com'
+    if check_tunnel_server(cloudflared_url, "Cloudflared"):
+        tunnels.append({
             "command": f"cl tunnel --url localhost:{tunnel_port}",
             "name": "Cloudflared",
             "pattern": re.compile(r"[\w-]+\.trycloudflare\.com")
-        },
-        {
+        })
+
+    # Check LocalTunnel
+    if is_package_installed('localtunnel'):
+        localtunnel_url = 'https://localtunnel.me'
+        if check_tunnel_server(localtunnel_url, "Localtunnel"):
+            tunnels.append({
+                "command": f"lt --port {tunnel_port}",
+                "name": "Localtunnel",
+                "pattern": re.compile(r"[\w-]+\.loca\.lt"),
+                "note": f"Password : \033[32m{public_ipv4}\033[0m rerun cell if 404 error."
+            })
+
+    # Check Pinggy
+    pinggy_url = 'https://pinggy.io'
+    if check_tunnel_server(pinggy_url, "Pinggy"):
+        tunnels.append({
             "command": f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{tunnel_port} a.pinggy.io",
             "name": "Pinggy",
             "pattern": re.compile(r"[\w-]+\.a\.free\.pinggy\.link")
-        }
-    ]
-
-    if is_package_installed('localtunnel'):
-        tunnels.append({
-            "command": f"lt --port {tunnel_port}",
-            "name": "Localtunnel",
-            "pattern": re.compile(r"[\w-]+\.loca\.lt"),
-            "note": f"Password : \033[32m{public_ipv4}\033[0m rerun cell if 404 error."
         })
 
+    # Check Zrok
     if zrok_token:
-        _zrok_enable(zrok_token)
-        tunnels.append({
-            "command": f"zrok share public http://localhost:{tunnel_port}/ --headless",
-            "name": "Zrok",
-            "pattern": re.compile(r"[\w-]+\.share\.zrok\.io")
-        })
+        zrok_url = 'https://status.zrok.io'
+        if check_tunnel_server(zrok_url, "Zrok"):
+            _zrok_enable(zrok_token)
+            tunnels.append({
+                "command": f"zrok share public http://localhost:{tunnel_port}/ --headless",
+                "name": "Zrok",
+                "pattern": re.compile(r"[\w-]+\.share\.zrok\.io")
+            })
         
+    # Check Ngrok
     if ngrok_token:
-        _ngrok_auth(ngrok_token)
-        tunnels.append({
-            "command": f"ngrok http http://localhost:{tunnel_port} --log stdout",
-            "name": "Ngrok",
-            "pattern": re.compile(r"https://[\w-]+\.ngrok-free\.app")
-        })
+        ngrok_url = 'https://ngrok.com'
+        if check_tunnel_server(ngrok_url, "Ngrok"):
+            _ngrok_auth(ngrok_token)
+            tunnels.append({
+                "command": f"ngrok http http://localhost:{tunnel_port} --log stdout",
+                "name": "Ngrok",
+                "pattern": re.compile(r"https://[\w-]+\.ngrok-free\.app")
+            })
 
     return tunnels
 
 ## ========================= Main ========================
 
-print('Please Wait...')
+print('Please Wait...\n')
 
 # Get public IP address
 public_ipv4 = js.read(SETTINGS_PATH, "ENVIRONMENT.public_ip", None)
