@@ -94,17 +94,19 @@ def trash_checkpoints():
 
 def check_tunnel_server(url, tunnel_name):
     """Check if the tunnel server is reachable."""
-    timeout = 3
+    timeout = 5
     try:
         response = requests.get(url, timeout=timeout)
-        if response.status_code != 200:
-            print(f"\033[31m[ERROR]: Tunnel '{tunnel_name}' returned status code {response.status_code} at {url}\033[0m")
-            return False
-        print(f"\033[32m[SUCCESS]: Tunnel '{tunnel_name}' is reachable at {url}\033[0m")
-        return True
+        if response.status_code == 200:
+            print(f"\033[32m> [SUCCESS]: Tunnel '\033[0m{tunnel_name}\033[32m' is reachable at {url}\033[0m")
+            return True
+        else:
+            error_message = f"returned status code '{response.status_code}'"
     except requests.RequestException as e:
-        print(f"\033[31m[ERROR]: Unable to access the tunnel '{tunnel_name}' at {url}: {e}\033[0m")
-        return False
+        error_message = f"Unable to access the tunnel: {e}"
+
+    print(f"\033[31m> [ERROR]: Tunnel '\033[0m{tunnel_name}\033[31m' at {url} >> {error_message}\033[0m")
+    return False
 
 def _zrok_enable(token):
     zrok_env_path = Path(HOME) / '.zrok/environment.json'
