@@ -29,6 +29,7 @@ EXTS = js.read(SETTINGS_PATH, 'WEBUI.extension_dir')
 
 CD(HOME)
 
+
 ## ================== WEB UI OPERATIONS ==================
 
 async def _download_file(url, directory, filename):

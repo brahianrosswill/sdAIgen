@@ -419,8 +419,9 @@ line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir
 
 ''' file.txt - added urls '''
 
-def process_file_downloads(file_urls, prefixes, unique_urls):
+def process_file_downloads(file_urls, prefixes):
     files_urls = ""
+    unique_urls = set()
     
     for file_url in file_urls:
         if file_url.startswith("http"):
@@ -452,13 +453,12 @@ def process_file_downloads(file_urls, prefixes, unique_urls):
     return files_urls
 
 file_urls = []
-unique_urls = set()
 
 if custom_file_urls:
     file_urls = [f"{custom_file}.txt" if not custom_file.endswith('.txt') else custom_file 
                  for custom_file in custom_file_urls.replace(',', '').split()]
 
-file_urls_result = process_file_downloads(file_urls, PREFIXES, unique_urls)
+file_urls_result = process_file_downloads(file_urls, PREFIXES)
 
 # URL prefixing
 urls = (Model_url, Vae_url, LoRA_url, Embedding_url, Extensions_url, ADetailer_url)

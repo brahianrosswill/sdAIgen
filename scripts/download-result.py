@@ -124,8 +124,8 @@ extensions_list = get_folders_list(extension_dir)
 extension_type = 'Nodes' if UI == 'ComfyUI' else 'Extensions'
 extensions_widget = output_container_generator(extension_type, extensions_list, is_grid=True)
 # ADetailers
-adetailer_list = get_all_files_list(adetailer_dir, ('.safetensors', '.pt'))
-adetailer_widget = output_container_generator('ADetailers', adetailer_list)
+adetailers_list = get_all_files_list(adetailer_dir, ('.safetensors', '.pt'))
+adetailers_widget = output_container_generator('ADetailers', adetailers_list)
 # ControlNet
 controlnets_list = get_controlnets_list(control_dir, r'^[^_]*_[^_]*_[^_]*_(.*)_fp16\.safetensors')
 controlnets_widget = output_container_generator('ControlNets', controlnets_list)
@@ -137,7 +137,7 @@ widgets_dict = {
     embeddings_widget: embeddings_list,
     loras_widget: loras_list,
     extensions_widget: extensions_list,
-    adetailer_widget: adetailer_list,
+    adetailers_widget: adetailers_list,
     controlnets_widget: controlnets_list
 }
 
