@@ -117,8 +117,6 @@ additional_widget_list = [
     HR,
     commandline_arguments_widget
 ]
-# if ENV_NAME == "Google Colab": # remove ngrok from colab
-#     additional_widget_list.remove(ngrok_widget)
 
 # --- CUSTOM DOWNLOAD ---
 """Create Custom-Download Selection widgets."""

@@ -21,12 +21,11 @@ model_list = {
         {"url": "https://civitai.com/api/download/models/138754", "name": "CuteColor_V3.safetensors"}
     ],
     "6. Dark-Sushi-Mix [Anime]": [
-        {"url": "https://civitai.com/api/download/models/101640", "name": "DarkSushiMix_2_5D.safetensors"},
+        {"url": "https://civitai.com/api/download/models/141866", "name": "DarkSushiMix_2_5D.safetensors"},
         {"url": "https://civitai.com/api/download/models/56071", "name": "DarkSushiMix_colorful.safetensors"}
     ],
-    "7. Meina-Mix [Anime] [V11] + INP": [
-        {"url": "https://civitai.com/api/download/models/119057", "name": "MeinaMix_V11.safetensors"},
-        {"url": "https://civitai.com/api/download/models/120702", "name": "MeinaMix_V11-inpainting.safetensors"}
+    "7. Meina-Mix [Anime] [V12] + INP": [
+        {"url": "https://civitai.com/api/download/models/948574", "name": "MeinaMix_V12.safetensors"}
     ],
     "8. Mix-Pro [Anime] [V4] + INP": [
         {"url": "https://huggingface.co/fp16-guy/MIX-Pro-V4_fp16_cleaned/resolve/main/mixProV4_v4_fp16.safetensors", "name": "MixPro_V4.safetensors"},

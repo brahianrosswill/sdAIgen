@@ -94,7 +94,7 @@ def install_packages(install_lib):
             print(f"\n\033[31mError installing {package}: {result.stderr.decode()}\033[0m")
 
 # Check and install dependencies
-if not js.read(SETTINGS_PATH, 'ENVIRONMENT.install_deps'):
+if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
     install_lib = {
         ## Libs
         "aria2": "pip install aria2",

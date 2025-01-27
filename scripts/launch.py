@@ -98,7 +98,7 @@ def check_tunnel_server(url, tunnel_name):
     try:
         response = requests.get(url, timeout=timeout)
         if response.status_code == 200:
-            print(f"\033[32m> [SUCCESS]: Tunnel '\033[0m{tunnel_name}\033[32m' is reachable at {url}\033[0m")
+            print(f"\033[32m> [SUCCESS]: Tunnel '\033[0m{tunnel_name}\033[32m' is reachable at \033[0m{url}")
             return True
         else:
             error_message = f"returned status code '{response.status_code}'"
@@ -109,7 +109,7 @@ def check_tunnel_server(url, tunnel_name):
     return False
 
 def _zrok_enable(token):
-    zrok_env_path = Path(HOME) / '.zrok/environment.json'
+    zrok_env_path = HOME / '.zrok/environment.json'
 
     current_token = None
     if zrok_env_path.exists():
@@ -121,11 +121,11 @@ def _zrok_enable(token):
     ipySys(f'zrok enable {token} &> /dev/null')
 
 def _ngrok_auth(token):
-    yml_path = Path(HOME) / '.config/ngrok/ngrok.yml'
+    yml_ngrok_path = HOME / '.config/ngrok/ngrok.yml'
 
     current_token = None
-    if yml_path.exists():
-        with open(yml_path, 'r') as f:
+    if yml_ngrok_path.exists():
+        with open(yml_ngrok_path, 'r') as f:
             current_token = yaml.safe_load(f).get('agent', {}).get('authtoken')
 
     if current_token != token:
@@ -247,11 +247,15 @@ with TunnelingService:
     ## Launch
     try:
         if UI == 'ComfyUI':
+            COMFYUI_SETTINGS_PATH = SCR_PATH / 'ComfyUI.json'
             if check_custom_nodes_deps:
                 ipySys(f'{py} install-deps.py')
-            print("Installing dependencies for ComfyUI from requirements.txt...")
-            subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            clear_output(wait=True)
+
+            if not js.key_exists(COMFYUI_SETTINGS_PATH, 'install_req', True):
+                print("Installing dependencies for ComfyUI from requirements.txt...")
+                subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                clear_output(wait=True)
+                js.save(COMFYUI_SETTINGS_PATH, 'install_req', True)
 
         print(f"🔧 WebUI: \033[34m{UI} \033[0m")
         ipySys(f'{py} {launcher} {commandline_arguments}')
