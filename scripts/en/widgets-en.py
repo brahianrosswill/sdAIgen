@@ -56,7 +56,7 @@ HR = widgets.HTML('<hr>')
 # --- MODEL ---
 """Create model selection widgets."""
 model_header = factory.create_header('Model Selection')
-model_options = model_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'model')
+model_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'model')
 model_widget = factory.create_dropdown(model_options, 'Model:', '4. Counterfeit [Anime] [V3] + INP')
 model_num_widget = factory.create_text('Model Number:', '', 'Enter the model numbers for the download.')
 inpainting_model_widget = factory.create_checkbox('Inpainting Models', False, class_names=['inpaint'])

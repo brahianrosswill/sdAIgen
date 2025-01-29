@@ -236,7 +236,7 @@ def display_info(env, scr_folder, branch):
 
 ## ===================== ENVIRONMENT =====================
 
-def key_or_value_exists(filepath, key=None, value=None):
+def key_exists(filepath, key=None, value=None):
     """Check for the existence of a key or value in a JSON file."""
     if not filepath.exists():
         return False
@@ -312,7 +312,7 @@ def get_start_timer():
 
 def create_environment_data(env, scr_folder, lang, branch):
     """Create a dictionary with environment data."""
-    install_deps = key_or_value_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
+    install_deps = key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
     start_timer = get_start_timer()
 
     return {

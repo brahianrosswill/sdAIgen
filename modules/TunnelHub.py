@@ -347,7 +347,7 @@ class Tunnel:
     def display_urls(self) -> None:
         """Display the collected URLs."""
         with self.urls_lock:
-            width = 110
+            width = 120
             tunnel_name_width = max(len(name) for _, _, name in self.urls) if self.urls else 6
 
             # Print the header

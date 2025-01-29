@@ -21,10 +21,6 @@ CSS = SCR_PATH / 'CSS'
 cleaner_css = CSS / 'auto-cleaner.css'
 
 
-# Initialize WidgetFactory
-factory = WidgetFactory()
-HR = widgets.HTML('<hr>')
-
 ## ================ loading settings V5 ==================
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -41,9 +37,6 @@ def load_settings(path):
 # Load settings
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
-
-## Load Css
-factory.load_css(cleaner_css)
 
 ## ================= AutoCleaner function ================
 
@@ -107,8 +100,12 @@ def hide_button_press(button):
 
 ## ================= AutoCleaner Widgets =================
 
+# Initialize the WidgetFactory
 factory = WidgetFactory()
 HR = widgets.HTML('<hr>')
+
+# Load Css
+factory.load_css(cleaner_css)
 
 directories = {
     'Images': output_dir,
@@ -119,7 +116,6 @@ directories = {
 }
 
 # --- storage memory ---
-import psutil
 disk_space = psutil.disk_usage(os.getcwd())
 total = disk_space.total / (1024 ** 3)
 used = disk_space.used / (1024 ** 3)

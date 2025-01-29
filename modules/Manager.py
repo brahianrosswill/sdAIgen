@@ -143,7 +143,7 @@ def clean_url(url):
                       print(f"> \033[31m[CivitAI API Error]:\033[0m {response.status_code} - {response.text}")
                       return None
 
-                early_access = data.get("earlyAccessEndsAt", None)
+                early_access = data.get("availability") == "EarlyAccess" or data.get("earlyAccessEndsAt", None)
                 if early_access:
                     model_id = data.get("modelId")
                     version_id = data.get("id")
