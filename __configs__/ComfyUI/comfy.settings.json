@@ -26,6 +26,7 @@
                     "NOISE": "#5a6785"
                 },
                 "litegraph_base": {
+                    "BACKGROUND_IMAGE": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkAQMAAABKLAcXAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAZQTFRFAAAAIyMjg6JHZQAAADRJREFUeJxjdDjA8ocBSjAwPlDg+8QAJRgYUeUYkMGw542GC3beaLhg542GC3beaLhg5QEAPT9LZZ9GZcYAAAAASUVORK5CYII=",
                     "CLEAR_BACKGROUND_COLOR": "#000000",
                     "NODE_TITLE_COLOR": "#bbc2c6",
                     "NODE_SELECTED_TITLE_COLOR": "#f9e2af",
