@@ -465,7 +465,7 @@ urls = (Model_url, Vae_url, LoRA_url, Embedding_url, Extensions_url, ADetailer_u
 prefixed_urls = [
     f"{prefix}:{url.strip()}"
     for prefix, url in zip(PREFIXES.keys(), urls)
-    if url.strip()
+    if url for url in url.replace(',', '').split()
 ]
 line += ", ".join(prefixed_urls) + ", " + file_urls_result.strip(', ')
 
