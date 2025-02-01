@@ -64,9 +64,13 @@ async def download_configuration():
 
     ## REPOS
     extensions_list = [
-        "https://github.com/ssitu/ComfyUI_UltimateSDUpscale",
-        "https://github.com/ltdrdata/ComfyUI-Manager",
-        "https://github.com/pythongosssss/ComfyUI-Custom-Scripts"
+        "https://github.com/ssitu/ComfyUI_UltimateSDUpscale UltimateSDUpscale",
+        "https://github.com/ltdrdata/ComfyUI-Manager Manager",
+        "https://github.com/pythongosssss/ComfyUI-Custom-Scripts",
+        "https://github.com/WASasquatch/was-node-suite-comfyui WAS-Nodes",
+        "https://github.com/Fannovel16/comfyui_controlnet_aux ControlNet-AUX",
+        "https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet Advanced-ControlNet",
+        "https://github.com/jags111/efficiency-nodes-comfyui Efficiency-Nodes"
     ]
     CD(EXTS)
 

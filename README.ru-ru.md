@@ -51,9 +51,13 @@
 <details>
 <summary>Установленные Кастомные-Ноды | ComfyUI</summary>
 
+- [Advanced-ControlNet](https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet)
 - [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager)
 - [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts)
+- [ControlNet-AUX](https://github.com/Fannovel16/comfyui_controlnet_aux)
+- [Efficiency-Nodes](https://github.com/jags111/efficiency-nodes-comfyui)
 - [UltimateSDUpscale](https://github.com/ssitu/ComfyUI_UltimateSDUpscale)
+- [WAS-Nodes](https://github.com/WASasquatch/was-node-suite-comfyui)
 
 </details>
 

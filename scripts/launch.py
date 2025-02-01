@@ -250,12 +250,13 @@ with TunnelingService:
             COMFYUI_SETTINGS_PATH = SCR_PATH / 'ComfyUI.json'
             if check_custom_nodes_deps:
                 ipySys(f'{py} install-deps.py')
+                clear_output(wait=True)
 
             if not js.key_exists(COMFYUI_SETTINGS_PATH, 'install_req', True):
                 print("Installing dependencies for ComfyUI from requirements.txt...")
                 subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                clear_output(wait=True)
                 js.save(COMFYUI_SETTINGS_PATH, 'install_req', True)
+                clear_output(wait=True)
 
         print(f"🔧 WebUI: \033[34m{UI} \033[0m")
         ipySys(f'{py} {launcher} {commandline_arguments}')
