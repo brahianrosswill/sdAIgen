@@ -117,10 +117,6 @@ if not VENV.exists():
     setup_venv()
     clear_output()
 
-# print("🍪 Библиотеки и VENV установлены!")
-# time.sleep(2)
-# clear_output()
-
 ## ================ loading settings V5 ==================
 def load_settings(path):
     """Load settings from a JSON file."""

@@ -117,9 +117,6 @@ if not VENV.exists():
     setup_venv()
     clear_output()
 
-# print("🍪 The libraries and VENV are installed!")
-# time.sleep(2)
-# clear_output()
 
 ## ================ loading settings V5 ==================
 def load_settings(path):
