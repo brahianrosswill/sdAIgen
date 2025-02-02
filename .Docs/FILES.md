@@ -32,9 +32,9 @@
 
 #### Subdirectory -> `en/ru`
 
-- **setup-en/ru.py**: Downloading files for work.
-- **downloading-en./ru.py**: The main script for downloading data.
-- **widgets-en/ru.py**: Script for creating and displaying main widgets.
+- **setup-{lang}.py**: Downloading files for work.
+- **downloading-{lang}.py**: The main script for downloading data.
+- **widgets-{lang}.py**: Script for creating and displaying main widgets.
   
 #### Subdirectory -> `UIs`
 

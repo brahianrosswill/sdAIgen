@@ -1,8 +1,7 @@
 """
 Modified script for creating tunnels.
-
-Originated from: https://github.com/gutris1/segsmaker/blob/main/script/SM/cupang.py
-Author: gutris1 https://github.com/gutris1
+Originated from: https://raw.githubusercontent.com/cupang-afk/subprocess-tunnel/refs/heads/master/src/tunnel.py
+Author: cupang-afk https://github.com/cupang-afk
 """
 
 

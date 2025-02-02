@@ -1,22 +1,14 @@
-"""
-Modified script.
-
-Originated from: https://github.com/gutris1/segsmaker/blob/main/script/SM/nenen88.py
-Author: gutris1 https://github.com/gutris1
-"""
-
-
 import json_utils as js    # JSON
 
-import os
-import re
-import sys
-import shlex
-import zipfile
-import requests
-import subprocess
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
+import subprocess
+import requests
+import zipfile
+import shlex
+import sys
+import os
+import re
 
 
 CD = os.chdir
