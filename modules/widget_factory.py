@@ -49,14 +49,6 @@ class WidgetFactory:
 
     # Widgets
     ## Supporting functions
-    def _set_default_value(self, widget_type, value, options, default):
-        """Set the default value based on widget type and options."""
-        if widget_type in [widgets.Dropdown, widgets.SelectMultiple]:
-            if not options or value not in options:
-                return options[0] if options else default
-
-        return value  # For other widget types, return the original value
-
     def _apply_layouts(self, children, layouts):
         """Apply layouts to children widgets."""
         n_layouts = len(layouts)
@@ -69,18 +61,14 @@ class WidgetFactory:
             for child, layout in zip(children, layouts):
                 child.layout = layout
 
-    def _create_widget(self, widget_type, class_names=None, default=None, **kwargs):
+    def _create_widget(self, widget_type, class_names=None, **kwargs):
         """Create a widget of a specified type with optional classes and styles."""
         style = kwargs.get('style', self.default_style)
 
-        # Check and set default values
-        value = kwargs.get('value', default)
-        options = kwargs.get('options', [])
-        kwargs['value'] = self._set_default_value(widget_type, value, options, default)
-
-        # Set default layout | reset -> width = 100%
-        if widget_type in [widgets.Dropdown, widgets.Text] and 'layout' not in kwargs and kwargs.get('reset') != True:
-            kwargs['layout'] = widgets.Layout(width='100%')
+        # Set default layout if not provided
+        if widget_type in [widgets.Dropdown, widgets.Text]:
+            if 'layout' not in kwargs and kwargs.get('reset') != True:    # reset -> return default width
+                kwargs['layout'] = widgets.Layout(width='100%')
 
         widget = widget_type(style=style, **kwargs)
 
@@ -90,7 +78,7 @@ class WidgetFactory:
         return widget
 
     ## Creation functions
-    def create_text(self, description='Text:', value=None, placeholder='', class_names=None, **kwargs):
+    def create_text(self, description, value='', placeholder='', class_names=None, **kwargs):
         """Create a text input widget."""
         return self._create_widget(
             widgets.Text,
@@ -101,8 +89,11 @@ class WidgetFactory:
             **kwargs
         )
 
-    def create_dropdown(self, options=[], description='Dropdown:', value=None, placeholder='', class_names=None, **kwargs):
+    def create_dropdown(self, options, description, value=None, placeholder='', class_names=None, **kwargs):
         """Create a dropdown widget."""
+        if value is None and options:
+            value = options[0]
+            
         return self._create_widget(
             widgets.Dropdown,
             options=options,
@@ -113,8 +104,13 @@ class WidgetFactory:
             **kwargs
         )
 
-    def create_select_multiple(self, options=[], description='Multiple:', value=None, class_names=None, **kwargs):
+    def create_select_multiple(self, options, description, value=None, class_names=None, **kwargs):
         """Create a multiple select widget."""
+        if isinstance(value, str):
+            value = (value,)
+        elif value is None:
+            value = ()
+
         return self._create_widget(
             widgets.SelectMultiple,
             options=options,
@@ -124,7 +120,7 @@ class WidgetFactory:
             **kwargs
         )
 
-    def create_checkbox(self, description='Checkbox:', value=False, class_names=None, **kwargs):
+    def create_checkbox(self, description, value=False, class_names=None, **kwargs):
         """Create a checkbox widget."""
         return self._create_widget(
             widgets.Checkbox,
@@ -134,7 +130,7 @@ class WidgetFactory:
             **kwargs
         )
 
-    def create_button(self, description='Button:', class_names=None, **kwargs):
+    def create_button(self, description, class_names=None, **kwargs):
         """Create a button widget."""
         return self._create_widget(
             widgets.Button,
