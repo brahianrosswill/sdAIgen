@@ -31,7 +31,7 @@ ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
-# USER VENV
+# USER VENV | python
 py = Path(VENV) / 'bin/python3'
 
 
@@ -272,3 +272,4 @@ print(f"\n⌚️ You have been conducting this session for - \033[33m{time_since
 ## Zrok Disable | PARANOYA
 if zrok_token:
     ipySys('zrok disable &> /dev/null')
+    print('🔐 Zrok tunnel was disabled :3')

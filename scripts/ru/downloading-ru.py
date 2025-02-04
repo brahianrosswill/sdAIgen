@@ -80,7 +80,7 @@ def setup_venv():
         f'{VENV}/bin/python3 -m pip install ipykernel',
         f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
     ]
-    if UI in ['Forge', 'ComfyUI']:
+    if UI == 'Forge':
         venv_commands.append(f'{VENV}/bin/python3 -m pip uninstall -y transformers')
 
     install_dependencies(venv_commands)

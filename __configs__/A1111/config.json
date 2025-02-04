@@ -54,7 +54,6 @@
         "LMS"
     ],
     "CLIP_stop_at_last_layers": 2,
-    "sd_vae": "None",
     "quicksettings_list": [
         "sd_model_checkpoint",
         "sd_vae",
@@ -102,5 +101,10 @@
     "live_preview_fast_interrupt": true,
     "extra_networks_card_width": 200.0,
     "extra_networks_card_height": 300.0,
-    "extra_networks_card_text_scale": 0.8
+    "extra_networks_card_text_scale": 0.8,
+    "tagger_hf_cache_dir": "",
+    "ad_extra_models_dir": "",
+    "sd_checkpoint_hash": "",
+    "sd_model_checkpoint": "",
+    "sd_vae": "None"
 }
