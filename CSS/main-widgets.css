@@ -178,6 +178,9 @@ a {
 .sdxl input[type="checkbox"]:checked {
     background-color: #EA861A;  
 }
+.empowerment input[type="checkbox"]:checked {
+    background-color: #DF6B91;  
+}
 
 .widget-checkbox input[type="checkbox"]:before {
     content: '';
@@ -243,7 +246,7 @@ a {
 /* For Empowerment */
 .empowerment {
     position: absolute;
-    top: 8px;
+    top: 10px;
     left: 300px;
     opacity: 0;
     transition: opacity 0.3s;
