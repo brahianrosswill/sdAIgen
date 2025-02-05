@@ -415,36 +415,41 @@ line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir
 
 ''' file.txt - added urls '''
 
-def process_file_downloads(file_urls, prefixes):
+def process_file_downloads(file_urls, prefixes, additional_lines=None):
     files_urls = ""
     unique_urls = set()
-    
+
+    if additional_lines:
+        lines = additional_lines.splitlines()
+    else:
+        lines = []
+
     for file_url in file_urls:
         if file_url.startswith("http"):
             file_url = _STRIP_URL(file_url)
             response = requests.get(file_url)
-            lines = response.text.splitlines()
+            lines += response.text.splitlines()
         else:
             try:
                 with open(file_url, 'r') as file:
-                    lines = file.readlines()
+                    lines += file.readlines()
             except FileNotFoundError:
                 continue
 
-        current_tag = None
-        for line in lines:
-            line = line.strip()
-            for prefix in prefixes.keys():
-                if f'# {prefix}'.lower() in line.lower():
-                    current_tag = prefix
-                    break
+    current_tag = None
+    for line in lines:
+        line = line.strip()
+        for prefix in prefixes.keys():
+            if f'# {prefix}'.lower() in line.lower():
+                current_tag = prefix
+                break
 
-            urls = [url.split('#')[0].strip() for url in line.split(',')]
-            for url in urls:
-                filter_url = url.split('[')[0].strip()
-                if url.startswith("http") and filter_url not in unique_urls:
-                    files_urls += f"{current_tag}:{url}, "
-                    unique_urls.add(filter_url)
+        urls = [url.split('#')[0].strip() for url in line.split(',')]
+        for url in urls:
+            filter_url = url.split('[')[0].strip()
+            if url.startswith("http") and filter_url not in unique_urls:
+                files_urls += f"{current_tag}:{url}, "
+                unique_urls.add(filter_url)
 
     return files_urls
 
@@ -454,7 +459,7 @@ if custom_file_urls:
     file_urls = [f"{custom_file}.txt" if not custom_file.endswith('.txt') else custom_file 
                  for custom_file in custom_file_urls.replace(',', '').split()]
 
-file_urls_result = process_file_downloads(file_urls, PREFIXES)
+file_urls_result = process_file_downloads(file_urls, PREFIXES, empowerment_output)
 
 # URL prefixing
 urls = (Model_url, Vae_url, LoRA_url, Embedding_url, Extensions_url, ADetailer_url)

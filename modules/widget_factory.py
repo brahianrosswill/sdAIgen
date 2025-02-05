@@ -89,6 +89,17 @@ class WidgetFactory:
             **kwargs
         )
 
+    def create_textarea(self, description, value='', placeholder='', class_names=None, **kwargs):
+        """Create a textarea input widget."""
+        return self._create_widget(
+            widgets.Textarea,
+            description=description,
+            value=value,
+            placeholder=placeholder,
+            class_names=class_names,
+            **kwargs
+        )
+
     def create_dropdown(self, options, description, value=None, placeholder='', class_names=None, **kwargs):
         """Create a dropdown widget."""
         if value is None and options:

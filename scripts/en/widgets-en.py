@@ -137,6 +137,22 @@ custom_download_header_popup = factory.create_html('''
 </div>
 ''')
 
+empowerment_widget = factory.create_checkbox('Empowerment', False, class_names=['empowerment'])
+empowerment_output_widget = factory.create_textarea(
+'', '', """Use special tags. Portable analog of "File (txt)"
+Available tags: model, vae, lora, embed, extension, adetailer, control, upscale, clip, config
+---
+For example:
+
+# Lora
+https://civitai.com/api/download/models/229782
+
+# Extension
+https://github.com/hako-mikan/sd-webui-cd-tuner[CD-Tuner]
+""",
+layout={'width': '100%'}
+)
+
 Model_url_widget = factory.create_text('Model:')
 Vae_url_widget = factory.create_text('Vae:')
 LoRA_url_widget = factory.create_text('LoRa:')
@@ -160,6 +176,8 @@ vae_widgets = [vae_header, vae_widget, vae_num_widget]
 additional_widgets = additional_widget_list
 custom_download_widgets = [
     custom_download_header_popup,
+    empowerment_widget,
+    empowerment_output_widget,
     Model_url_widget,
     Vae_url_widget,
     LoRA_url_widget,
@@ -181,6 +199,28 @@ factory.display(WIDGET_LIST)
 
 ## ================== CALLBACK FUNCTION ==================
 
+# Initialize visibility
+check_custom_nodes_deps_widget.layout.display = 'none'  # Initially hidden
+empowerment_output_widget.layout.display = 'none'       # Initially hidden
+
+# Callback functions for XL options
+def update_XL_options(change, widget):
+    selected = change['new']
+
+    default_model_values = {
+        True: ('3. WAI-illustrious [Anime] [V9] [XL]', 'none', 'none'),            # For XL models
+        False: ('4. Counterfeit [Anime] [V3] + INP', '3. Blessed2.vae', 'none')    # For 1.5 models
+    }
+
+    # GET DATA MODELs | VAES| CNETs
+    data_file = '_xl-models-data.py' if selected else '_models-data.py'
+    model_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'model')
+    vae_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'vae')
+    controlnet_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'cnet')
+
+    # Set default values from the dictionary
+    model_widget.value, vae_widget.value, controlnet_widget.value = default_model_values[selected]
+
 # Callback functions for updating widgets
 def update_change_webui(change, widget):
     selected_webui = change['new']
@@ -198,29 +238,32 @@ def update_change_webui(change, widget):
         check_custom_nodes_deps_widget.layout.display = 'none'
         Extensions_url_widget.description = 'Extensions:'
 
-# Initialize visibility of the check dependencies widget
-check_custom_nodes_deps_widget.layout.display = 'none'  # Initially hidden
+# Callback functions for Empowerment
+def update_empowerment(change, widget):
+    selected_emp = change['new']
 
-def update_XL_options(change, widget):
-    selected = change['new']
+    customDL_widgets = [
+        Model_url_widget,
+        Vae_url_widget, 
+        LoRA_url_widget,
+        Embedding_url_widget,
+        Extensions_url_widget,
+        ADetailer_url_widget
+    ]
 
-    default_model_values = {
-        True: ('3. WAI-illustrious [Anime] [V9] [XL]', 'none', 'none'),            # For XL models
-        False: ('4. Counterfeit [Anime] [V3] + INP', '3. Blessed2.vae', 'none')    # For 1.5 models
-    }
+    if selected_emp:
+        for wg in customDL_widgets:
+            wg.layout.display = 'none'
+        empowerment_output_widget.layout.display = 'inline-block'
+    else:
+        for wg in customDL_widgets:
+            wg.layout.display = ''    # idk why, but that's the way it's supposed to be >_<'
+        empowerment_output_widget.layout.display = 'none'
 
-    # GET DATA MODELs | VAES| CNETs
-    data_file = '_xl-models-data.py' if selected else '_models-data.py'
-    model_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'model')
-    vae_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'vae')
-    controlnet_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'cnet')
-
-    # Set default values from the dictionary
-    model_widget.value, vae_widget.value, controlnet_widget.value = default_model_values[selected]
-    
 # Connecting widgets
 factory.connect_widgets([(change_webui_widget, 'value')], update_change_webui)
 factory.connect_widgets([(XL_models_widget, 'value')], update_XL_options)
+factory.connect_widgets([(empowerment_widget, 'value')], update_empowerment)
 
 ## ============== Load / Save - Settings V3 ==============
 
@@ -229,7 +272,10 @@ SETTINGS_KEYS = [
       'latest_webui', 'latest_extensions', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
       'controlnet', 'controlnet_num', 'commit_hash',
       'civitai_token', 'huggingface_token', 'zrok_token', 'ngrok_token', 'commandline_arguments',
-      'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'ADetailer_url', 'custom_file_urls'
+      # CustomDL
+      'empowerment', 'empowerment_output',
+      'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'ADetailer_url',
+      'custom_file_urls'
 ]
 
 def save_settings():
