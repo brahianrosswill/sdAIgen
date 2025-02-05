@@ -5,7 +5,7 @@
     "sd_i2i_scheduler": "Karras",
     "aria2_flags": "--optimize-concurrent-downloads --console-log-level=error -j5 -x16 -s16 -k1M -c",
     "unpack_zip": true,
-    "ad_max_models": 6,
+    "ad_max_models": 5,
     "control_net_unit_count": 6,
     "cross_attention_optimization": "xformers",
     "state_txt2img": [
@@ -105,10 +105,5 @@
     "live_preview_fast_interrupt": true,
     "extra_networks_card_width": 200.0,
     "extra_networks_card_height": 300.0,
-    "extra_networks_card_text_scale": 0.8,
-    "tagger_hf_cache_dir": "",
-    "ad_extra_models_dir": "",
-    "sd_checkpoint_hash": "",
-    "sd_model_checkpoint": "",
-    "sd_vae": "None"
+    "extra_networks_card_text_scale": 0.8
 }

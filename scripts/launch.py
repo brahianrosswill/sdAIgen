@@ -74,14 +74,12 @@ def get_public_ip(version='ipv4'):
 
 def update_config_paths(config_path, paths_to_check):
     """Update configuration paths in the specified JSON config file."""
-    if os.path.exists(config_path):
-        with open(config_path, 'r') as file:
-            config_data = json.load(file)
-        for key, expected_value in paths_to_check.items():
-            if key in config_data and config_data[key] != expected_value:
-                sed_command = f"sed -i 's|\"{key}\": \".*\"|\"{key}\": \"{expected_value}\"|' {config_path}"
-                ipySys(sed_command)
-                
+    for key, expected_value in paths_to_check.items():
+        if js.key_exists(config_path, key):
+            js.update(config_path, key, expected_value)
+        else:
+            js.save(config_path, key, expected_value)
+             
 def trash_checkpoints():
     dirs = ["A1111", "ReForge", "ComfyUI", "Forge"]
     paths = [Path(HOME) / name for name in dirs]
