@@ -218,6 +218,15 @@ PREFIXES = {
     "clip": clip_dir,
     "config": WEBUI
 }
+SHORT_PREFIXES = {
+    "model": "$ckpt",
+    "embed": "$emb",
+    "extension": "$ext",
+    "adetailer": "$ad",
+    "control": "$cn",
+    "upscale": "$up",
+    "config": "$cfg"
+}
 for path in PREFIXES.values():
     os.makedirs(path, exist_ok=True)
 
@@ -227,7 +236,7 @@ def _center_text(text, terminal_width=45):
     padding = (terminal_width - len(text)) // 2
     return f"{' ' * padding}{text}{' ' * padding}"
 
-def format_output(url, dst_dir, file_name, image_url=None, image_name=None, paid_model=None):
+def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
     info = _center_text(f"[{file_name.split('.')[0]}]")
     sep_line = '---' * 20
 
@@ -287,7 +296,7 @@ def _handle_manual_download(link):
             try:
                 manual_download(path, dir, file_name=file_name, prefix=prefix)
             except Exception as e:
-                print(f"Error downloading file: {e}")
+                print(f"\nError downloading file: {e}")
         else:
             extension_repo.append((path, file_name))
 
@@ -438,9 +447,10 @@ def process_file_downloads(file_urls, prefixes, additional_lines=None):
 
     current_tag = None
     for line in lines:
-        line = line.strip()
+        line = line.strip().lower()
         for prefix in prefixes.keys():
-            if f'# {prefix}'.lower() in line.lower():
+            # if f'# {prefix}'.lower() in line.lower():
+            if f'# {prefix}'.lower() in line or f'{SHORT_PREFIXES[prefix]}'.lower() in line:
                 current_tag = prefix
                 break
 
