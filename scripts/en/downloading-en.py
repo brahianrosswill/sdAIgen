@@ -174,7 +174,13 @@ if latest_webui or latest_extensions:
 
         ## Update extensions
         if latest_extensions:
-            ipySys('{\'for dir in \' + WEBUI + \'/extensions/*/; do cd \\"$dir\\" && git reset --hard && git pull; done\'}')          
+            # ipySys('{\'for dir in \' + WEBUI + \'/extensions/*/; do cd \\"$dir\\" && git reset --hard && git pull; done\'}')
+            for entry in os.listdir(f'{WEBUI}/extensions'):
+                dir_path = f'{WEBUI}/extensions/{entry}'
+                if os.path.isdir(dir_path):
+                    subprocess.run(['git', 'reset', '--hard'], cwd=dir_path, check=True)
+                    subprocess.run(['git', 'pull'], cwd=dir_path, check=True)
+
     print(f"\r✨ Update {action} Completed!")
 
 

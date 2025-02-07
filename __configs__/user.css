@@ -1,8 +1,3 @@
-/* Hide 'HyperNetworks' Tab */
-.tabs.gradio-tabs.extra-networks .tab-nav > :nth-child(3) {
-    display: none;
-}
-
 /* Other */ 
 .gradio-container {
   padding: 15px !important;

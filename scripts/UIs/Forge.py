@@ -23,6 +23,8 @@ WEBUI = HOME / UI
 SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
+ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
+
 REPO_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"
 BRANCH = js.read(SETTINGS_PATH, 'ENVIRONMENT.branch')
 EXTS = js.read(SETTINGS_PATH, 'WEBUI.extension_dir')
@@ -71,7 +73,6 @@ async def download_configuration():
         
         ## OTHER | ON
         "https://github.com/gutris1/sd-image-info Image-Info",
-        "https://github.com/gutris1/sd-encrypt-image Encrypt-Image",
 
         ## OTHER | OFF
         # "https://github.com/Bing-su/adetailer Adetailer",
@@ -89,6 +90,9 @@ async def download_configuration():
         # "https://github.com/Tsukreya/Umi-AI-Wildcards",
         # "https://github.com/picobyte/stable-diffusion-webui-wd14-tagger wd14-tagger"
     ]
+    if ENV_NAME == 'Kaggle':
+        extensions_list.append("https://github.com/gutris1/sd-encrypt-image Encrypt-Image")
+
     CD(EXTS)
 
     tasks = []

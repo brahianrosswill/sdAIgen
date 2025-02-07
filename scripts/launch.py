@@ -218,7 +218,7 @@ paths_to_check = {
     "ad_extra_models_dir": adetailer_dir,
     "sd_checkpoint_hash": "",
     "sd_model_checkpoint": "",
-    "sd_vae": "None"
+    "sd_vae": "Automatic"
 }
 update_config_paths(f'{WEBUI}/config.json', paths_to_check)
 ## Remove '.ipynb_checkpoints' dirs in UI

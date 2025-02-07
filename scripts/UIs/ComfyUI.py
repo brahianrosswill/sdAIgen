@@ -23,6 +23,8 @@ WEBUI = HOME / UI
 SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
+ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
+
 REPO_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"
 BRANCH = js.read(SETTINGS_PATH, 'ENVIRONMENT.branch')
 EXTS = js.read(SETTINGS_PATH, 'WEBUI.extension_dir')
