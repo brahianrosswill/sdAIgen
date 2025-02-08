@@ -48,7 +48,7 @@ def install_dependencies(commands):
 
 def setup_venv():
     """Customize the virtual environment."""
-    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/venv-torch251-cu121-Kfac.tar.lz4"
+    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/venv-torch251-cu121-K-all.tar.lz4"
     fn = Path(url).name
 
     m_download(f'{url} {HOME} {fn}')
@@ -230,7 +230,7 @@ SHORT_PREFIXES = {
     "extension": "$ext",
     "adetailer": "$ad",
     "control": "$cn",
-    "upscale": "$up",
+    "upscale": "$ups",
     "config": "$cfg"
 }
 for path in PREFIXES.values():

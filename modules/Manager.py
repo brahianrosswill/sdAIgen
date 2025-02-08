@@ -94,7 +94,7 @@ def execute_download_command(url, filename, aria2_command, is_special_domain, is
     if is_special_domain:
         command = f"{aria2_command} '{url}'"
         if not filename:
-            filename = get_file_name(urlparse)
+            filename = get_file_name(url)
         if filename:
             command += f" -o '{filename}'"
         monitor_aria2_download(command, filename, url, log)

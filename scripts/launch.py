@@ -92,7 +92,7 @@ def trash_checkpoints():
 
 def check_tunnel_server(url, tunnel_name):
     """Check if the tunnel server is reachable."""
-    timeout = 5
+    timeout = 2
     try:
         response = requests.get(url, timeout=timeout)
         if response.status_code == 200:
@@ -218,7 +218,7 @@ paths_to_check = {
     "ad_extra_models_dir": adetailer_dir,
     "sd_checkpoint_hash": "",
     "sd_model_checkpoint": "",
-    "sd_vae": "Automatic"
+    "sd_vae": "None"
 }
 update_config_paths(f'{WEBUI}/config.json', paths_to_check)
 ## Remove '.ipynb_checkpoints' dirs in UI
