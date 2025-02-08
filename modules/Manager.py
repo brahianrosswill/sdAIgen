@@ -50,10 +50,11 @@ def m_download(line, log=False, unzip=False):
         return
 
     for link in links:
-        if link.endswith('.txt') and Path(link).expanduser().is_file():
-            with open(Path(link).expanduser(), 'r') as file:
-                for file_link in file:
-                    process_download(file_link.strip(), log, unzip)
+        url = link[0]
+        if url.endswith('.txt') and Path(url).expanduser().is_file():
+            with open(Path(url).expanduser(), 'r') as file:
+                for line in file:
+                    process_download(line, log, unzip)
         else:
             process_download(link, log, unzip)
 
@@ -73,7 +74,7 @@ def process_download(line, log, unzip):
     try:
         if path:
             path.mkdir(parents=True, exist_ok=True)
-            CD(current_dir)
+            CD(path)
 
         download_file(url, filename, log)
         if unzip and filename and filename.endswith('.zip'):
