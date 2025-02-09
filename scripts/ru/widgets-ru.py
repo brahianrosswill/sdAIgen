@@ -43,10 +43,10 @@ def read_model_data(file_path, data_type):
         return ['none', 'ALL'] + cnet_names
 
 webui_selection = {
-    'A1111': "--xformers --no-half-vae",
+    'A1111': "--xformers",  # Removed: --no-half-vae
     'ReForge': "--xformers --cuda-stream --pin-shared-memory",
     'ComfyUI': "--dont-print-server --preview-method auto --use-pytorch-cross-attention",
-    'Forge': "--opt-sdp-attention --cuda-stream --cuda-malloc --pin-shared-memory"  # Remove: --disable-xformers 
+    'Forge': "--opt-sdp-attention --cuda-stream --pin-shared-memory"  # Removed: --disable-xformers --cuda-malloc
 }
 
 # Initialize the WidgetFactory

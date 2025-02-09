@@ -181,7 +181,7 @@ if latest_webui or latest_extensions:
                     subprocess.run(['git', 'reset', '--hard'], cwd=dir_path)
                     subprocess.run(['git', 'pull'], cwd=dir_path)
 
-    print(f"\r✨ Update {action} Completed!")
+    print(f"\r✨ Обновление {action} Завершено!")
 
 
 # === FIXING EXTENSIONS ===
