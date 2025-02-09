@@ -81,8 +81,7 @@ def setup_venv():
     ipySys(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python*')
 
     # Create a virtual environment
-    # python_command = 'python3.10' if ENV_NAME == 'Google Colab' else 'python3'
-    python_command = 'python3'
+    python_command = 'python3.10' if ENV_NAME == 'Google Colab' else 'python3'
     venv_commands = [
         f'{python_command} -m venv {VENV}',
         f'{VENV}/bin/python3 -m pip install -U --force-reinstall pip',
@@ -145,7 +144,7 @@ locals().update(settings)
 
 ## ======================== WEBUI ========================
 
-if not os.path.exists('/root/.cache/huggingface/hub'):
+if UI != 'ComfyUI' and not os.path.exists('/root/.cache/huggingface/hub'):
     print('🚚 Распаковка кэша моделей ADetailer...')
 
     name_zip = 'hf_cache_adetailer'

@@ -92,7 +92,8 @@ async def download_configuration():
     ]
     if ENV_NAME == 'Kaggle':
         extensions_list.append("https://github.com/gutris1/sd-encrypt-image Encrypt-Image")
-    
+
+    os.makedirs(EXTS, exist_ok=True)
     CD(EXTS)
 
     tasks = []

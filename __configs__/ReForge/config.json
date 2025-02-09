@@ -3,7 +3,7 @@
     "unpack_zip": true,
     "ad_max_models": 6,
     "control_net_unit_count": 6,
-    "cross_attention_optimization": "xformers",
+    "cross_attention_optimization": "None",
     "state_txt2img": [
         "prompt",
         "negative_prompt",

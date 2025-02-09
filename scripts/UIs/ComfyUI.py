@@ -75,6 +75,7 @@ async def download_configuration():
         "https://github.com/ssitu/ComfyUI_UltimateSDUpscale",
         "https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet"
     ]
+    os.makedirs(EXTS, exist_ok=True)
     CD(EXTS)
 
     tasks = []
