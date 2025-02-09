@@ -145,6 +145,19 @@ locals().update(settings)
 
 ## ======================== WEBUI ========================
 
+if not os.path.exists('/root/.cache/huggingface/hub'):
+    print('🚚 Распаковка кэша моделей ADetailer...')
+
+    name_zip = 'hf_cache_adetailer'
+    chache_url = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main/hf_chache_adetailer.zip'
+
+    zip_path = f'{HOME}/{name_zip}.zip'
+    m_download(f'{chache_url} {HOME} {name_zip}')
+    ipySys(f'unzip -q -o {zip_path} -d /')
+    ipySys(f'rm -rf {zip_path}')
+
+    clear_output()
+
 start_timer = js.read(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
 
 if not os.path.exists(WEBUI):

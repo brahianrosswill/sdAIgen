@@ -1,3 +1,5 @@
+""" Manager Module | by ANXETY """
+
 import json_utils as js    # JSON
 
 from urllib.parse import urlparse, parse_qs
