@@ -28,25 +28,26 @@ a {
 /* Sprecial Styles */
 /* === ScrollBar === */
 .widget-textarea textarea::-webkit-scrollbar {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.65rem;
+  height: 0.65rem;
 }
 .widget-textarea textarea::-webkit-scrollbar-thumb {
   background: #475254 !important;
-  border-radius: 30px;
+  border-radius: 16px;
+  border: 3px solid #111111;
 }
 .widget-textarea textarea::-webkit-scrollbar-thumb:hover {
   background: #db88ae !important;
 }
 .widget-textarea textarea::-webkit-scrollbar-track,
 .widget-textarea textarea::-webkit-scrollbar-corner {
-  background: #0b0b0b !important;
-  border-radius: 30px;
+  background: #111111 !important;
+  border-radius: 0 8px 8px 0;
 }
 /* FireFox */ 
 .widget-textarea textarea {
   scrollbar-width: auto;
-  scrollbar-color: #475254 #0b0b0b;
+  scrollbar-color: #475254 #111111;
 }
 
 /* Text FONTs */

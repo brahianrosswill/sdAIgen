@@ -47,7 +47,7 @@ def compare_versions(installed_version, required_version):
 
 def install_package(package_spec):
     """Installs a package."""
-    print(f"\033[1;33mInstalling >> \033[0m{package_spec}")
+    print(f"\033[1;32mInstalling >> \033[0m{package_spec}")
     subprocess.run([sys.executable, "-m", "pip", "install", package_spec], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def install_requirements(requirements_file_path, installed_packages):
@@ -74,7 +74,7 @@ def install_requirements(requirements_file_path, installed_packages):
 def run_install_script(install_script_path):
     """Runs install.py if it exists."""
     if install_script_path.exists():
-        print(f"\033[1;34mRunning install script from \033[0m{install_script_path}...")
+        print(f"\033[1;33mRunning install script from \033[0m{install_script_path}...")
         subprocess.run([sys.executable, str(install_script_path)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def log_installed_packages(installed_packages, log_file_path):
