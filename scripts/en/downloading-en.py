@@ -58,18 +58,19 @@ def setup_venv():
     if ENV_NAME == 'Google Colab':
         install_commands.append("apt -y install python3.10-venv")
         
-        for blyat in [
-            'sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python',
-            'sudo ln -sf /usr/bin/python3.10 /usr/bin/python3',
-            'sudo rm -rf /usr/local/lib/python3.10',
-            'sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10'
-        ]:
-            ipySys(blyat)
+        # for blyat in [
+        #     'sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python',
+        #     'sudo ln -sf /usr/bin/python3.10 /usr/bin/python3',
+        #     'sudo rm -rf /usr/local/lib/python3.10',
+        #     'sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10'
+        # ]:
+        #     ipySys(blyat)
     else:
-        install_commands.extend([
-            "pip install ipywidgets jupyterlab_widgets --upgrade",
-            "rm -f /usr/lib/python3.10/sitecustomize.py"
-        ])
+        # install_commands.extend([
+        #     "pip install ipywidgets jupyterlab_widgets --upgrade",
+        #     "rm -f /usr/lib/python3.10/sitecustomize.py"
+        # ])
+        pass
 
     install_commands.append("apt -y install lz4 pv")
     install_dependencies(install_commands)
