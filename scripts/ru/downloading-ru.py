@@ -250,7 +250,7 @@ SHORT_PREFIXES = {
     "embed": "$emb",
     "extension": "$ext",
     "adetailer": "$ad",
-    "control": "$cn",
+    "control": "$cnet",
     "upscale": "$ups",
     "config": "$cfg"
 }
@@ -474,10 +474,12 @@ def process_file_downloads(file_urls, prefixes, additional_lines=None):
 
     current_tag = None
     for line in lines:
-        line = line.strip().lower()
+        tag_line = line.strip().lower()
         for prefix in prefixes.keys():
-            # if f'# {prefix}'.lower() in line.lower():
-            if f'# {prefix}'.lower() in line or f'{SHORT_PREFIXES[prefix]}'.lower() in line:
+            long_tag = f'# {prefix}'
+            short_tag = SHORT_PREFIXES.get(prefix, None)
+            
+            if (long_tag.lower() in tag_line) or (short_tag and short_tag.lower() in tag_line):
                 current_tag = prefix
                 break
 
@@ -487,6 +489,10 @@ def process_file_downloads(file_urls, prefixes, additional_lines=None):
             if url.startswith("http") and filter_url not in unique_urls:
                 files_urls += f"{current_tag}:{url}, "
                 unique_urls.add(filter_url)
+
+    # Return string if no tag was found | FIX
+    if current_tag is None:
+        return ''
 
     return files_urls
 
