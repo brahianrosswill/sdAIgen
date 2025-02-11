@@ -95,7 +95,9 @@ def get_launch_command(tunnel_port):
 
     common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
     if ENV_NAME == "Kaggle":
-        common_args += f' --encrypt-pass={password} --api'
+        common_args += f' --encrypt-pass={password}'
+    else:
+        common_args += ' --share'
 
     return f'{py} launch.py --port={tunnel_port} {base_args}{common_args}'
 
@@ -196,7 +198,7 @@ class TunnelManager:
 
         return (
             self.tunnels,
-            len(self.tunnels),
+            len(self.success_urls + self.error_urls),    # Total Tunnel
             len(self.success_urls),
             len(self.error_urls)
         )
@@ -217,7 +219,7 @@ if __name__ == "__main__":
     tunnelingService.logger.setLevel(logging.DEBUG)
     
     for tunnel in tunnels:
-        tunneling.add_tunnel(**tunnel)
+        tunnelingService.add_tunnel(**tunnel)
 
     clear_output(wait=True)
 
@@ -244,7 +246,7 @@ if __name__ == "__main__":
                 js.save(COMFYUI_SETTINGS_PATH, 'install_req', True)
                 clear_output(wait=True)
         
-        print(f"\033[34m>> Active Tunnels:\033[0m {total} | \033[32mSuccess:\033[0m {success} | \033[31mErrors:\033[0m {errors}\n")
+        print(f"\033[34m>> Total Tunnels:\033[0m {total} | \033[32mSuccess:\033[0m {success} | \033[31mErrors:\033[0m {errors}\n")
         print(f"🔧 WebUI: \033[34m{UI}\033[0m")
         
         try:

@@ -1,8 +1,12 @@
-/* Other */ 
+/* Other */
+.label-wrap > span { /* Fix CheckBox*/
+  display: inline-flex;
+  align-items: center;
+}
+
 .gradio-container {
   padding: 15px !important;
 }
-
 div.compact {
   gap: 6px !important;
 }
