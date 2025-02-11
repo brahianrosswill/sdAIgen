@@ -35,6 +35,12 @@ WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 py = Path(VENV) / 'bin/python3'
 
 
+"""Set up environment variables"""
+os.environ["PYTHONWARNINGS"] = "ignore"
+if f'{VENV}/bin' not in os.environ['PATH']:
+    os.environ['PATH'] = f'{VENV}/bin:' + os.environ['PATH']
+
+
 ## ================ loading settings V5 ==================
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -54,33 +60,7 @@ locals().update(settings)
 
 ## ======================= Other =========================
 
-def is_package_installed(package_name):
-    """Check if a package is installed globally using npm."""
-    try:
-        subprocess.run(["npm", "ls", "-g", package_name], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
-def get_public_ip(version='ipv4'):
-    """Retrieve the public IP address."""
-    try:
-        url = f'https://api64.ipify.org?format=json&{version}=true'
-        response = requests.get(url)
-        return response.json().get('ip', 'N/A')
-    except Exception as e:
-        print(f"Error getting public {version} address:", e)
-        return None
-
-def update_config_paths(config_path, paths_to_check):
-    """Update configuration paths in the specified JSON config file."""
-    for key, expected_value in paths_to_check.items():
-        if js.key_exists(config_path, key):
-            js.update(config_path, key, expected_value)
-        else:
-            js.save(config_path, key, expected_value)
-             
-def trash_checkpoints():
+def Trashing():
     dirs = ["A1111", "ReForge", "ComfyUI", "Forge"]
     paths = [Path(HOME) / name for name in dirs]
 
@@ -88,162 +68,170 @@ def trash_checkpoints():
         cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-## =================== Tunnel Functions ==================
+def _update_config_paths():
+    """Update configuration paths in WebUI config file"""
+    config_mapping = {
+        "tagger_hf_cache_dir": f"{WEBUI}/models/interrogators/",
+        "ad_extra_models_dir": adetailer_dir,
+        "sd_checkpoint_hash": "",
+        "sd_model_checkpoint": "",
+        "sd_vae": "None"
+    }
 
-def check_tunnel_server(url, tunnel_name):
-    """Check if the tunnel server is reachable."""
-    timeout = 2
-    try:
-        response = requests.get(url, timeout=timeout)
-        if response.status_code == 200:
-            print(f"\033[32m> [SUCCESS]: Tunnel '\033[0m{tunnel_name}\033[32m' is reachable at \033[0m{url}")
-            return True
+    config_file = f"{WEBUI}/config.json"
+    for key, value in config_mapping.items():
+        if js.key_exists(config_file, key):
+            js.update(config_file, key, str(value))
         else:
-            error_message = f"returned status code '{response.status_code}'"
-    except requests.RequestException as e:
-        error_message = f"Unable to access the tunnel: {e}"
+            js.save(config_file, key, str(value))
 
-    print(f"\033[31m> [ERROR]: Tunnel '\033[0m{tunnel_name}\033[31m' at {url} >> {error_message}\033[0m")
-    return False
+def get_launch_command(tunnel_port):
+    """Construct launch command based on configuration"""
+    base_args = commandline_arguments
+    password = 'vo9fdxgc0zkvghqwzrlz6rk2o00h5sc7'
 
-def _zrok_enable(token):
-    zrok_env_path = HOME / '.zrok/environment.json'
+    if UI == 'ComfyUI':
+        return f'{py} main.py --port={tunnel_port} {base_args}'
 
-    current_token = None
-    if zrok_env_path.exists():
-        with open(zrok_env_path, 'r') as f:
-            current_token = json.load(f).get('zrok_token')
+    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
+    if ENV_NAME == "Kaggle":
+        common_args += f' --encrypt-pass={password} --api'
 
-    if current_token != token:
-        ipySys('zrok disable &> /dev/null')
-    ipySys(f'zrok enable {token} &> /dev/null')
+    return f'{py} launch.py --port={tunnel_port} {base_args}{common_args}'
 
-def _ngrok_auth(token):
-    yml_ngrok_path = HOME / '.config/ngrok/ngrok.yml'
+## ===================== Tunneling =======================
 
-    current_token = None
-    if yml_ngrok_path.exists():
-        with open(yml_ngrok_path, 'r') as f:
-            current_token = yaml.safe_load(f).get('agent', {}).get('authtoken')
-
-    if current_token != token:
-        ipySys(f'ngrok config add-authtoken {token}')
-        
-def setup_tunnels(tunnel_port, public_ipv4):
-    """Setup tunneling commands based on available packages and configurations."""
-    tunnels = []
+class TunnelManager:
+    """Class for managing tunnel services"""
     
-    # Check Cloudflared
-    cloudflared_url = 'https://www.cloudflare.com'
-    if check_tunnel_server(cloudflared_url, "Cloudflared"):
-        tunnels.append({
-            "command": f"cl tunnel --url localhost:{tunnel_port}",
-            "name": "Cloudflared",
-            "pattern": re.compile(r"[\w-]+\.trycloudflare\.com")
-        })
+    def __init__(self, tunnel_port):
+        self.tunnel_port = tunnel_port
+        self.tunnels = []
+        self.success_urls = []
+        self.error_urls = []
+        self.public_ip = self._get_public_ip()
 
-    # Check LocalTunnel
-    if is_package_installed('localtunnel'):
-        localtunnel_url = 'https://localtunnel.me'
-        if check_tunnel_server(localtunnel_url, "Localtunnel"):
-            tunnels.append({
-                "command": f"lt --port {tunnel_port}",
-                "name": "Localtunnel",
-                "pattern": re.compile(r"[\w-]+\.loca\.lt"),
-                "note": f"Password : \033[32m{public_ipv4}\033[0m rerun cell if 404 error."
-            })
-
-    # Check Pinggy
-    pinggy_url = 'https://pinggy.io'
-    if check_tunnel_server(pinggy_url, "Pinggy"):
-        tunnels.append({
-            "command": f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{tunnel_port} a.pinggy.io",
-            "name": "Pinggy",
-            "pattern": re.compile(r"[\w-]+\.a\.free\.pinggy\.link")
-        })
-
-    # Check Zrok
-    if zrok_token:
-        zrok_url = 'https://status.zrok.io'
-        if check_tunnel_server(zrok_url, "Zrok"):
-            _zrok_enable(zrok_token)
-            tunnels.append({
-                "command": f"zrok share public http://localhost:{tunnel_port}/ --headless",
-                "name": "Zrok",
-                "pattern": re.compile(r"[\w-]+\.share\.zrok\.io")
-            })
+    def _get_public_ip(self) -> str:
+        """Retrieve and cache public IPv4 address"""
+        cached_ip = js.read(SETTINGS_PATH, 'ENVIRONMENT.public_ip')
+        if cached_ip:
+            return cached_ip
         
-    # Check Ngrok
-    if ngrok_token:
-        ngrok_url = 'https://ngrok.com'
-        if check_tunnel_server(ngrok_url, "Ngrok"):
-            _ngrok_auth(ngrok_token)
-            tunnels.append({
-                "command": f"ngrok http http://localhost:{tunnel_port} --log stdout",
-                "name": "Ngrok",
-                "pattern": re.compile(r"https://[\w-]+\.ngrok-free\.app")
-            })
+        try:
+            response = requests.get('https://api64.ipify.org?format=json&ipv4=true', timeout=5)
+            public_ip = response.json().get('ip', 'N/A')
+            js.update(SETTINGS_PATH, "ENVIRONMENT.public_ip", public_ip)
+            return public_ip
+        except Exception as e:
+            print(f"Error getting public IP address: {e}")
+            return 'N/A'
 
-    return tunnels
+    def _check_service_availability(self, url, name):
+        """Check if a tunnel service is reachable"""
+        try:
+            response = requests.get(url, timeout=2)
+            if response.status_code == 200:
+                print(f"\033[32m> [SUCCESS]: Tunnel '\033[0m{name}\033[32m' is reachable at \033[0m{url}")
+                self.success_urls.append(url)
+                return True
+        except requests.RequestException as e:
+            print(f"\033[31m> [ERROR]: Tunnel '\033[0m{name}\033[31m' - {e}\033[0m")
+            self.error_urls.append(url)
+        return False
+
+    def setup_tunnels(self):
+        """Configure all available tunnel services"""
+        services = [
+            ('https://www.cloudflare.com', 'Cloudflared', {
+                "command": f"cl tunnel --url localhost:{self.tunnel_port}",
+                "pattern": re.compile(r"[\w-]+\.trycloudflare\.com")
+            }),
+            ('https://pinggy.io', 'Pinggy', {
+                "command": f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{self.tunnel_port} a.pinggy.io",
+                "pattern": re.compile(r"[\w-]+\.a\.free\.pinggy\.link")
+            }),
+            ('https://localtunnel.me', 'Localtunnel', {
+                "command": f"lt --port {self.tunnel_port}",
+                "pattern": re.compile(r"[\w-]+\.loca\.lt"),
+                "note": f"Password : \033[32m{self.public_ip}\033[0m"
+            })
+        ]
+
+        if zrok_token:
+            env_path = HOME / '.zrok/environment.json'
+            current_token = None
+            
+            if env_path.exists():
+                with open(env_path, 'r') as f:
+                    current_token = json.load(f).get('zrok_token')
+
+            if current_token != zrok_token:
+                ipySys('zrok disable &> /dev/null')
+                ipySys(f'zrok enable {zrok_token} &> /dev/null')
+
+            services.append(('https://status.zrok.io', 'Zrok', {
+                "command": f"zrok share public http://localhost:{self.tunnel_port}/ --headless",
+                "pattern": re.compile(r"[\w-]+\.share\.zrok\.io")
+            }))
+
+        if ngrok_token:
+            config_path = HOME / '.config/ngrok/ngrok.yml'
+            current_token = None
+            
+            if config_path.exists():
+                with open(config_path, 'r') as f:
+                    current_token = yaml.safe_load(f).get('agent', {}).get('authtoken')
+
+            if current_token != ngrok_token:
+                ipySys(f'ngrok config add-authtoken {ngrok_token}')
+
+            services.append(('https://ngrok.com', 'Ngrok', {
+                "command": f"ngrok http http://localhost:{self.tunnel_port} --log stdout",
+                "pattern": re.compile(r"https://[\w-]+\.ngrok-free\.app")
+            }))
+
+        for url, name, config in services:
+            if self._check_service_availability(url, name):
+                self.tunnels.append({**config, "name": name})
+
+        return (
+            self.tunnels,
+            len(self.tunnels),
+            len(self.success_urls),
+            len(self.error_urls)
+        )
 
 ## ========================= Main ========================
 
-print('Please Wait...\n')
+if __name__ == "__main__":
+    """Main execution flow"""
+    print('Please Wait...\n')
 
-# Get public IP address
-public_ipv4 = js.read(SETTINGS_PATH, "ENVIRONMENT.public_ip", None)
-if not public_ipv4:
-    public_ipv4 = get_public_ip(version='ipv4')
-    js.update(SETTINGS_PATH, "ENVIRONMENT.public_ip", public_ipv4)
-
-tunnel_port = 8188 if UI == 'ComfyUI' else 7860
-TunnelingService = Tunnel(tunnel_port)
-TunnelingService.logger.setLevel(logging.DEBUG)
-
-# environ
-if f'{VENV}/bin' not in os.environ['PATH']:
-    os.environ['PATH'] = f'{VENV}/bin:' + os.environ['PATH']
-os.environ["PYTHONWARNINGS"] = "ignore"
-
-# Setup tunnels
-tunnels = setup_tunnels(tunnel_port, public_ipv4)
-for tunnel_info in tunnels:
-    TunnelingService.add_tunnel(**tunnel_info)
-
-clear_output()
-
-# Update configuration paths
-paths_to_check = {
-    "tagger_hf_cache_dir": f"{WEBUI}/models/interrogators/",
-    "ad_extra_models_dir": adetailer_dir,
-    "sd_checkpoint_hash": "",
-    "sd_model_checkpoint": "",
-    "sd_vae": "None"
-}
-update_config_paths(f'{WEBUI}/config.json', paths_to_check)
-## Remove '.ipynb_checkpoints' dirs in UI
-trash_checkpoints()
-
-# Launching the tunnel
-launcher = 'main.py' if UI == 'ComfyUI' else 'launch.py'
-password = 'vo9fdxgc0zkvghqwzrlz6rk2o00h5sc7'
-
-# Setup pinggy timer
-ipySys(f'echo -n {int(time.time())+(3600+20)} > {WEBUI}/static/timer-pinggy.txt')
-
-with TunnelingService:
-    CD(WEBUI)
-    commandline_arguments += f' --port={tunnel_port}'
+    # Initialize tunnel manager and services
+    tunnel_port = 8188 if UI == 'ComfyUI' else 7860
+    tunnel_mgr = TunnelManager(tunnel_port)
+    tunnels, total, success, errors = tunnel_mgr.setup_tunnels()
     
-    # Default args append
-    if UI != 'ComfyUI':
-        commandline_arguments += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
-        # NSFW filter for Kaggle
-        if ENV_NAME == "Kaggle":
-            commandline_arguments += f' --encrypt-pass={password} --api'
+    # Set up tunneling service
+    tunnelingService = Tunnel(tunnel_port)
+    tunnelingService.logger.setLevel(logging.DEBUG)
     
-    ## Launch
-    try:
+    for tunnel in tunnels:
+        tunneling.add_tunnel(**tunnel)
+
+    clear_output(wait=True)
+
+    # Launch sequence
+    Trashing()
+    _update_config_paths()
+    LAUNCHER = get_launch_command(tunnel_port)
+    
+    # Setup pinggy timer
+    ipySys(f'echo -n {int(time.time())+(3600+20)} > {WEBUI}/static/timer-pinggy.txt')
+
+    with tunnelingService:
+        CD(WEBUI)
+
         if UI == 'ComfyUI':
             COMFYUI_SETTINGS_PATH = SCR_PATH / 'ComfyUI.json'
             if check_custom_nodes_deps:
@@ -251,23 +239,29 @@ with TunnelingService:
                 clear_output(wait=True)
 
             if not js.key_exists(COMFYUI_SETTINGS_PATH, 'install_req', True):
-                print("Installing dependencies for ComfyUI from requirements.txt...")
+                print("Installing ComfyUI dependencies...")
                 subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 js.save(COMFYUI_SETTINGS_PATH, 'install_req', True)
                 clear_output(wait=True)
+        
+        print(f"\033[34m>> Active Tunnels:\033[0m {total} | \033[32mSuccess:\033[0m {success} | \033[31mErrors:\033[0m {errors}\n")
+        print(f"🔧 WebUI: \033[34m{UI}\033[0m")
+        
+        try:
+            ipySys(LAUNCHER)
+        except KeyboardInterrupt:
+            pass
 
-        print(f"🔧 WebUI: \033[34m{UI} \033[0m")
-        ipySys(f'{py} {launcher} {commandline_arguments}')
-    except KeyboardInterrupt:
+    # Post-execution cleanup
+    if zrok_token:
+        ipySys('zrok disable &> /dev/null')
+        print('🔐 Zrok tunnel disabled :3')
+
+    # Display session duration
+    try:
+        with open(f'{WEBUI}/static/timer.txt') as f:
+            timer = float(f.read())
+            duration = timedelta(seconds=time.time() - timer)
+            print(f"\n⌚️ Session duration: \033[33m{str(duration).split('.')[0]}\033[0m")
+    except FileNotFoundError:
         pass
-
-# Print session duration
-timer = float(open(f'{WEBUI}/static/timer.txt', 'r').read())
-time_since_start = str(timedelta(seconds=time.time() - timer)).split('.')[0]
-print(f"\n⌚️ You have been conducting this session for - \033[33m{time_since_start}\033[0m")
-
-
-## Zrok Disable | PARANOYA
-if zrok_token:
-    ipySys('zrok disable &> /dev/null')
-    print('🔐 Zrok tunnel was disabled :3')

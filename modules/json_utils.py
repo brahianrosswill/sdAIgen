@@ -44,9 +44,12 @@ def _write_json(filepath, data):
 
 ## =================== Main Functions ====================
 
-def read(filepath, key, default=None):
-    """Reads a value by key from a JSON file, supporting nested structures."""
+def read(filepath, key=None, default=None):
+    """Reads a value by key from a JSON file, or returns the entire content if no key is provided."""
     data = _read_json(filepath)
+    if key is None:
+        return data
+
     keys = key.split('.')
     result = _get_nested_value(data, keys)
     return result if result is not None else default
