@@ -91,7 +91,7 @@ def get_launch_command(tunnel_port):
     password = 'vo9fdxgc0zkvghqwzrlz6rk2o00h5sc7'
 
     if UI == 'ComfyUI':
-        return f'{py} main.py --port={tunnel_port} {base_args}'
+        return f'{py} main.py {base_args}'
 
     common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
     if ENV_NAME == "Kaggle":
@@ -99,7 +99,7 @@ def get_launch_command(tunnel_port):
     else:
         common_args += ' --share'
 
-    return f'{py} launch.py --port={tunnel_port} {base_args}{common_args}'
+    return f'{py} launch.py {base_args}{common_args}'
 
 ## ===================== Tunneling =======================
 

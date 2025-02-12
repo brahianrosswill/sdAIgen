@@ -70,20 +70,19 @@ async def download_configuration():
         ## ANXETY Edits
         "https://github.com/anxety-solo/webui_timer timer",
         "https://github.com/anxety-solo/anxety-theme",
+        "https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus",
         
         ## OTHER | ON
         "https://github.com/gutris1/sd-image-info Image-Info",
+        "https://github.com/gutris1/sd-hub SD-Hub",
 
         ## OTHER | OFF
         # "https://github.com/Bing-su/adetailer Adetailer",
         # "https://github.com/thomasasfk/sd-webui-aspect-ratio-helper Aspect-Ratio-Helper",
         # "https://github.com/richrobber2/canvas-zoom Canvas-Zoom",
-        # "https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus",
         # "https://github.com/Mikubill/sd-webui-controlnet ControlNet",
         # "https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing",
         # "https://github.com/hako-mikan/sd-webui-regional-prompter Regional-Prompter",
-        # "https://github.com/gutris1/sd-image-info Image-Info",
-        # "https://github.com/gutris1/sd-hub SD-Hub",
         # "https://github.com/ilian6806/stable-diffusion-webui-state State",
         # "https://github.com/hako-mikan/sd-webui-supermerger Supermerger",
         # "https://github.com/DominikDoom/a1111-sd-webui-tagcomplete TagComplete",
@@ -99,7 +98,7 @@ async def download_configuration():
     tasks = []
     for command in extensions_list:
         tasks.append(asyncio.create_subprocess_shell(
-            f'git clone --depth 1 --recursive {command}',
+            f'git clone --depth 1 {command}',
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         ))
