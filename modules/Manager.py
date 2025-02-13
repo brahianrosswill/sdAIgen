@@ -70,7 +70,7 @@ def process_download(line, log, unzip):
     if not url:
         return
 
-    path, filename = handle_path_and_filename(parts)
+    path, filename = handle_path_and_filename(parts, url)
     current_dir = Path.cwd()
 
     try:
@@ -84,7 +84,7 @@ def process_download(line, log, unzip):
     finally:
         CD(current_dir)
 
-def handle_path_and_filename(parts):
+def handle_path_and_filename(parts, url):
     """Extract path and filename from parts."""
     if len(parts) >= 3:
         path = Path(parts[1]).expanduser()
@@ -95,13 +95,14 @@ def handle_path_and_filename(parts):
     else:
         path, filename = None, None
 
-    if filename and not Path(filename).suffix:
-        url = parts[0]
-        url_extension = Path(urlparse(url).path).suffix
-        if url_extension:
-            filename += url_extension
-        else:
-            filename = None
+    if 'drive.google.com' not in url:
+        if filename and not Path(filename).suffix:
+            url = parts[0]
+            url_extension = Path(urlparse(url).path).suffix
+            if url_extension:
+                filename += url_extension
+            else:
+                filename = None
 
     return path, filename
 

@@ -265,7 +265,12 @@ def _center_text(text, terminal_width=45):
     return f"{' ' * padding}{text}{' ' * padding}"
 
 def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
-    info = _center_text(f"[{file_name.split('.')[0]}]")
+    info = "[ NONE ]"
+    if file_name:
+        info = _center_text(f"[{file_name.split('.')[0]}]")
+    if not file_name and 'drive.google.com' in url:
+      info = _center_text("[ GDrive ]")
+
     sep_line = '---' * 20
 
     print(f"\n\033[32m{sep_line}\033[36;1m{info}\033[32m{sep_line}\033[0m")
