@@ -80,7 +80,6 @@ async def download_configuration():
         # "https://github.com/Bing-su/adetailer Adetailer",
         # "https://github.com/thomasasfk/sd-webui-aspect-ratio-helper Aspect-Ratio-Helper",
         # "https://github.com/richrobber2/canvas-zoom Canvas-Zoom",
-        # "https://github.com/Mikubill/sd-webui-controlnet ControlNet",
         # "https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing",
         # "https://github.com/hako-mikan/sd-webui-regional-prompter Regional-Prompter",
         # "https://github.com/ilian6806/stable-diffusion-webui-state State",

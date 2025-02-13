@@ -48,7 +48,7 @@ def _set_webui_paths(ui):
     output_dir = webui / webui_output
     
     # other
-    adetailer_dir = models / 'adetailer'
+    adetailer_dir = models / ('ultralytics' if ui == 'ComfyUI' else 'adetailer')
     clip_dir = models / ('clip' if ui == 'ComfyUI' else 'text_encoder')
 
     paths = {

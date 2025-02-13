@@ -14,6 +14,7 @@ from pathlib import Path
 import subprocess
 import requests
 import zipfile
+import shutil
 import shlex
 import time
 import json
@@ -539,6 +540,22 @@ if extension_repo:
         for repo, repo_name in extension_repo:
             _clone_repository(repo, repo_name, extension_dir)
     print(f"\r📦 Installed '{len(extension_repo)}' custom {extension_type}!")
+
+
+# === SPRECIAL ===
+## Sorting models `bbox` and `segm` | Only ComfyUI
+if UI == 'ComfyUI'
+    for filename in os.listdir(adetailer_dir):
+        src = os.path.join(adetailer_dir, filename)
+
+        if os.path.isfile(src) and filename.endswith('.pt'):
+            dest_dir = 'segm' if filename.endswith('-seg.pt') else 'bbox'
+            dest = os.path.join(adetailer_dir, dest_dir, filename)
+
+            if os.path.exists(dest):
+                os.remove(src)
+            else:
+                shutil.move(src, dest)
 
 
 ## List Models and stuff
