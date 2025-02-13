@@ -544,7 +544,11 @@ if extension_repo:
 
 # === SPRECIAL ===
 ## Sorting models `bbox` and `segm` | Only ComfyUI
-if UI == 'ComfyUI'
+if UI == 'ComfyUI':
+    dirs = {'segm': '-seg.pt', 'bbox': None}
+    for d in dirs:
+        os.makedirs(os.path.join(adetailer_dir, d), exist_ok=True)
+
     for filename in os.listdir(adetailer_dir):
         src = os.path.join(adetailer_dir, filename)
 
