@@ -43,7 +43,7 @@ locals().update(settings)
 
 HR = widgets.HTML('<hr class="divider-line">')
 HEADER_DL = 'DOWNLOAD RESULTS'
-VERSION = 'v0.53'
+VERSION = 'v0.55'
 
 factory = WidgetFactory()
 
@@ -64,19 +64,16 @@ def output_container_generator(header, items, is_grid=False):
 
     return factory.create_vbox([header_widget, content_container]).add_class("output-section")
 
-def get_files_list(directory, extensions):
-    """List files in a directory with specific extensions, excluding certain types."""
+def get_all_files_list(directory, extensions, excluded_dirs=[]):
+    """Get all files in the directory and its subdirectories, excluding specified directories."""
     if not os.path.isdir(directory):
-        return []  # Return empty list if directory does not exist
-    return [file for file in os.listdir(directory) if file.endswith(extensions) and not file.endswith(tuple(EXCLUDED_EXTENSIONS))]
+        return []
 
-def get_all_files_list(directory, extensions):
-    """Get all files in the directory and its subdirectories."""
-    if not os.path.isdir(directory):
-        return []  # Return empty list if directory does not exist
-    
     files_list = []
     for root, dirs, files in os.walk(directory):
+        # Exclude specified directories
+        dirs[:] = [d for d in dirs if d not in excluded_dirs]
+        
         for file in files:
             if file.endswith(extensions) and not file.endswith(tuple(EXCLUDED_EXTENSIONS)):
                 files_list.append(file)  # Store only the file name
@@ -85,7 +82,7 @@ def get_all_files_list(directory, extensions):
 def get_folders_list(directory):
     """List folders in a directory, excluding hidden folders."""
     if not os.path.isdir(directory):
-        return []  # Return empty list if directory does not exist
+        return []
     return [
         folder for folder in os.listdir(directory)
         if os.path.isdir(os.path.join(directory, folder)) and not folder.startswith('__')
@@ -94,7 +91,7 @@ def get_folders_list(directory):
 def get_controlnets_list(directory, filter_pattern):
     """List ControlNet files matching a specific pattern."""
     if not os.path.isdir(directory):
-        return []  # Return empty list if directory does not exist
+        return []
     filter_name = re.compile(filter_pattern)
     return [
         filter_name.match(file).group(1) if filter_name.match(file) else file
@@ -108,16 +105,17 @@ header_widget = factory.create_html(f'''
 ''')
 
 # Models
-models_list = get_files_list(model_dir, ('.safetensors', '.ckpt'))
+models_list = get_all_files_list(model_dir, ('.safetensors', '.ckpt'))
 models_widget = output_container_generator('Models', models_list)
 # Vaes
-vaes_list = get_files_list(vae_dir, ('.safetensors',))
+vaes_list = get_all_files_list(vae_dir, ('.safetensors',))
 vaes_widget = output_container_generator('VAEs', vaes_list)
 # Embeddings
-embeddings_list = get_files_list(embed_dir, ('.safetensors', '.pt'))
+embed_filter = ['SD', 'XL']
+embeddings_list = get_all_files_list(embed_dir, ('.safetensors', '.pt'), embed_filter)
 embeddings_widget = output_container_generator('Embeddings', embeddings_list)
 # LoRAs
-loras_list = get_files_list(lora_dir, ('.safetensors',))
+loras_list = get_all_files_list(lora_dir, ('.safetensors',))
 loras_widget = output_container_generator('LoRAs', loras_list)
 # Extensions
 extensions_list = get_folders_list(extension_dir)

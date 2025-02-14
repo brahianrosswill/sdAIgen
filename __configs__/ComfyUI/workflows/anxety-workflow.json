@@ -40,7 +40,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "lowres, worst quality, low quality, bad anatomy, bad hands, 4koma, comic, greyscale, censored, jpeg artifacts, overly saturated, overly vivid"
+        "lowres, (worst quality, low quality:1.2), bad anatomy, bad hands, 4koma, comic, greyscale, censored, jpeg artifacts, overly saturated, overly vivid"
       ]
     },
     {

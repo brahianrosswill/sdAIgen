@@ -383,7 +383,7 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     # if os.path.exists(file_path) and prefix == 'config':
     #     os.remove(file_path)
 
-    m_download(f"{url} {dst_dir} {file_name}", log=True)
+    m_download(f"{url} {dst_dir} {file_name if file_name else ''}", log=True)
 
 ''' SubModels - Added URLs '''
 
@@ -547,7 +547,7 @@ if extension_repo:
     print(f"\r📦 Установлено '{len(extension_repo)}' кастомных {extension_type}!")
 
 
-# === SPRECIAL ===
+# === SPECIAL ===
 ## Sorting models `bbox` and `segm` | Only ComfyUI
 if UI == 'ComfyUI':
     dirs = {'segm': '-seg.pt', 'bbox': None}
