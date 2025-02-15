@@ -1,9 +1,11 @@
-import os
+""" install-deps.py | by ANXETY """ 
+
+from importlib.metadata import distribution, PackageNotFoundError
+from pathlib import Path
 import subprocess
 import sys
 import re
-from pathlib import Path
-from importlib.metadata import distribution, PackageNotFoundError
+import os
 
 def get_enabled_subdirectories_with_files(base_directory):
     """Gets subdirectories containing requirements.txt and install.py files."""
@@ -71,39 +73,51 @@ def install_requirements(requirements_file_path, installed_packages):
                         install_package(package_name)
                         installed_packages.add(package_name)
 
-def run_install_script(install_script_path):
-    """Runs install.py if it exists."""
-    if install_script_path.exists():
+def run_install_script(install_script_path, executed_scripts):
+    """Runs install.py if it exists and hasn't been executed before."""
+    if install_script_path.exists() and str(install_script_path) not in executed_scripts:
         print(f"\033[1;33mRunning install script from \033[0m{install_script_path}...")
         subprocess.run([sys.executable, str(install_script_path)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        executed_scripts.add(str(install_script_path))  # Mark script as executed
 
-def log_installed_packages(installed_packages, log_file_path):
-    """Logs installed packages to a file."""
+def log_installed_packages(installed_packages, executed_scripts, log_file_path):
+    """Logs installed packages and executed scripts to a file."""
     with open(log_file_path, 'w') as f:
         for package in installed_packages:
             if '[' in package or ']' in package or package.startswith('git+'):  # filter name
                 f.write(package + '\n')
+        f.write("\n# Executed install scripts:\n")
+        for script in executed_scripts:
+            f.write(script + '\n')
 
 def main():
     """Main function that searches for and installs libraries."""
     custom_nodes_directory = "custom_nodes"
     log_file_path = "installed_packages.txt"
-    installed_packages = set()
+    installed_packages = set()    # Track installed packages
+    executed_scripts = set()      # Track executed install scripts
 
-    # Load existing installed packages from log file
+    # Load existing installed packages and executed scripts from log file
     if Path(log_file_path).exists():
         with open(log_file_path, 'r') as f:
-            installed_packages.update(line.strip() for line in f)
+            for line in f:
+                stripped_line = line.strip()
+                if stripped_line and not stripped_line.startswith('#'):
+                    installed_packages.add(stripped_line)
+                elif stripped_line.startswith('# Executed install scripts:'):
+                    break  # Stop at the section for executed scripts
+            for line in f:
+                executed_scripts.add(line.strip())
 
     subdirs_with_files = get_enabled_subdirectories_with_files(custom_nodes_directory)
 
     try:
         for full_path, requirements_file, install_script in subdirs_with_files:
             install_requirements(requirements_file, installed_packages)
-            run_install_script(install_script)
+            run_install_script(install_script, executed_scripts)
 
-        # Log installed packages
-        log_installed_packages(installed_packages, log_file_path)
+        # Log installed packages and executed scripts
+        log_installed_packages(installed_packages, executed_scripts, log_file_path)
 
     except KeyboardInterrupt:
         print("\n\033[1;31mScript interrupted by user. Exiting...\033[0m")
