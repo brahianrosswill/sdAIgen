@@ -129,7 +129,7 @@ a {
     border: 1px solid #262626;
     border-radius: 10px;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease-in-out;
+    transition: all 0.25s ease-in-out;
 }
 .widget-textarea textarea {
     height: 200px;
