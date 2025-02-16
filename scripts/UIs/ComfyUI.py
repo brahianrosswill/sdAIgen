@@ -58,8 +58,11 @@ async def download_configuration():
     ## FILES
     url_comfy = f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/{BRANCH}/__configs__/ComfyUI'
     files = [
+        # settings
         f'{url_comfy}/install-deps.py',
-        f'{url_comfy}/comfy.settings.json, {WEBUI}/user/default',
+        f'{url_comfy}/comfy.settings.json, {WEBUI}/user/default',                         # ComfyUI settings
+        f'{url_comfy}/Comfy-Manager/config.ini, {WEBUI}/user/default/ComfyUI-Manager',    # ComfyUI-Manager settings
+        # workflows
         f'{url_comfy}/workflows/anxety-workflow.json, {WEBUI}/user/default/workflows'
     ]
     await download_files(files)
