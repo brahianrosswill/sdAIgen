@@ -191,8 +191,12 @@ if latest_webui or latest_extensions:
         ## Update Webui
         if latest_webui:
             CD(WEBUI)
-            ipySys('git restore .')
-            ipySys('git pull -X theirs --rebase --autostash')
+            # ipySys('git restore .')
+            # ipySys('git pull -X theirs --rebase --autostash')
+            
+            ipySys('git stash')
+            ipySys('git pull --rebase')
+            ipySys('git stash pop')
 
         ## Update extensions
         if latest_extensions:
