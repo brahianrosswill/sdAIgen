@@ -149,9 +149,7 @@ https://civitai.com/api/download/models/229782
 
 # Extension
 https://github.com/hako-mikan/sd-webui-cd-tuner[CD-Tuner]
-""",
-layout={'width': '100%'}
-)
+""")
 
 Model_url_widget = factory.create_text('Model:')
 Vae_url_widget = factory.create_text('Vae:')

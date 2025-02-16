@@ -66,7 +66,7 @@ class WidgetFactory:
         style = kwargs.get('style', self.default_style)
 
         # Set default layout if not provided
-        if widget_type in [widgets.Dropdown, widgets.Text]:
+        if widget_type in [widgets.Text, widgets.Dropdown, widgets.Textarea]:
             if 'layout' not in kwargs and kwargs.get('reset') != True:    # reset -> return default width
                 kwargs['layout'] = widgets.Layout(width='100%')
 
