@@ -56,15 +56,15 @@ async def download_files(file_list):
 
 async def download_configuration():
     ## FILES
-    url_af = f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{BRANCH}/__configs__/'
+    url_cfg = f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{BRANCH}/__configs__'
     configs = [
         # settings
-        f'{url_af}/{UI}/config.json',
-        f'{url_af}/{UI}/ui-config.json',
-        f'{url_af}/styles.csv',
-        f'{url_af}/user.css',
+        f'{url_cfg}/{UI}/config.json',
+        f'{url_cfg}/{UI}/ui-config.json',
+        f'{url_cfg}/styles.csv',
+        f'{url_cfg}/user.css',
         # other
-        f'{url_af}/card-no-preview.png, {WEBUI}/html'
+        f'{url_cfg}/card-no-preview.png, {WEBUI}/html'
     ]
     await download_files(configs)
 
