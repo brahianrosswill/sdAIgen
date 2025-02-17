@@ -56,43 +56,54 @@ def setup_venv():
 
     # Install dependencies based on environment
     install_commands = []
-    if ENV_NAME == 'Google Colab':
-        install_commands.append("apt -y install python3.10-venv")
-        
-        # for blyat in [
-        #     'sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python',
-        #     'sudo ln -sf /usr/bin/python3.10 /usr/bin/python3',
-        #     'sudo rm -rf /usr/local/lib/python3.10',
-        #     'sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10'
-        # ]:
-        #     ipySys(blyat)
-    else:
+    if ENV_NAME == 'Kaggle':
         install_commands.extend([
             "pip install ipywidgets jupyterlab_widgets --upgrade",
             "rm -f /usr/lib/python3.10/sitecustomize.py"
         ])
+    # else:        
+    #     install_commands.append("apt -y install python3.10-venv")
 
-    install_commands.append("apt -y install lz4 pv")
+    #     for blyat in [
+    #         'sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python',
+    #         'sudo ln -sf /usr/bin/python3.10 /usr/bin/python3',
+    #         'sudo rm -rf /usr/local/lib/python3.10',
+    #         'sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10'
+    #     ]:
+    #         ipySys(blyat)
+
+    install_commands.append("sudo apt-get -y install lz4 pv")
     install_dependencies(install_commands)
 
     # Unpack and clean
     CD(HOME)
     ipySys(f'pv {fn} | lz4 -d | tar xf -')
     Path(fn).unlink()
-    ipySys(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python*')
+    # ipySys(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python*')
 
     # Create a virtual environment
-    python_command = 'python3.10' if ENV_NAME == 'Google Colab' else 'python3'
-    venv_commands = [
-        f'{python_command} -m venv {VENV}',
-        f'{VENV}/bin/python3 -m pip install -U --force-reinstall pip',
-        f'{VENV}/bin/python3 -m pip install ipykernel',
-        f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
-    ]
-    if UI == 'Forge':
-        venv_commands.append(f'{VENV}/bin/python3 -m pip uninstall -y transformers')
+    # python_command = 'python3.10' if ENV_NAME == 'Google Colab' else 'python3'
+    # venv_commands = [
+    #     f'{python_command} -m venv {VENV}',
+    #     f'{VENV}/bin/python3 -m pip install -U --force-reinstall pip',
+    #     f'{VENV}/bin/python3 -m pip install ipykernel',
+    #     f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
+    # ]
+    # if UI == 'Forge':
+    #     venv_commands.append(f'{VENV}/bin/python3 -m pip uninstall -y transformers')
 
-    install_dependencies(venv_commands)
+    # install_dependencies(venv_commands)
+
+    BIN = str(VENV / 'bin')
+    PKG = str(VENV / 'lib/python3.10/site-packages')
+
+    if BIN not in os.environ["PATH"]:
+        os.environ["PATH"] = BIN + ":" + os.environ["PATH"]
+
+    if PKG not in os.environ["PYTHONPATH"]:
+        os.environ["PYTHONPATH"] = PKG + ":" + os.environ["PYTHONPATH"]
+
+    os.environ["PYTHONWARNINGS"] = "ignore"
 
 def install_packages(install_lib):
     """Install packages from the provided library dictionary."""

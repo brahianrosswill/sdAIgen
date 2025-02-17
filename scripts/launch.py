@@ -32,13 +32,8 @@ UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
 # USER VENV | python
-py = Path(VENV) / 'bin/python3'
-
-
-"""Set up environment variables"""
-os.environ["PYTHONWARNINGS"] = "ignore"
-if f'{VENV}/bin' not in os.environ['PATH']:
-    os.environ['PATH'] = f'{VENV}/bin:' + os.environ['PATH']
+# py = Path(VENV) / 'bin/python3'
+py = 'python3'
 
 
 ## ================ loading settings V5 ==================
