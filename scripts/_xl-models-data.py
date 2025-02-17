@@ -7,8 +7,8 @@ model_list = {
     "2. NoobAI [Anime] [VP-1.0] [XL]": [
         {"url": "https://civitai.com/api/download/models/1190596", "name": "NoobAI_VP1.safetensors"}
     ],
-    "3. WAI-illustrious [Anime] [V10] [XL]": [
-        {"url": "https://civitai.com/api/download/models/1367422", "name": "WAI-illustrious_V10.safetensors"}
+    "3. WAI-illustrious [Anime] [V11] [XL]": [
+        {"url": "https://civitai.com/api/download/models/1410435", "name": "WAI-illustrious_V11.safetensors"}
     ]
 
 }
