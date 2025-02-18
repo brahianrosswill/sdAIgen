@@ -1,7 +1,8 @@
 # File Descriptions in the Repository
 
-## Directory -> `_configs_`
-- Customization files, styles and other files for the UI
+## Directory -> `__configs__`
+- Customization files, styles and other files for the UI.
+- **install-deps.py**: Script for automatic download of libraries for all custom nodes (ComfyUI).
 
 ## Directory -> `CSS`
 
@@ -38,4 +39,4 @@
   
 #### Subdirectory -> `UIs`
 
-- Downloading the UI repo and its customizations.
+- Downloading the WebUI repository, downloading its config files and installing extensions/nodes.

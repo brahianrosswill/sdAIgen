@@ -49,7 +49,7 @@ def install_dependencies(commands):
 
 def setup_venv():
     """Customize the virtual environment."""
-    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/venv-torch251-cu121-C-acf.tar.lz4"
+    url = "https://huggingface.co/NagisaNao/ANXETY_test/resolve/main/venv-torch251-cu121-C-acf2.tar.lz4"
     fn = Path(url).name
 
     m_download(f'{url} {HOME} {fn}')
@@ -180,10 +180,10 @@ if not os.path.exists(WEBUI):
 
     install_time = time.time() - start_install
     minutes, seconds = divmod(int(install_time), 60)
-    print(f"\r🚀 Распаковка Завершена! За {minutes:02}:{seconds:02} ⚡" + " "*25)
+    print(f"\r🚀 Распаковка \033[34m{UI}\033[0m Завершена! {minutes:02}:{seconds:02} ⚡" + " "*25)
 
 else:
-    print(f"🔧 Текущий WebUI: \033[34m{UI} \033[0m")
+    print(f"🔧 Текущий WebUI: \033[34m{UI}\033[0m")
     print("🚀 Распаковка завершена. Пропуск. ⚡")
 
     timer_env = handle_setup_timer(WEBUI, start_timer)
