@@ -19,11 +19,11 @@ English | [Русский](README.ru-ru.md)
 </div>
 
 ## 🌟 Features:
-  - Multiplatform notebook: *Google Colab (Pro|Free), Kaggle.*
+  - Multiplatform notebook: *Google Colab, Kaggle.*
   - *Widgets* for easy interaction.
   - Preset custom settings + styles.
   - Download previews for *models, LoRa and embedding* (CivitAi) | ***There are limitations for Kaggle.***
-  - Choosing WebUI between *A1111*, *ReForge*, *ComfyUI* and *Forge.*
+  - Choosing WebUI between *A1111*, *ComfyUI*, *Forge*, *SD-UX.*
 
 <details>
 <summary>Installed Extensions</summary>

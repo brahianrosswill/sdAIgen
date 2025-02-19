@@ -64,14 +64,6 @@ def setup_venv():
     # else:        
     #     install_commands.append("apt -y install python3.10-venv")
 
-    #     for blyat in [
-    #         'sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python',
-    #         'sudo ln -sf /usr/bin/python3.10 /usr/bin/python3',
-    #         'sudo rm -rf /usr/local/lib/python3.10',
-    #         'sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10'
-    #     ]:
-    #         ipySys(blyat)
-
     install_commands.append("sudo apt-get -y install lz4 pv")
     install_dependencies(install_commands)
 
