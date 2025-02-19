@@ -37,6 +37,10 @@ CD(HOME)
 async def _download_file(url, directory, filename):
     os.makedirs(directory, exist_ok=True)
     file_path = os.path.join(directory, filename)
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
     process = await asyncio.create_subprocess_shell(
         f'curl -sLo {file_path} {url}',
         stdout=subprocess.DEVNULL,
@@ -65,7 +69,7 @@ async def download_configuration():
         f'{url_cfg}/user.css',
         # other
         f'{url_cfg}/card-no-preview.png, {WEBUI}/html',
-        f'{url_cfg}/notification.mp3, {WEBUI}'
+        f'{url_cfg}/notification.mp3'
     ]
     await download_files(configs)
 
@@ -79,7 +83,7 @@ async def download_configuration():
         ## OTHER | ON
         "https://github.com/gutris1/sd-image-viewer Image-Viewer",
         "https://github.com/gutris1/sd-image-info Image-Info",
-        "https://github.com/gutris1/sd-hub SD-Hub",
+        "https://github.com/gutris1/sd-hub",
 
         ## OTHER | OFF
         # "https://github.com/Bing-su/adetailer Adetailer",

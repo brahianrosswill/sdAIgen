@@ -56,10 +56,6 @@ div.compact {
   padding: 10px !important;
 }
 
-.tab-nav.scroll-hide.svelte-1g805jl {
-  row-gap: 5px !important;
-}
-
 #txt2img_script_container > div, 
 #img2img_script_container > div {
   margin-bottom: 10px;
