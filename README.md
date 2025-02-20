@@ -23,7 +23,7 @@ English | [Русский](README.ru-ru.md)
   - *Widgets* for easy interaction.
   - Preset custom settings + styles.
   - Download previews for *models, LoRa and embedding* (CivitAi) | ***There are limitations for Kaggle.***
-  - Choosing WebUI between *A1111*, *ComfyUI*, *Forge*, *SD-UX.*
+  - Choosing WebUI between *A1111*, *ComfyUI*, *Forge*, *ReForge*, *SD-UX.*
 
 <details>
 <summary>Installed Extensions</summary>
