@@ -60,7 +60,7 @@ model_header = factory.create_header('Model Selection')
 model_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'model')
 model_widget = factory.create_dropdown(model_options, 'Model:', '4. Counterfeit [Anime] [V3] + INP')
 model_num_widget = factory.create_text('Model Number:', '', 'Enter the model numbers for the download.')
-inpainting_model_widget = factory.create_checkbox('Inpainting Models', False, class_names=['inpaint'])
+inpainting_model_widget = factory.create_checkbox('Inpainting Models', False, class_names=['inpaint'], layout={'width': '25%'})
 XL_models_widget = factory.create_checkbox('SDXL', False, class_names=['sdxl'])
 
 switch_model_widget = factory.create_hbox([inpainting_model_widget, XL_models_widget])

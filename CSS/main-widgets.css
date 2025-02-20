@@ -156,6 +156,12 @@ a {
 
 
 /* Slider Checkbox style */
+/* Fix Checkbox Width */ 
+.widget-checkbox {
+    width: auto;
+    display: inline-flex;
+    min-width: unset;
+}
 
 .widget-checkbox input[type="checkbox"] {
     appearance: none;
