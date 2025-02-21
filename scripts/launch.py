@@ -83,14 +83,16 @@ def _update_config_paths():
 def get_launch_command(tunnel_port):
     """Construct launch command based on configuration"""
     base_args = commandline_arguments
-    password = '82a973c04367123ae98bd9abdf80d9eda9b910e2'
+    password = 'ha4ez7147b5vdlu5u8f8flrllgn61kpbgbh6emil'
 
     if UI == 'ComfyUI':
         return f'{py} main.py {base_args}'
 
-    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark --share'
+    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
     if ENV_NAME == "Kaggle":
         common_args += f' --encrypt-pass={password}'
+    else:
+        common_args += ' --share'
 
     return f'{py} launch.py {base_args}{common_args}'
 
