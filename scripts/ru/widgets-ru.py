@@ -141,7 +141,7 @@ custom_download_header_popup = factory.create_html('''
 empowerment_widget = factory.create_checkbox('Расширение возможностей', False, class_names=['empowerment'])
 empowerment_output_widget = factory.create_textarea(
 '', '', """Используйте специальные теги. Портативный аналог "Файл (txt)"
-Доступные теги: model, vae, lora, embed, extension, adetailer, control, upscale, clip, config
+Доступные теги: model, vae, lora, embed, extension, adetailer, control, upscale, clip, unet, config
 ---
 Например:
 

@@ -51,6 +51,7 @@ def _set_webui_paths(ui):
     # other
     adetailer_dir = models / ('ultralytics' if ui == 'ComfyUI' else 'adetailer')
     clip_dir = models / ('clip' if ui == 'ComfyUI' else 'text_encoder')
+    unet_dir = models / ('unet' if ui == 'ComfyUI' else 'text_encoder')
 
     paths = {
         'model_dir': str(model_dir),
@@ -62,6 +63,7 @@ def _set_webui_paths(ui):
         'upscale_dir': str(upscale_dir),
         'adetailer_dir': str(adetailer_dir),
         'clip_dir': str(clip_dir),
+        'unet_dir': str(unet_dir), 
         'output_dir': str(output_dir)
     }
     

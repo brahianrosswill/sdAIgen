@@ -251,6 +251,7 @@ PREFIXES = {
     "control": control_dir,
     "upscale": upscale_dir,
     "clip": clip_dir,
+    "unet": unet_dir,
     "config": WEBUI
 }
 SHORT_PREFIXES = {

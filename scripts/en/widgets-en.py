@@ -141,7 +141,7 @@ custom_download_header_popup = factory.create_html('''
 empowerment_widget = factory.create_checkbox('Empowerment', False, class_names=['empowerment'])
 empowerment_output_widget = factory.create_textarea(
 '', '', """Use special tags. Portable analog of "File (txt)"
-Available tags: model, vae, lora, embed, extension, adetailer, control, upscale, clip, config
+Available tags: model, vae, lora, embed, extension, adetailer, control, upscale, clip, unet, config
 ---
 For example:
 
