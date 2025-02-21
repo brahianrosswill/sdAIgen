@@ -88,7 +88,6 @@ async def download_configuration():
         ## OTHER | OFF
         # "https://github.com/Bing-su/adetailer Adetailer",
         # "https://github.com/thomasasfk/sd-webui-aspect-ratio-helper Aspect-Ratio-Helper",
-        # "https://github.com/richrobber2/canvas-zoom Canvas-Zoom",
         # "https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing",
         # "https://github.com/ilian6806/stable-diffusion-webui-state State",
         # "https://github.com/hako-mikan/sd-webui-supermerger Supermerger",

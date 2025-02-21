@@ -90,7 +90,6 @@
         "batch",
         "scripts"
     ],
-    "canvas_zoom_brush_outline": true,
     "custom_api_key": "65b66176dcf284b266579de57fbdc024",
     "show_progress_grid": true,
     "show_progress_every_n_steps": 2,
