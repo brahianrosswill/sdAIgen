@@ -76,7 +76,7 @@ async def download_configuration():
     ## REPOS
     extensions_list = [
         ## ANXETY Edits
-        "https://github.com/anxety-solo/webui_timer timer",
+        # "https://github.com/anxety-solo/webui_timer timer",
         "https://github.com/anxety-solo/anxety-theme-ux",
         "https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus",
         

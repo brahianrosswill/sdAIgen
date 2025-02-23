@@ -79,7 +79,8 @@
         "Extras",
         "PNG Info",
         "Train",
-        "Checkpoint Merger"
+        "Checkpoint Merger",
+        "Spaces"
     ],
     "ui_reorder_list": [
         "override_settings",

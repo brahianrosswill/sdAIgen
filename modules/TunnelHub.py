@@ -80,7 +80,7 @@ class Tunnel:
         port: int,
         check_local_port: bool = True,
         debug: bool = False,
-        timeout: int = 30,
+        timeout: int = 60,
         propagate: bool = False,
         log_handlers: ListHandlersOrBool = None,
         log_dir: StrOrPath = Path.home(),
