@@ -53,10 +53,6 @@
     --aw-button-gradient: radial-gradient(circle at top left, purple 10%, violet 90%);
     --aw-button-save-hover: radial-gradient(circle at top left, purple 10%, #93ac47 90%);
     --aw-button-zrok-hover: radial-gradient(circle at top left, purple 10%, #1d94bb 90%);
-
-    /* Special Elements */
-    --aw-hr-color: grey;
-    --aw-hr-opacity: 0.25;
 }
 
 
@@ -75,9 +71,9 @@
 
 hr {
     margin: 4px 0;
-    border-color: var(--aw-hr-color);
-    background-color: var(--aw-hr-color);
-    opacity: var(--aw-hr-opacity);
+    border-color: grey;
+    background-color: grey;
+    opacity: 0.25;
 }
 a {
     color: inherit;
@@ -139,6 +135,7 @@ a {
 
 /* Element text style */
 
+.widget-text,
 .widget-button,
 .widget-text label,
 .widget-checkbox label,
@@ -146,19 +143,21 @@ a {
 .widget-dropdown select,
 .widget-textarea textarea,
 .widget-text input[type="text"] {
-    font-size: var(--aw-text-size) !important;
+    font-style: normal;
+    font-size: var(--aw-text-size);
     color: var(--aw-color-text-primary) !important;
     user-select: none;
 }
 .widget-text input[type="text"]::placeholder {
     color: grey;
+    font-size: var(--aw-text-size);
 }
 
 
 /* Container style */
 
 .mainContainer {
-    width: auto;
+    /* width: auto; */
     padding: 5px;
     gap: 5px;
     /* overflow: hidden; */
@@ -210,13 +209,14 @@ a {
 .widget-textarea textarea {
     height: 200px;
     resize: none;
-    overflow: auto;
+    /* overflow: auto; */
 }
 
 .widget-dropdown select:focus,
 .widget-text input[type="text"]:focus,
 .widget-textarea textarea:focus {
     border-color: var(--aw-input-border-focus);
+    font-size: var(--aw-text-size);
 }
 
 .widget-dropdown select:hover,

@@ -20,19 +20,15 @@
     --aw-button-gradient: radial-gradient(circle at top left, purple 10%, violet 90%);
     --aw-button-execute-hover: radial-gradient(circle at top left, purple 10%, #93ac47 90%);
     --aw-button-hide-hover: radial-gradient(circle at top left, purple 10%, #fc3468 90%);
-
-    /* Special Elements */
-    --aw-hr-color: grey;
-    --aw-hr-opacity: 0.25;
 }
 
 
 /* General Styles */
 
 hr {
-    border-color: var(--aw-hr-color);
-    background-color: var(--aw-hr-color);
-    opacity: var(--aw-hr-opacity);
+    border-color: grey;
+    background-color: grey;
+    opacity: 0.25;
 }
 
 .instruction {

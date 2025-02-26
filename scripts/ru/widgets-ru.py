@@ -1,4 +1,4 @@
-2# ~ widgets.py | by ANXETY ~
+# ~ widgets.py | by ANXETY ~
 
 from widget_factory import WidgetFactory        # WIDGETS
 from webui_utils import update_current_webui    # WEBUI
@@ -28,10 +28,10 @@ widgets_js = JS / 'main-widgets.js'
 def read_model_data(file_path, data_type):
     """Reads model, VAE, or ControlNet data from the specified file."""
     local_vars = {}
-    
+
     with open(file_path) as f:
         exec(f.read(), {}, local_vars)
-    
+
     if data_type == "model":
         model_names = list(local_vars['model_list'].keys())   # Return model names
         return ['none'] + model_names
@@ -149,7 +149,8 @@ empowerment_output_widget = factory.create_textarea(
 https://civitai.com/api/download/models/229782
 
 $ext
-https://github.com/hako-mikan/sd-webui-cd-tuner[CD-Tuner]""")
+https://github.com/hako-mikan/sd-webui-cd-tuner[CD-Tuner]
+""")
 
 Model_url_widget = factory.create_text('Model:')
 Vae_url_widget = factory.create_text('Vae:')
@@ -224,7 +225,7 @@ def update_change_webui(change, widget):
     selected_webui = change['new']
     commandline_arguments = webui_selection.get(selected_webui, "")
     commandline_arguments_widget.value = commandline_arguments
-    
+
     if selected_webui == 'ComfyUI':
         latest_extensions_widget.layout.display = 'none'
         latest_extensions_widget.value = False
@@ -249,13 +250,14 @@ def update_empowerment(change, widget):
         ADetailer_url_widget
     ]
 
+    # idk why, but that's the way it's supposed to be >_<'
     if selected_emp:
         for wg in customDL_widgets:
             wg.layout.display = 'none'
-        empowerment_output_widget.layout.display = 'inline-block'
+        empowerment_output_widget.layout.display = ''
     else:
         for wg in customDL_widgets:
-            wg.layout.display = ''    # idk why, but that's the way it's supposed to be >_<'
+            wg.layout.display = ''
         empowerment_output_widget.layout.display = 'none'
 
 # Connecting widgets
