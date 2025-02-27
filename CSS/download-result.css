@@ -56,9 +56,9 @@
 }
 
 .divider-line {
-    border-color: var(--aw-hr-color);
-    background-color: var(--aw-hr-color);
-    opacity: var(--aw-hr-opacity);
+    border-color: grey;
+    background-color: grey;
+    opacity: 0.25;
     width: 1000px;
 }
 

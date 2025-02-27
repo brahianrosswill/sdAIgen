@@ -37,7 +37,7 @@
     --aw-popup-sample-border: 2px solid rgba(255, 255, 255, 0.2);
   
     /* Term Colors (Popup) */
-    --aw-term-sample-label: dbafff;
+    --aw-term-sample-label: #dbafff;
     --aw-term-braces: #ffff00;
     --aw-term-extension: #eb934b;
     --aw-term-filename: #ffdba7;
@@ -179,6 +179,7 @@ a {
     right: 10px;
     content: "ANXETY";
     font-family: var(--aw-font-family-secondary);
+    font-optical-sizing: auto;
     font-weight: 750;
     font-size: 24px;
     color: rgba(0, 0, 0, 0.3);
