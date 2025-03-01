@@ -252,6 +252,7 @@ PREFIXES = {
     "upscale": upscale_dir,
     "clip": clip_dir,
     "unet": unet_dir,
+    "vision": vision_dir,
     "encoder": encoder_dir,
     "diffusion": diffusion_dir,
     "config": WEBUI

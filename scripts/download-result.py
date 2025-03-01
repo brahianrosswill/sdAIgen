@@ -130,6 +130,9 @@ clips_widget = output_container_generator('Clips', clips_list)
 # Unets
 unets_list = get_all_files_list(unet_dir, ('.safetensors',))
 unets_widget = output_container_generator('Unets', unets_list)
+# (Clip) Visions
+visions_list = get_all_files_list(vision_dir, ('.safetensors',))
+visions_widget = output_container_generator('Visions', visions_list)
 # (Text) Encoders
 encoders_list = get_all_files_list(encoder_dir, ('.safetensors',))
 encoders_widget = output_container_generator('Encoders', encoders_list)
@@ -150,6 +153,7 @@ widgets_dict = {
     adetailers_widget: adetailers_list,
     clips_widget: clips_list,
     unets_widget: unets_list,
+    visions_widget: visions_list,
     encoders_widget: encoders_list,
     diffusions_widget: diffusions_list,
     controlnets_widget: controlnets_list

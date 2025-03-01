@@ -66,7 +66,7 @@
 </details>
 
 ## 🚧 FAQ:
-- [Renrtey Page](https://rentry.co/faq-sdAIgen-ru)
+- [Rentry Page](https://rentry.co/faq-sdAIgen-ru)
 
 <div align="center">
 	<h6>Некоторые скрипты взяты у <a href="https://github.com/gutris1">gutris1</a>.</h6>
