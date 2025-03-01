@@ -241,35 +241,26 @@ with open(f'{SCRIPTS}/{model_files}') as f:
 print("📦 Скачивание моделей и прочего...", end='')
 
 extension_repo = []
-PREFIXES = {
-    "model": model_dir,
-    "vae": vae_dir,
-    "lora": lora_dir,
-    "embed": embed_dir,
-    "extension": extension_dir,
-    "adetailer": adetailer_dir,
-    "control": control_dir,
-    "upscale": upscale_dir,
-    "clip": clip_dir,
-    "unet": unet_dir,
-    "vision": vision_dir,
-    "encoder": encoder_dir,
-    "diffusion": diffusion_dir,
-    "config": WEBUI
+PREFIX_MAP = {
+    # prefix : (path_dir , short-tag)
+    "model": (model_dir, "$ckpt"),
+    "vae": (vae_dir, None),
+    "lora": (lora_dir, None),
+    "embed": (embed_dir, "$emb"),
+    "extension": (extension_dir, "$ext"),
+    "adetailer": (adetailer_dir, "$ad"),
+    "control": (control_dir, "$cnet"),
+    "upscale": (upscale_dir, "$ups"),
+    # Other
+    "clip": (clip_dir, None),
+    "unet": (unet_dir, None),
+    "vision": (vision_dir, None),
+    "encoder": (encoder_dir, "$enc"),
+    "diffusion": (diffusion_dir, "diff"),
+    "config": (WEBUI, "$cfg")
 }
-SHORT_PREFIXES = {
-    "model": "$ckpt",
-    "embed": "$emb",
-    "extension": "$ext",
-    "adetailer": "$ad",
-    "control": "$cnet",
-    "upscale": "$ups",
-    "encoder": "$enc",
-    "diffusion": "$diff",
-    "config": "$cfg"
-}
-for path in PREFIXES.values():
-    os.makedirs(path, exist_ok=True)
+for dir_path, _ in PREFIX_MAP.values():
+    os.makedirs(dir_path, exist_ok=True)
 
 ''' Formatted Info Output '''
 
@@ -296,72 +287,61 @@ def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
 
 ''' Main Download Code '''
 
-def _STRIP_URL(url):
-    """Removes unnecessary parts from the URL for correct downloading."""
+def _clean_url(url):
     if "huggingface.co" in url:
-        url = url.replace('/blob/', '/resolve/')
-        if '?' in url:
-            url = url.split('?')[0]
-    elif 'github.com' in url:
+        return url.replace('/blob/', '/resolve/').split('?')[0]
+    if 'github.com' in url:
         return url.replace('/blob/', '/raw/')
-
     return url
 
-def _get_file_name(url):
-    file_name_match = re.search(r'\[(.*?)\]', url)
-    if file_name_match:
-        return file_name_match.group(1)
+def _extract_filename(url):
+    if match := re.search(r'\[(.*?)\]', url):
+        return match.group(1)
 
-    file_name_parse = urlparse(url)
-    if any(domain in file_name_parse.netloc for domain in ["civitai.com", "drive.google.com"]):
+    parsed = urlparse(url)
+    if any(d in parsed.netloc for d in ["civitai.com", "drive.google.com"]):
         return None
 
-    return Path(file_name_parse.path).name
+    return Path(parsed.path).name
 
 def _unpack_zips():
-    """Extracts all ZIP files in the directories specified in PREFIXES."""
-    for directory in PREFIXES.values():
-        for root, _, files in os.walk(directory):
+    for dir_path, _ in PREFIX_MAP.values():
+        for root, _, files in os.walk(dir_path):
             for file in files:
                 if file.endswith(".zip"):
                     zip_path = Path(root) / file
                     extract_path = zip_path.with_suffix('')
                     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                         zip_ref.extractall(extract_path)
-                    zip_path.unlink()  # Using Path.unlink() to remove the file
+                    zip_path.unlink()
 
-def _handle_manual_download(link):
-    """Handles downloads for URLs with prefixes."""
-    prefix, path = link.split(':', 1)
-    file_name = _get_file_name(path)
-    path = re.sub(r'\[.*?\]', '', path)
+# Download Core
 
-    if prefix in PREFIXES:
-        dir = PREFIXES[prefix]
-        if prefix != "extension":
-            try:
-                manual_download(path, dir, file_name=file_name, prefix=prefix)
-            except Exception as e:
-                print(f"\nError downloading file: {e}")
-        else:
-            extension_repo.append((path, file_name))
+def _process_download_link(link):
+    link = _clean_url(link)
+    if ':' in link:
+        prefix, path = link.split(':', 1)
+        if prefix in PREFIX_MAP:
+            return prefix, re.sub(r'\[.*?\]', '', path), _extract_filename(path)
+    return None, link, None
 
 def download(line):
-    links = [link.strip() for link in line.split(',') if link.strip()]
+    for link in (l.strip() for l in line.split(',') if l.strip()):
+        prefix, url, filename = _process_download_link(link)
 
-    for link in links:
-        link = _STRIP_URL(link)
-
-        try:
-            if any(link.lower().startswith(prefix) for prefix in PREFIXES):
-                _handle_manual_download(link)
+        if prefix:
+            dir_path, _ = PREFIX_MAP[prefix]
+            if prefix == "extension":
+                extension_repo.append((url, filename))
             else:
-                url, dst_dir, file_name = link.split()
-                manual_download(url, dst_dir, file_name)
-        except Exception as e:
-            print(f"\n> Error download: {e}\n")
+                try:
+                    manual_download(url, dir_path, filename, prefix)
+                except Exception as e:
+                    print(f"\n> Error downloading file: {e}")
+        else:
+            url, dst_dir, file_name = url.split()
+            manual_download(url, dst_dir, file_name)
 
-    # Unpacking ZIPs files
     _unpack_zips()
 
 def manual_download(url, dst_dir, file_name=None, prefix=None):
@@ -370,26 +350,20 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
 
     if 'civitai' in url:
         civitai = CivitAiAPI(civitai_token)
-        data = civitai.fetch_data(url)
-
-        if data is None or civitai.check_early_access(data):
-            return  # Terminate if no data or requires payment
+        if not (data := civitai.fetch_data(url)) or civitai.check_early_access(data):
+            return
 
         model_type, file_name = civitai.get_model_info(data, url, file_name)
         download_url = civitai.get_download_url(data, url)
         clean_url, url = civitai.get_full_and_clean_download_url(download_url)
         image_url, image_name = civitai.get_image_info(data, file_name, model_type)
 
-        # Download preview images
         if image_url and image_name:
             m_download(f"{image_url} {dst_dir} {image_name}")
 
     elif 'github' in url or 'huggingface.co' in url:
         if file_name and '.' not in file_name:
-            file_extension = clean_url.split('/')[-1].split('.', 1)[1]
-            file_name = f"{file_name}.{file_extension}"
-        if not file_name:
-            file_name = clean_url.split("/")[-1]
+            file_name += f".{clean_url.split('.')[-1]}"
 
     # Formatted info output
     format_output(clean_url, dst_dir, file_name, image_url, image_name)
@@ -399,12 +373,12 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     # if os.path.exists(file_path) and prefix == 'config':
     #     os.remove(file_path)
 
-    m_download(f"{url} {dst_dir} {file_name if file_name else ''}", log=True)
+    m_download(f"{url} {dst_dir} {file_name or ''}", log=True)
 
 ''' SubModels - Added URLs '''
 
 # Separation of merged numbers
-def _split_numbers(num_str, max_num):
+def _parse_selection_numbers(num_str, max_num):
     """Split a string of numbers into unique integers."""
     num_str = num_str.replace(',', ' ').strip()
     unique_numbers = set()
@@ -429,24 +403,23 @@ def _split_numbers(num_str, max_num):
 
     return sorted(unique_numbers)
 
-def add_submodels(selection, num_selection, model_dict, dst_dir):
-    """Add selected submodels based on user selection."""
+def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url):
     selected_models = []
 
-    if selection == "none":
-        return selected_models
-    elif selection == "ALL":
-        selected_models = sum(model_dict.values(), [])
-    else:
-        selected_models.extend(model_dict.get(selection, []))
+    if selection != "none":
+        if selection == "ALL":
+            selected_models = sum(model_dict.values(), [])
+        else:
+            if selection in model_dict:
+                selected_models.extend(model_dict[selection])
 
-        max_num = len(model_dict)
-        unique_nums = _split_numbers(num_selection, max_num)
-
-        for num in unique_nums:
-            if 1 <= num <= max_num:
-                name = list(model_dict.keys())[num - 1]
-                selected_models.extend(model_dict[name])
+            if num_selection:
+                max_num = len(model_dict)
+                unique_nums = _parse_selection_numbers(num_selection, max_num)
+                for num in unique_nums:
+                    if 1 <= num <= max_num:
+                        name = list(model_dict.keys())[num - 1]
+                        selected_models.extend(model_dict[name])
 
     unique_models = {}
     for model in selected_models:
@@ -455,16 +428,13 @@ def add_submodels(selection, num_selection, model_dict, dst_dir):
         model['dst_dir'] = model.get('dst_dir', dst_dir)
         unique_models[model_name] = model
 
-    return list(unique_models.values())
-
-def handle_submodels(selection, num_selection, model_dict, dst_dir, url):
-    """Handle the selection of submodels and construct the URL string."""
-    submodels = add_submodels(selection, num_selection, model_dict, dst_dir)
-    for submodel in submodels:
-        if not inpainting_model and "inpainting" in submodel['name']:
+    # Filter inpainting
+    for model in unique_models.values():
+        if not inpainting_model and "inpainting" in model['name']:
             continue
-        url += f"{submodel['url']} {submodel['dst_dir']} {submodel['name']}, "
-    return url
+        base_url += f"{model['url']} {model['dst_dir']} {model['name']}, "
+
+    return base_url
 
 line = ""
 line = handle_submodels(model, model_num, model_list, model_dir, line)
@@ -473,67 +443,46 @@ line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir
 
 ''' file.txt - added urls '''
 
-def process_file_downloads(file_urls, prefixes, additional_lines=None):
-    files_urls = ""
-    unique_urls = set()
-
-    if additional_lines:
-        lines = additional_lines.splitlines()
-    else:
-        lines = []
-
-    for file_url in file_urls:
-        if file_url.startswith("http"):
-            file_url = _STRIP_URL(file_url)
-            response = requests.get(file_url)
-            lines += response.text.splitlines()
-        else:
-            try:
-                with open(file_url, 'r') as file:
-                    lines += file.readlines()
-            except FileNotFoundError:
-                continue
-
+def _process_lines(lines):
     current_tag = None
+    urls = set()
+    result = []
+
     for line in lines:
-        tag_line = line.strip().lower()
-        for prefix in prefixes.keys():
-            long_tag = f'# {prefix}'
-            short_tag = SHORT_PREFIXES.get(prefix, None)
-            
-            if (long_tag.lower() in tag_line) or (short_tag and short_tag.lower() in tag_line):
+        line_lower = line.strip().lower()
+        for prefix, (_, short) in PREFIX_MAP.items():
+            if f"# {prefix}".lower() in line_lower or (short and short.lower() in line_lower):
                 current_tag = prefix
                 break
 
-        urls = [url.split('#')[0].strip() for url in line.split(',')]
-        for url in urls:
-            filter_url = url.split('[')[0].strip()
-            if url.startswith("http") and filter_url not in unique_urls:
-                files_urls += f"{current_tag}:{url}, "
-                unique_urls.add(filter_url)
+        for url_part in (u.split('#')[0].strip() for u in line.split(',')):
+            if url_part.startswith("http") and (base_url := url_part.split('[')[0]) not in urls:
+                urls.add(base_url)
+                result.append(f"{current_tag}:{url_part}" if current_tag else url_part)
 
-    # Return string if no tag was found | FIX
-    if current_tag is None:
-        return ''
+    return ', '.join(result)
 
-    return files_urls
+def process_file_downloads(file_urls, additional_lines=None):
+    lines = additional_lines.splitlines() if additional_lines else []
 
-file_urls = []
+    for source in file_urls:
+        if source.startswith("http"):
+            lines += requests.get(_clean_url(source)).text.splitlines()
+        else:
+            try:
+                with open(source, 'r') as f:
+                    lines += f.readlines()
+            except FileNotFoundError:
+                continue
 
-if custom_file_urls:
-    file_urls = [f"{custom_file}.txt" if not custom_file.endswith('.txt') else custom_file 
-                 for custom_file in custom_file_urls.replace(',', '').split()]
+    return _process_lines(lines)
 
-file_urls_result = process_file_downloads(file_urls, PREFIXES, empowerment_output)
+# File URLs processing
+urls_sources = (Model_url, Vae_url, LoRA_url, Embedding_url, Extensions_url, ADetailer_url)
+file_urls = [f"{f}.txt" if not f.endswith('.txt') else f for f in custom_file_urls.replace(',', '').split()] if custom_file_urls else []
 
-# URL prefixing
-urls = (Model_url, Vae_url, LoRA_url, Embedding_url, Extensions_url, ADetailer_url)
-prefixed_urls = [
-    f"{prefix}:{url.strip()}"
-    for prefix, url in zip(PREFIXES.keys(), urls)
-    if url for url in url.replace(',', '').split()
-]
-line += ", ".join(prefixed_urls) + ", " + file_urls_result.strip(', ')
+prefixed_urls = [f"{p}:{u}" for p, u in zip(PREFIX_MAP, urls_sources) if u.strip()]
+line += ", ".join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
 
 if detailed_download == "on":
     print("\n\n\033[33m# ====== Подробная Загрузка ====== #\n\033[0m")
