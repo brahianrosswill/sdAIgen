@@ -256,7 +256,7 @@ PREFIX_MAP = {
     "unet": (unet_dir, None),
     "vision": (vision_dir, None),
     "encoder": (encoder_dir, "$enc"),
-    "diffusion": (diffusion_dir, "diff"),
+    "diffusion": (diffusion_dir, "$diff"),
     "config": (WEBUI, "$cfg")
 }
 for dir_path, _ in PREFIX_MAP.values():
@@ -351,13 +351,14 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     if 'civitai' in url:
         civitai = CivitAiAPI(civitai_token)
         if not (data := civitai.fetch_data(url)) or civitai.check_early_access(data):
-            return
+            return  # Terminate if no data or requires payment
 
         model_type, file_name = civitai.get_model_info(data, url, file_name)
         download_url = civitai.get_download_url(data, url)
         clean_url, url = civitai.get_full_and_clean_download_url(download_url)
         image_url, image_name = civitai.get_image_info(data, file_name, model_type)
 
+        # Download preview images
         if image_url and image_name:
             m_download(f"{image_url} {dst_dir} {image_name}")
 
@@ -445,22 +446,28 @@ line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir
 
 def _process_lines(lines):
     current_tag = None
-    urls = set()
-    result = []
+    unique_urls = set()
+    files_urls = ""
 
     for line in lines:
-        line_lower = line.strip().lower()
-        for prefix, (_, short) in PREFIX_MAP.items():
-            if f"# {prefix}".lower() in line_lower or (short and short.lower() in line_lower):
+        tag_line = line.strip().lower()
+        for prefix, (_, short_tag) in PREFIX_MAP.items():
+            if (f'# {prefix}'.lower() in tag_line) or (short_tag and short_tag.lower() in tag_line):
                 current_tag = prefix
                 break
 
-        for url_part in (u.split('#')[0].strip() for u in line.split(',')):
-            if url_part.startswith("http") and (base_url := url_part.split('[')[0]) not in urls:
-                urls.add(base_url)
-                result.append(f"{current_tag}:{url_part}" if current_tag else url_part)
+        for url_part in [u.split('#')[0].strip() for u in line.split(',')]:
+            filter_url = url_part.split('[')[0].strip()
+            if current_tag is not None:
+                if url_part.startswith("http") and filter_url not in unique_urls:
+                    files_urls += f"{current_tag}:{url_part}, "
+                    unique_urls.add(filter_url)
 
-    return ', '.join(result)
+    # Return string if no tag was found | FIX
+    if current_tag is None:
+        return ''
+
+    return files_urls
 
 def process_file_downloads(file_urls, additional_lines=None):
     lines = additional_lines.splitlines() if additional_lines else []
