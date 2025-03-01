@@ -9,6 +9,7 @@
     --aw-font-family-secondary: "Tiny5", sans-serif;
     --aw-color-text-primary: #f0f8ff;
     --aw-text-size: 14px;
+    --aw-text-size-small: 12px;
 
     /* Container */
     --aw-container-bg: #232323;
@@ -153,6 +154,12 @@ a {
     font-size: var(--aw-text-size);
 }
 
+/* TextArea */
+.widget-textarea textarea,
+.widget-textarea textarea::placeholder {
+    font-size: var(--aw-text-size-small);
+}
+
 
 /* Container style */
 
@@ -217,7 +224,7 @@ a {
 .widget-text input[type="text"]:focus,
 .widget-textarea textarea:focus {
     border-color: var(--aw-input-border-focus);
-    font-size: var(--aw-text-size);
+    /* font-size: var(--aw-text-size); */
 }
 
 .widget-dropdown select:hover,

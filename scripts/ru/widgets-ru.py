@@ -141,8 +141,7 @@ custom_download_header_popup = factory.create_html('''
 empowerment_widget = factory.create_checkbox('Расширение возможностей', False, class_names=['empowerment'])
 empowerment_output_widget = factory.create_textarea(
 '', '', """Используйте специальные теги. Портативный аналог "Файл (txt)"
-Доступные теги: model (ckpt), vae, lora, embed (emb), extension (ext), adetailer (ad), control (cnet), upscale (ups), clip, unet, config (cfg)
-Короткие-теги: начинаются с '$' без пробела -> $ckpt
+Теги: model (ckpt), vae, lora, embed (emb), extension (ext), adetailer (ad), control (cnet), upscale (ups), clip, unet, encoder (enc), diffusion (diff), config (cfg)Короткие-теги: начинаются с '$' без пробела -> $ckpt
 ------ Например ------
 
 # Lora
