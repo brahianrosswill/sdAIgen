@@ -351,11 +351,14 @@ def download(line):
     for link in links:
         link = _STRIP_URL(link)
 
-        if any(link.lower().startswith(prefix) for prefix in PREFIXES):
-            _handle_manual_download(link)
-        else:
-            url, dst_dir, file_name = link.split()
-            manual_download(url, dst_dir, file_name)
+        try:
+            if any(link.lower().startswith(prefix) for prefix in PREFIXES):
+                _handle_manual_download(link)
+            else:
+                url, dst_dir, file_name = link.split()
+                manual_download(url, dst_dir, file_name)
+        except Exception as e:
+            print(f"\n> Error download: {e}\n")
 
     # Unpacking ZIPs files
     _unpack_zips()
