@@ -252,6 +252,8 @@ PREFIXES = {
     "upscale": upscale_dir,
     "clip": clip_dir,
     "unet": unet_dir,
+    "encoder": encoder_dir,
+    "diffusion": diffusion_dir,
     "config": WEBUI
 }
 SHORT_PREFIXES = {
@@ -261,6 +263,8 @@ SHORT_PREFIXES = {
     "adetailer": "$ad",
     "control": "$cnet",
     "upscale": "$ups",
+    "encoder": "$enc",
+    "diffusion": "$diff",
     "config": "$cfg"
 }
 for path in PREFIXES.values():

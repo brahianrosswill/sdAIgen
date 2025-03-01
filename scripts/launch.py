@@ -148,7 +148,7 @@ class TunnelManager:
             ('https://localtunnel.me', 'Localtunnel', {
                 "command": f"lt --port {self.tunnel_port}",
                 "pattern": re.compile(r"[\w-]+\.loca\.lt"),
-                "note": f"Password : \033[32m{self.public_ip}\033[0m"
+                "note": f"Password: \033[32m{self.public_ip}\033[0m"
             })
         ]
 

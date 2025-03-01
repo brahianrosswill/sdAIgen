@@ -124,6 +124,18 @@ extensions_widget = output_container_generator(extension_type, extensions_list, 
 # ADetailers
 adetailers_list = get_all_files_list(adetailer_dir, ('.safetensors', '.pt'))
 adetailers_widget = output_container_generator('ADetailers', adetailers_list)
+# Clips
+clips_list = get_all_files_list(clip_dir, ('.safetensors',))
+clips_widget = output_container_generator('Clips', clips_list)
+# Unets
+unets_list = get_all_files_list(unet_dir, ('.safetensors',))
+unets_widget = output_container_generator('Unets', unets_list)
+# (Text) Encoders
+encoders_list = get_all_files_list(encoder_dir, ('.safetensors',))
+encoders_widget = output_container_generator('Encoders', encoders_list)
+# Diffusions (Models)
+diffusions_list = get_all_files_list(diffusion_dir, ('.safetensors',))
+diffusions_widget = output_container_generator('Diffusions', diffusions_list)
 # ControlNet
 controlnets_list = get_controlnets_list(control_dir, r'^[^_]*_[^_]*_[^_]*_(.*)_fp16\.safetensors')
 controlnets_widget = output_container_generator('ControlNets', controlnets_list)
@@ -136,6 +148,10 @@ widgets_dict = {
     loras_widget: loras_list,
     extensions_widget: extensions_list,
     adetailers_widget: adetailers_list,
+    clips_widget: clips_list,
+    unets_widget: unets_list,
+    encoders_widget: encoders_list,
+    diffusions_widget: diffusions_list,
     controlnets_widget: controlnets_list
 }
 
