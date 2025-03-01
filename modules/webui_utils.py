@@ -54,7 +54,7 @@ def _set_webui_paths(ui):
     unet_dir = models / ('unet' if ui == 'ComfyUI' else 'text_encoder')
 
     vision_dir = models / 'clip_vision'
-    encoder_dir =  models / 'text_encoder'
+    encoder_dir =  models / ('text_encoders' if ui == 'ComfyUI' else 'text_encoder')
     diffusion_dir = models / 'diffusion_models'
 
     paths = {
