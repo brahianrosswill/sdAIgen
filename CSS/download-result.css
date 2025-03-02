@@ -23,7 +23,7 @@
 
 .widget-html,
 .header-main-title,
-.header-output-title {
+.section-title {
     font-family: var(--aw-font-family-primary);
     font-optical-sizing: auto;
 }
@@ -41,7 +41,7 @@
 /* General Styles */
 
 .header-main-title,
-.header-output-title {
+.section-title {
     font-size: 20px;
     font-weight: bold;
     text-align: center;
@@ -51,7 +51,7 @@
     text-align: center;
     margin-bottom: 15px;
 }
-.header-output-title {
+.section-title {
     color: #0083c0;
 }
 
@@ -69,11 +69,8 @@
     position: relative;
     flex-direction: column;
     align-items: center;
-    padding: 10px 15px;
-    margin: 5px;
-    height: auto;
+    padding: 15px;
     margin: 40px 10px 10px 10px;
-    padding: 10px 15px;
     background-color: var(--aw-container-bg);
     border: var(--aw-container-border);
     border-radius: 16px;
@@ -82,7 +79,7 @@
 }
 .result-container::after {
     position: absolute;
-    top: 8px;
+    top: 5px;
     right: 10px;
     content: "ANXETY";
     font-family: var(--aw-font-family-secondary);
@@ -93,32 +90,30 @@
 }
 
 .result-output-container {
+    display: flex;
     flex-wrap: wrap;
+    width: 95%;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
     background-color: var(--aw-output-container-bg);
     border-radius: 8px;
-    width: 95%;
-    padding: 10px 15px;
+    padding: 25px;
+    gap: 16px;
     overflow: visible;
 }
 .output-section {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+    flex: 1 1 auto;
+    min-width: min-content;
     background-color: var(--aw-output-section-bg);
     padding: 10px 15px;
     border-radius: 16px;
     border: var(--aw-output-section-border);
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(0, 0, 0, 0.3);
-    margin: 8px;
     transition: all 0.15s;
 }
-
 /* good use of space */
-.output-items {
+._horizontal {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    width: 100%;
 }
 
 

@@ -56,11 +56,11 @@ EXCLUDED_EXTENSIONS = {'.txt', '.yaml', '.log', '.json'}
 ## Functions
 def output_container_generator(header, items, is_grid=False):
     """Create a container widget for output items."""
-    header_widget = factory.create_html(f'<div class="header-output-title">{header} ➤</div>')
+    header_widget = factory.create_html(f'<div class="section-title">{header} ➤</div>')
     content_widgets = [factory.create_html(f'<div class="output-item">{item}</div>') for item in items]
 
     container_method = factory.create_hbox if is_grid else factory.create_vbox    # hbox -> grid
-    content_container = container_method(content_widgets).add_class("output-items" if is_grid else "")
+    content_container = container_method(content_widgets).add_class("_horizontal" if is_grid else "")
 
     return factory.create_vbox([header_widget, content_container]).add_class("output-section")
 
