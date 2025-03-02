@@ -65,7 +65,7 @@
 
 </details>
 
-## 🚧 FAQ:
+## 🚧 FAQ?:
 - [Rentry Page](https://rentry.co/faq-sdAIgen-ru)
 
 <div align="center">

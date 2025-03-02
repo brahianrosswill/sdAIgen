@@ -65,7 +65,7 @@ English | [Русский](README.ru-ru.md)
 
 </details>
 
-## 🚧 FAQ:
+## 🚧 FAQ?:
 - [Rentry Page](https://rentry.co/faq-sdAIgen-en)
 
 <div align="center">

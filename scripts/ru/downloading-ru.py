@@ -81,7 +81,7 @@ def setup_venv():
     #     f'{VENV}/bin/python3 -m pip install ipykernel',
     #     f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
     # ]
-    # if UI == 'Forge':
+    # if UI == 'Forge':    
     #     venv_commands.append(f'{VENV}/bin/python3 -m pip uninstall -y transformers')
 
     # install_dependencies(venv_commands)
@@ -89,13 +89,14 @@ def setup_venv():
     BIN = str(VENV / 'bin')
     PKG = str(VENV / 'lib/python3.10/site-packages')
 
+    os.environ["PYTHONWARNINGS"] = "ignore"
     if BIN not in os.environ["PATH"]:
         os.environ["PATH"] = BIN + ":" + os.environ["PATH"]
-
     if PKG not in os.environ["PYTHONPATH"]:
         os.environ["PYTHONPATH"] = PKG + ":" + os.environ["PYTHONPATH"]
 
-    os.environ["PYTHONWARNINGS"] = "ignore"
+    if UI == 'Forge':
+        install_dependencies('pip uninstall -y transformers')
 
 def install_packages(install_lib):
     """Install packages from the provided library dictionary."""
@@ -242,7 +243,7 @@ print("📦 Скачивание моделей и прочего...", end='')
 
 extension_repo = []
 PREFIX_MAP = {
-    # prefix : (path_dir , short-tag)
+    # prefix : (dir_path , short-tag)
     "model": (model_dir, "$ckpt"),
     "vae": (vae_dir, None),
     "lora": (lora_dir, None),
