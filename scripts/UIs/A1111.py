@@ -78,7 +78,7 @@ async def download_configuration():
         ## ANXETY Edits
         "https://github.com/anxety-solo/webui_timer timer",
         "https://github.com/anxety-solo/anxety-theme",
-        # "https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus",
+        "https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus",
         
         ## OTHER | ON
         "https://github.com/gutris1/sd-image-viewer Image-Viewer",
