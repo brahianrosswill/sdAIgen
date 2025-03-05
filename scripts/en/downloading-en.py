@@ -489,7 +489,8 @@ def process_file_downloads(file_urls, additional_lines=None):
 urls_sources = (Model_url, Vae_url, LoRA_url, Embedding_url, Extensions_url, ADetailer_url)
 file_urls = [f"{f}.txt" if not f.endswith('.txt') else f for f in custom_file_urls.replace(',', '').split()] if custom_file_urls else []
 
-prefixed_urls = [f"{p}:{u}" for p, u in zip(PREFIX_MAP, urls_sources) if u.strip()]
+# p -> prefix ; u -> url | Remember: don't touch the prefix!
+prefixed_urls = [f"{p}:{u}" for p, u in zip(PREFIX_MAP, urls_sources) if u for u in u.replace(',', '').split()]
 line += ", ".join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
 
 if detailed_download == "on":
