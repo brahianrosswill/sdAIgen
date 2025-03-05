@@ -2,6 +2,9 @@
 Modified script for creating tunnels.
 Originated from: https://raw.githubusercontent.com/cupang-afk/subprocess-tunnel/refs/heads/master/src/tunnel.py
 Author: cupang-afk https://github.com/cupang-afk
+
+This module has been modified specifically for the 'sdAIgen' project and may not be compatible with normal use.
+Use the original script of the author cupang-afk
 """
 
 from typing import Callable, List, Optional, Tuple, TypedDict, Union, get_args
@@ -33,7 +36,7 @@ class ColoredFormatter(logging.Formatter):
     def format(self, record):
         color = self.COLORS.get(record.levelno, "\033[0m")
         message = super().format(record)
-        return f"\n{color}[TunnelHub]:\033[0m {message}"
+        return f"\n{color}[{record.name}]:\033[0m {message}"
 
 
 class FileFormatter(logging.Formatter):
@@ -103,6 +106,7 @@ class Tunnel:
         log_dir: StrOrPath = None,
         callback: Callable[[List[Tuple[str, Optional[str]]]], None] = None,
     ):
+        """Initialize the Tunnel class with provided parameters."""
         self._is_running = False
         self.urls: List[Tuple[str, Optional[str], Optional[str]]] = []
         self.urls_lock = Lock()
@@ -123,6 +127,7 @@ class Tunnel:
         self.logger = self.setup_logger(propagate)
 
     def setup_logger(self, propagate: bool) -> logging.Logger:
+        """Set up the logger for the tunnel operations."""
         logger = logging.getLogger("TunnelHub")
         logger.setLevel(logging.DEBUG if self.debug else logging.INFO)
         logger.propagate = propagate
@@ -140,7 +145,7 @@ class Tunnel:
         log_file = self.log_dir / "tunnelhub.log"
         file_handler = logging.FileHandler(log_file, encoding="utf-8")
         file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(FileFormatter("[%(asctime)s] [TunnelHub]: %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
+        file_handler.setFormatter(FileFormatter("[%(asctime)s] [%(name)s]: %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
         logger.addHandler(file_handler)
 
         for handler in self.log_handlers:
@@ -149,12 +154,15 @@ class Tunnel:
         return logger
 
     def is_command_available(self, command: str) -> bool:
+        """Check if the specified command is available in the system PATH."""
         return any(
             os.access(os.path.join(path, command), os.X_OK)
             for path in os.environ["PATH"].split(os.pathsep)
         )
 
-    def add_tunnel(self, *, command: str, pattern: StrOrRegexPattern, name: str, note: str = None, callback: Callable[[str, Optional[str], Optional[str]], None] = None) -> None:
+    def add_tunnel(self, *, command: str, pattern: StrOrRegexPattern, name: str, 
+                 note: str = None, callback: Callable[[str, Optional[str], Optional[str]], None] = None) -> None:
+        """Add a new tunnel with the specified command, pattern, name, and optional note and callback."""
         cmd_name = command.split()[0]
         if not self.is_command_available(cmd_name):
             self.logger.warning(f"Skipping {name} - {cmd_name} not installed")
@@ -173,6 +181,7 @@ class Tunnel:
         })
 
     def start(self) -> None:
+        """Start the tunnel and its associated threads."""
         if self._is_running:
             raise RuntimeError("Tunnel is already running")
 
@@ -186,6 +195,7 @@ class Tunnel:
             self.stop()
 
     def stop(self) -> None:
+        """Stop the tunnel and clean up resources."""
         if not self._is_running:
             raise RuntimeError("Tunnel is not running")
 
@@ -196,9 +206,11 @@ class Tunnel:
         self.reset()
 
     def get_tunnel_names(self) -> str:
+        """Get a comma-separated string of tunnel names."""
         return ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
 
     def terminate_processes(self) -> None:
+        """Terminate all running subprocesses associated with the tunnels."""
         for process in self.processes:
             try:
                 if process.poll() is None:
@@ -208,14 +220,13 @@ class Tunnel:
                 self.logger.warning(f"Error terminating process: {str(e)}")
         self.processes.clear()
 
-    def handle_process_timeout(self, process: subprocess.Popen) -> None:
-        process.kill()
-
     def join_threads(self) -> None:
+        """Wait for all threads associated with the tunnels to finish."""
         for job in self.jobs:
             job.join()
 
     def __enter__(self):
+        """Enter the runtime context for the tunnel."""
         if self._is_running:
             raise RuntimeError("Tunnel is already running by another method")
 
@@ -233,6 +244,7 @@ class Tunnel:
         return self
 
     def start_tunnel_thread(self, tunnel: TunnelDict) -> None:
+        """Start a new thread for the specified tunnel."""
         try:
             cmd = tunnel["command"].format(port=self.port)
             name = tunnel.get("name")
@@ -243,9 +255,11 @@ class Tunnel:
             self.logger.error(f"Failed to start tunnel {tunnel.get('name')}: {str(e)}")
 
     def __exit__(self, exc_type, exc_value, exc_tb):
+        """Exit the runtime context for the tunnel, stopping it."""
         self.stop()
 
     def reset(self) -> None:
+        """Reset the tunnel state, clearing all stored URLs, jobs, and processes."""
         self.urls.clear()
         self.jobs.clear()
         self.processes.clear()
@@ -255,7 +269,7 @@ class Tunnel:
 
     @staticmethod
     def is_port_in_use(port: int) -> bool:
-        """Check if the specified port is in use."""
+        """Check if the specified port is currently in use."""
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.settimeout(1)
@@ -265,7 +279,7 @@ class Tunnel:
 
     @staticmethod
     def wait_for_condition(condition: Callable[[], bool], *, interval: int = 1, timeout: int = 10) -> bool:
-        """Wait for the condition to be true until the specified timeout."""
+        """Wait for a condition to be true, checking at specified intervals."""
         start_time = time.time()
         elapsed_time = 0
         checks_count = 0
@@ -285,14 +299,14 @@ class Tunnel:
             time.sleep(next_interval)
 
     def _process_line(self, line: str) -> bool:
-        """Process a line of output to extract tunnel information."""
+        """Process a line of output from the tunnel command to check for URLs."""
         for tunnel in self.tunnel_list:
             if self.extract_url(tunnel, line):
                 return True
         return False
 
     def extract_url(self, tunnel: TunnelDict, line: str) -> bool:
-        """Extract the URL from the line and invoke the callback if applicable."""
+        """Extract a URL from a line of output based on the tunnel's regex pattern."""
         regex = tunnel["pattern"]
         matches = regex.search(line)
 
@@ -312,54 +326,50 @@ class Tunnel:
         return False
 
     def invoke_callback(self, callback: Callable, link: str, note: Optional[str], name: Optional[str]) -> None:
-        """Invoke the callback and handle any exceptions."""
+        """Invoke the provided callback with the extracted URL and its associated metadata."""
         try:
             callback(link, note, name)
         except Exception:
             self.logger.error("An error occurred while invoking URL callback", exc_info=True)
 
     def _run(self, cmd: str, name: str) -> None:
-        """Run the tunnel process and monitor its output."""
-        log_path = Path(self.log_dir, f"tunnel_{name}.log")
-        log_path.write_text("")  # Clear the log
+        """Run the specified command in a subprocess, monitoring its output."""
+        log_path = self.log_dir / f"tunnel_{name}.log"
+        log_path.write_text("")  # Clear previous log file
 
-        log = self.logger.getChild(name)
-        self.setup_file_logging(log, log_path)
+        log = self.logger.getChild(name)  # Create a child logger for this tunnel
+        self.setup_file_logging(log, log_path)  # Set up file logging for this tunnel
 
         try:
             self.wait_for_port_if_needed()
             cmd = shlex.split(cmd)
-            try:
-                process = subprocess.Popen(
-                    cmd,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    stdin=subprocess.PIPE,
-                    universal_newlines=True,
-                    bufsize=1,
-                )
-            except FileNotFoundError as e:
-                log.error(f"Command not found: {e.filename}. Skipping tunnel {name}.")
-                return
-
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                stdin=subprocess.PIPE,
+                universal_newlines=True,
+                bufsize=1,
+            )
             self.processes.append(process)
             self.monitor_process_output(process, log)
 
         except Exception as e:
-            log.error(f"Error in tunnel {name}: {str(e)}", exc_info=self.debug)
+            log.error(f"Error in tunnel: {str(e)}", exc_info=self.debug)
         finally:
             for handler in log.handlers:
-                handler.close()
+                handler.close()  # Close any handlers associated with this logger
 
     def setup_file_logging(self, log: logging.Logger, log_path: Path) -> None:
-        """Set up file logging for the specified logger."""
+        """Set up file logging for the specified logger and log file path."""
         if not log.handlers:
             handler = logging.FileHandler(log_path, encoding="utf-8")
             handler.setLevel(logging.DEBUG)
+            handler.setFormatter(FileFormatter("[%(name)s]: %(message)s")) 
             log.addHandler(handler)
 
     def wait_for_port_if_needed(self) -> None:
-        """Wait for the port to be available if required."""
+        """Wait for the specified port to be available if the check_local_port flag is set."""
         if self.check_local_port:
             self.wait_for_condition(
                 lambda: self.is_port_in_use(self.port) or self.stop_event.is_set(),
@@ -368,7 +378,7 @@ class Tunnel:
             )
 
     def monitor_process_output(self, process: subprocess.Popen, log: logging.Logger) -> None:
-        """Monitor the output of the tunnel process."""
+        """Monitor the output of the subprocess and process any lines received."""
         url_extracted = False
         while not self.stop_event.is_set() and process.poll() is None:
             line = process.stdout.readline()
@@ -379,7 +389,7 @@ class Tunnel:
             log.debug(line.rstrip())
 
     def _print(self) -> None:
-        """Print the tunnel URLs."""
+        """Print the collected tunnel URLs."""
         if self.check_local_port:
             self.wait_for_port_if_needed()
 
@@ -394,7 +404,7 @@ class Tunnel:
             self.display_urls()
 
     def display_urls(self) -> None:
-        """Display the collected URLs."""
+        """Display the collected URLs in a formatted manner."""
         with self.urls_lock:
             width = 100
             tunnel_name_width = max(len(name) for _, _, name in self.urls) if self.urls else 6
@@ -404,7 +414,7 @@ class Tunnel:
 
             # Print each URL
             for url, note, name in self.urls:
-                print(f"\033[32m 🔗 Tunnel \033[0m{name:<{tunnel_name_width}}  \033[32mURL: \033[0m{url} {note if note else ''}")
+                print(f"\033[32m 🔗 Tunnel \033[0m{name:<{tunnel_name_width}}  \033[32mURL: \033[0m{url} {note or ''}")
 
             # Print the footer
             print("\n\033[32m+" + "=" * (width - 2) + "+\033[0m\n")
@@ -413,12 +423,3 @@ class Tunnel:
                 self.invoke_callback(self.callback, self.urls)
 
             self.printed.set()
-
-    def set_log_handlers(self, log_handlers: ListHandlersOrBool) -> None:
-        """Set logging handlers for the tunnel logger."""
-        if log_handlers is False:
-            for handler in self.logger.handlers:
-                self.logger.removeHandler(handler)
-        elif isinstance(log_handlers, list):
-            for handler in log_handlers:
-                self.logger.addHandler(handler)
