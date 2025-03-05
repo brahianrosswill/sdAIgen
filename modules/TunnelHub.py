@@ -4,16 +4,16 @@ Originated from: https://raw.githubusercontent.com/cupang-afk/subprocess-tunnel/
 Author: cupang-afk https://github.com/cupang-afk
 """
 
-
-import logging
-import re
-import shlex
-import socket
-import time
-import subprocess
-from pathlib import Path
-from threading import Event, Lock, Thread
 from typing import Callable, List, Optional, Tuple, TypedDict, Union, get_args
+from threading import Event, Lock, Thread
+from pathlib import Path
+import subprocess
+import logging
+import socket
+import shlex
+import time
+import re
+import os
 
 
 StrOrPath = Union[str, Path]
@@ -21,13 +21,30 @@ StrOrRegexPattern = Union[str, re.Pattern]
 ListHandlersOrBool = Union[List[logging.Handler], bool]
 
 
-class CustomLogFormat(logging.Formatter):
-    def format(self, record: logging.LogRecord) -> str:
-        names = record.name.split(".") if record.name else []
-        if len(names) > 1:
-            _, *names = names
-            record.msg = f"[{' '.join(names)}] {record.msg}"
-        return super().format(record)
+class ColoredFormatter(logging.Formatter):
+    COLORS = {
+        logging.DEBUG: "\033[36m",        # Cyan
+        logging.INFO: "\033[32m",         # Green
+        logging.WARNING: "\033[33m",      # Yellow
+        logging.ERROR: "\033[31m",        # Red
+        logging.CRITICAL: "\033[31;1m",   # Bold Red
+    }
+
+    def format(self, record):
+        color = self.COLORS.get(record.levelno, "\033[0m")
+        message = super().format(record)
+        return f"\n{color}[TunnelHub]:\033[0m {message}"
+
+
+class FileFormatter(logging.Formatter):
+    @staticmethod
+    def strip_ansi_codes(text: str) -> str:
+        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+        return ansi_escape.sub('', text)
+
+    def format(self, record):
+        formatted_message = super().format(record)
+        return self.strip_ansi_codes(formatted_message)
 
 
 class TunnelDict(TypedDict):
@@ -80,10 +97,10 @@ class Tunnel:
         port: int,
         check_local_port: bool = True,
         debug: bool = False,
-        timeout: int = 60,
+        timeout: int = 15,
         propagate: bool = False,
         log_handlers: ListHandlersOrBool = None,
-        log_dir: StrOrPath = Path.home(),
+        log_dir: StrOrPath = None,
         callback: Callable[[List[Tuple[str, Optional[str]]]], None] = None,
     ):
         self._is_running = False
@@ -99,26 +116,50 @@ class Tunnel:
         self.debug = debug
         self.timeout = timeout
         self.log_handlers = log_handlers or []
-        self.log_dir = log_dir or Path.cwd()
+        self.log_dir = Path(log_dir) if log_dir else Path.home() / "tunnel_logs"
+        self.log_dir.mkdir(parents=True, exist_ok=True)
         self.callback = callback
 
         self.logger = self.setup_logger(propagate)
 
     def setup_logger(self, propagate: bool) -> logging.Logger:
-        logger = logging.getLogger("Tunnel")
+        logger = logging.getLogger("TunnelHub")
         logger.setLevel(logging.DEBUG if self.debug else logging.INFO)
+        logger.propagate = propagate
+
         if not propagate:
-            logger.propagate = False
-            if not logger.handlers:
-                handler = logging.StreamHandler()
-                handler.setLevel(logger.level)
-                handler.setFormatter(CustomLogFormat("{message}", style="{"))
-                logger.addHandler(handler)
+            for handler in logger.handlers[:]:
+                logger.removeHandler(handler)
+
+        if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+            stream_handler = logging.StreamHandler()
+            stream_handler.setLevel(logger.level)
+            stream_handler.setFormatter(ColoredFormatter("{message}", style="{"))
+            logger.addHandler(stream_handler)
+
+        log_file = self.log_dir / "tunnelhub.log"
+        file_handler = logging.FileHandler(log_file, encoding="utf-8")
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(FileFormatter("[%(asctime)s] [TunnelHub]: %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
+        logger.addHandler(file_handler)
+
         for handler in self.log_handlers:
             logger.addHandler(handler)
+
         return logger
 
+    def is_command_available(self, command: str) -> bool:
+        return any(
+            os.access(os.path.join(path, command), os.X_OK)
+            for path in os.environ["PATH"].split(os.pathsep)
+        )
+
     def add_tunnel(self, *, command: str, pattern: StrOrRegexPattern, name: str, note: str = None, callback: Callable[[str, Optional[str], Optional[str]], None] = None) -> None:
+        cmd_name = command.split()[0]
+        if not self.is_command_available(cmd_name):
+            self.logger.warning(f"Skipping {name} - {cmd_name} not installed")
+            return
+
         if isinstance(pattern, str):
             pattern = re.compile(pattern)
 
@@ -141,14 +182,14 @@ class Tunnel:
             while not self.printed.is_set():
                 time.sleep(1)
         except KeyboardInterrupt:
-            self.logger.warning("Keyboard Interrupt detected, stopping tunnel")
+            self.logger.warning("\033[33m⚠️  Keyboard Interrupt detected, stopping tunnel\033[0m")
             self.stop()
 
     def stop(self) -> None:
         if not self._is_running:
             raise RuntimeError("Tunnel is not running")
 
-        self.logger.info(f"\n\033[32m💣 Tunnels:\033[0m \033[34m{self.get_tunnel_names()}\033[0m -> \033[31mKilled.\033[0m")
+        self.logger.info(f"💣 \033[32mTunnels:\033[0m \033[34m{self.get_tunnel_names()}\033[0m -> \033[31mKilled.\033[0m")
         self.stop_event.set()
         self.terminate_processes()
         self.join_threads()
@@ -159,12 +200,13 @@ class Tunnel:
 
     def terminate_processes(self) -> None:
         for process in self.processes:
-            while process.poll() is None:
-                try:
+            try:
+                if process.poll() is None:
                     process.terminate()
-                    process.wait(timeout=15)
-                except subprocess.TimeoutExpired:
-                    self.handle_process_timeout(process)
+                    process.wait(timeout=5)
+            except Exception as e:
+                self.logger.warning(f"Error terminating process: {str(e)}")
+        self.processes.clear()
 
     def handle_process_timeout(self, process: subprocess.Popen) -> None:
         process.kill()
@@ -191,11 +233,14 @@ class Tunnel:
         return self
 
     def start_tunnel_thread(self, tunnel: TunnelDict) -> None:
-        cmd = tunnel["command"]
-        name = tunnel.get("name")
-        tunnel_thread = Thread(target=self._run, args=(cmd.format(port=self.port),), kwargs={"name": name})
-        tunnel_thread.start()
-        self.jobs.append(tunnel_thread)
+        try:
+            cmd = tunnel["command"].format(port=self.port)
+            name = tunnel.get("name")
+            tunnel_thread = Thread(target=self._run, args=(cmd, name))
+            tunnel_thread.start()
+            self.jobs.append(tunnel_thread)
+        except Exception as e:
+            self.logger.error(f"Failed to start tunnel {tunnel.get('name')}: {str(e)}")
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         self.stop()
@@ -284,19 +329,24 @@ class Tunnel:
         try:
             self.wait_for_port_if_needed()
             cmd = shlex.split(cmd)
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                stdin=subprocess.PIPE,
-                universal_newlines=True,
-                bufsize=1,
-            )
+            try:
+                process = subprocess.Popen(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    stdin=subprocess.PIPE,
+                    universal_newlines=True,
+                    bufsize=1,
+                )
+            except FileNotFoundError as e:
+                log.error(f"Command not found: {e.filename}. Skipping tunnel {name}.")
+                return
+
             self.processes.append(process)
             self.monitor_process_output(process, log)
 
-        except Exception:
-            log.error(f"An error occurred while running the command: {cmd}", exc_info=True)
+        except Exception as e:
+            log.error(f"Error in tunnel {name}: {str(e)}", exc_info=self.debug)
         finally:
             for handler in log.handlers:
                 handler.close()

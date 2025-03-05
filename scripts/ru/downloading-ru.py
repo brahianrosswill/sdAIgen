@@ -96,7 +96,7 @@ def setup_venv():
         os.environ["PYTHONPATH"] = PKG + ":" + os.environ["PYTHONPATH"]
 
     if UI == 'Forge':
-        install_dependencies('pip uninstall -y transformers')
+        install_dependencies(['pip uninstall -y transformers'])
 
 def install_packages(install_lib):
     """Install packages from the provided library dictionary."""
