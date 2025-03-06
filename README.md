@@ -68,6 +68,14 @@ English | [Русский](README.ru-ru.md)
 ## 🚧 FAQ?:
 - [Rentry Page](https://rentry.co/faq-sdAIgen-en)
 
+## Support 💙
+
+<div align="center">
+    <a href="https://www.donationalerts.com/r/anxety">
+        <img src=".Docs/SVG/DA_Logo_Color.svg" width="250" height="100" alt="DonationAlerts">
+    </a>
+</div>
+
 <div align="center">
 	<h6>Some scripts are taken from <a href="https://github.com/gutris1">gutris1</a>.</h6>
 </div>
