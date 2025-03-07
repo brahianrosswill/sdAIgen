@@ -24,6 +24,7 @@
   - Предустановленные пользовательские настройки + стили.
   - Скачивание превью для *моделей, LoRa и embedding* (CivitAi) | ***Для Kaggle есть ограничения.***
   - Выбор WebUI между *A1111*, *ComfyUI*, *Forge*, *ReForge*, *SD-UX.*
+  - [Rentry Page](https://rentry.co/faq-sdAIgen-ru) - описание виджетов.
 
 <details>
 <summary>Установленные Расширения</summary>
@@ -64,9 +65,6 @@
 - [WD14-Tagger](https://github.com/pythongosssss/ComfyUI-WD14-Tagger)
 
 </details>
-
-## 🚧 FAQ?:
-- [Rentry Page](https://rentry.co/faq-sdAIgen-ru)
 
 ## Поддержать 💙
 

@@ -3,9 +3,10 @@ Modified script for creating tunnels.
 Originated from: https://raw.githubusercontent.com/cupang-afk/subprocess-tunnel/refs/heads/master/src/tunnel.py
 Author: cupang-afk https://github.com/cupang-afk
 
-This module has been modified specifically for the 'sdAIgen' project and may not be compatible with normal use.
-Use the original script of the author cupang-afk
+This script has been modified specifically for the 'sdAIgen' project and may not be compatible with normal use.
+Use the original script of the author cupang-afk.
 """
+
 
 from typing import Callable, List, Optional, Tuple, TypedDict, Union, get_args
 from threading import Event, Lock, Thread

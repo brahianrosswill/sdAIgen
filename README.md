@@ -24,6 +24,7 @@ English | [Русский](README.ru-ru.md)
   - Preset custom settings + styles.
   - Download previews for *models, LoRa and embedding* (CivitAi) | ***There are limitations for Kaggle.***
   - Choosing WebUI between *A1111*, *ComfyUI*, *Forge*, *ReForge*, *SD-UX.*
+  - [Rentry Page](https://rentry.co/faq-sdAIgen-en) - widget description.
 
 <details>
 <summary>Installed Extensions</summary>
@@ -64,9 +65,6 @@ English | [Русский](README.ru-ru.md)
 - [WD14-Tagger](https://github.com/pythongosssss/ComfyUI-WD14-Tagger)
 
 </details>
-
-## 🚧 FAQ?:
-- [Rentry Page](https://rentry.co/faq-sdAIgen-en)
 
 ## Support 💙
 

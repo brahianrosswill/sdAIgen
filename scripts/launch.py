@@ -56,7 +56,7 @@ locals().update(settings)
 ## ======================= Other =========================
 
 def Trashing():
-    dirs = ["A1111", "ReForge", "ComfyUI", "Forge"]
+    dirs = ["A1111", "ComfyUI", "Forge", "ReForge", "SD-UX"]
     paths = [Path(HOME) / name for name in dirs]
 
     for path in paths:
@@ -150,7 +150,6 @@ class TunnelManager:
                 "pattern": re.compile(r"[\w-]+\.loca\.lt"),
                 "note": f"Password: \033[32m{self.public_ip}\033[0m"
             }),
-            # Testing Tunnels
             ('https://serveo.net', 'Serveo', {
                 "command": f"ssh -o StrictHostKeyChecking=no -R 80:localhost:{self.tunnel_port} serveo.net",
                 "pattern": re.compile(r"[\w-]+\.serveo\.net")

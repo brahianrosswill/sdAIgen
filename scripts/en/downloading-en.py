@@ -149,7 +149,7 @@ locals().update(settings)
 
 ## ======================== WEBUI ========================
 
-if UI not in ['ComfyUI', 'Forge'] and not os.path.exists('/root/.cache/huggingface/hub/models--Bingsu--adetailer'):
+if UI not in ['ComfyUI', 'Forge', 'ReForge'] and not os.path.exists('/root/.cache/huggingface/hub/models--Bingsu--adetailer'):
     print('🚚 Unpacking ADetailer model cache...')
 
     name_zip = 'hf_cache_adetailer'
