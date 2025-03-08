@@ -49,11 +49,13 @@ def install_dependencies(commands):
 
 def setup_venv():
     """Customize the virtual environment."""
+    CD(HOME)
+
     url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python310-venv-torch251-cu121-C-fca.tar.lz4"
     fn = Path(url).name
 
-    m_download(f'{url} {HOME} {fn}')
-
+    m_download(f'{url} {fn}')
+    
     # Install dependencies based on environment
     install_commands = []
     if ENV_NAME == 'Kaggle':
@@ -61,30 +63,13 @@ def setup_venv():
             "pip install ipywidgets jupyterlab_widgets --upgrade",
             "rm -f /usr/lib/python3.10/sitecustomize.py"
         ])
-    # else:        
-    #     install_commands.append("apt -y install python3.10-venv")
 
     install_commands.append("sudo apt-get -y install lz4 pv")
     install_dependencies(install_commands)
 
     # Unpack and clean
-    CD(HOME)
     ipySys(f'pv {fn} | lz4 -d | tar xf -')
     Path(fn).unlink()
-    # ipySys(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python*')
-
-    # Create a virtual environment
-    # python_command = 'python3.10' if ENV_NAME == 'Google Colab' else 'python3'
-    # venv_commands = [
-    #     f'{python_command} -m venv {VENV}',
-    #     f'{VENV}/bin/python3 -m pip install -U --force-reinstall pip',
-    #     f'{VENV}/bin/python3 -m pip install ipykernel',
-    #     f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
-    # ]
-    # if UI == 'Forge':    
-    #     venv_commands.append(f'{VENV}/bin/python3 -m pip uninstall -y transformers')
-
-    # install_dependencies(venv_commands)
 
     BIN = str(VENV / 'bin')
     PKG = str(VENV / 'lib/python3.10/site-packages')
@@ -94,9 +79,6 @@ def setup_venv():
         os.environ["PATH"] = BIN + ":" + os.environ["PATH"]
     if PKG not in os.environ["PYTHONPATH"]:
         os.environ["PYTHONPATH"] = PKG + ":" + os.environ["PYTHONPATH"]
-
-    if UI == 'Forge':
-        install_dependencies(['pip uninstall -y transformers'])
 
 def install_packages(install_lib):
     """Install packages from the provided library dictionary."""

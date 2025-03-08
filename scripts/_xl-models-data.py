@@ -10,7 +10,6 @@ model_list = {
     "3. WAI-illustrious [Anime] [V12] [XL]": [
         {"url": "https://civitai.com/api/download/models/1490781", "name": "WAI-illustrious_V12.safetensors"}
     ]
-
 }
 
 ## VAE
