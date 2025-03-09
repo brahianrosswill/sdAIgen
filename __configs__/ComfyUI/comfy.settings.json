@@ -74,5 +74,6 @@
         }
     },
     "Comfy.TutorialCompleted": true,
-    "pysssss.ModelInfo.NsfwLevel": "PG"
+    "pysssss.ModelInfo.NsfwLevel": "PG",
+    "pysssss.ImageFeed.Location": "hidden"
 }

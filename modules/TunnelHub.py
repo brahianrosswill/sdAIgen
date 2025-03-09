@@ -310,17 +310,29 @@ class Tunnel:
         """Extract a URL from a line of output based on the tunnel's regex pattern."""
         regex = tunnel["pattern"]
         matches = regex.search(line)
-
+    
         if matches:
             link = matches.group().strip()
-            link = link if link.startswith("http") else "http://" + link
             note = tunnel.get("note")
             name = tunnel.get("name")
             callback = tunnel.get("callback")
-
+    
+            # Определение протокола: HTTPS, если доступен, иначе HTTP
+            if not link.startswith("http"):
+                host_part = link.split('/')[0]
+                host = host_part.split(':')[0]
+                try:
+                    with socket.create_connection((host, 443), timeout=1):
+                        link = f"https://{link}"
+                except (socket.timeout, ConnectionRefusedError, OSError):
+                    link = f"http://{link}"
+                except Exception as e:
+                    self.logger.error(f"Error checking HTTPS for {host}: {e}")
+                    link = f"http://{link}"
+    
             with self.urls_lock:
                 self.urls.append((link, note, name))
-
+    
             if callback:
                 self.invoke_callback(callback, link, note, name)
             return True

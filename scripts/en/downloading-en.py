@@ -55,7 +55,7 @@ def setup_venv():
     fn = Path(url).name
 
     m_download(f'{url} {HOME} {fn}')
-    
+
     # Install dependencies based on environment
     install_commands = []
     if ENV_NAME == 'Kaggle':
