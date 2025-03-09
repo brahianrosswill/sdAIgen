@@ -51,7 +51,7 @@ def setup_venv():
     """Customize the virtual environment."""
     CD(HOME)
 
-    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python310-venv-torch251-cu121-C-fca.tar.lz4"
+    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python310-venv-torch251-cu121-K-car.tar.lz4"
     fn = Path(url).name
 
     m_download(f'{url} {fn}')
