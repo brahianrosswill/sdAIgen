@@ -240,7 +240,7 @@ PREFIX_MAP = {
     "vision": (vision_dir, None),
     "encoder": (encoder_dir, "$enc"),
     "diffusion": (diffusion_dir, "$diff"),
-    "config": (WEBUI, "$cfg")
+    "config": (config_dir, "$cfg")
 }
 for dir_path, _ in PREFIX_MAP.values():
     os.makedirs(dir_path, exist_ok=True)
@@ -353,10 +353,6 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     format_output(clean_url, dst_dir, file_name, image_url, image_name)
 
     # Downloading
-    # file_path = os.path.join(dst_dir, file_name)
-    # if os.path.exists(file_path) and prefix == 'config':
-    #     os.remove(file_path)
-
     m_download(f"{url} {dst_dir} {file_name or ''}", log=True)
 
 ''' SubModels - Added URLs '''

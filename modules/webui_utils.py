@@ -42,17 +42,18 @@ def _set_webui_paths(ui):
     model_dir = models / checkpoint
     vae_dir = models / vae
     lora_dir = models / lora
-    embed_dir = models / embed if ui == 'ComfyUI' else webui / embed
+    embed_dir = (models / embed if ui == 'ComfyUI' else webui / embed)
     extension_dir = webui / extension
     upscale_dir = models / upscale
     control_dir = models / ('controlnet' if ui == 'ComfyUI' else 'ControlNet')
     output_dir = webui / webui_output
+
+    config_dir = (webui / 'user/default' if ui == 'ComfyUI' else webui)
     
     # other
     adetailer_dir = models / ('ultralytics' if ui == 'ComfyUI' else 'adetailer')
     clip_dir = models / ('clip' if ui == 'ComfyUI' else 'text_encoder')
     unet_dir = models / ('unet' if ui == 'ComfyUI' else 'text_encoder')
-
     vision_dir = models / 'clip_vision'
     encoder_dir =  models / ('text_encoders' if ui == 'ComfyUI' else 'text_encoder')
     diffusion_dir = models / 'diffusion_models'
@@ -71,7 +72,8 @@ def _set_webui_paths(ui):
         'vision_dir': str(vision_dir),
         'encoder_dir': str(encoder_dir),
         'diffusion_dir': str(diffusion_dir),
-        'output_dir': str(output_dir)
+        'output_dir': str(output_dir),
+        'config_dir': str(config_dir)
     }
     
     js.update(SETTINGS_PATH, 'WEBUI', paths)
