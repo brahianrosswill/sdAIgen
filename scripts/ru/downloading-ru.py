@@ -123,8 +123,7 @@ if venv_needs_reinstall:
     else:
         venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python310-venv-torch251-cu121-C-fca.tar.lz4"
 
-    print("♻️ Установка VENV, это займет некоторое время...")
-    print(venv_url)
+    print(f"♻️ Установка {'ReForge VENV' if UI == 'ReForge' else 'VENV'}, это займет некоторое время...")
     setup_venv(venv_url)
 
     # Create a marker for the current UI
