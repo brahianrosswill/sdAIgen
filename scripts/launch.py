@@ -92,7 +92,8 @@ def get_launch_command(tunnel_port):
     if UI == 'ComfyUI':
         return f'{py} main.py {base_args}'
     else:
-        return f'COMMANDLINE_ARGS="{base_args}{common_args}" REQS_FILE="requirements_versions.txt" {py} launch.py'
+        # return f'COMMANDLINE_ARGS="{base_args}{common_args}" REQS_FILE="requirements_versions.txt" {py} launch.py'
+        return f'{py} launch.py {base_args}{common_args}'
 
 ## ===================== Tunneling =======================
 
