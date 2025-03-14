@@ -47,11 +47,9 @@ def install_dependencies(commands):
     for cmd in commands:
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def setup_venv():
-    """Customize the virtual environment."""
+def setup_venv(url):
+    """Customize the virtual environment using the specified URL."""
     CD(HOME)
-
-    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python310-venv-torch251-cu121-C-rca.tar.lz4"
     fn = Path(url).name
 
     m_download(f'{url} {HOME} {fn}')
@@ -101,15 +99,36 @@ if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
         "ngrok": "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
     }
 
-    print("💿 Установка библиотек займет немного времени.")
+    print("💿 Installing the libraries will take a bit of time.")
     install_packages(install_lib)
     clear_output()
     js.update(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
 
 # Check and setup virtual environment
-if not VENV.exists(): 
+current_ui = js.read(SETTINGS_PATH, 'WEBUI.current')
+venv_ui_path = SCR_PATH / '.venv_ui'
+
+venv_needs_reinstall = not VENV.exists() or \
+                      not venv_ui_path.exists() or \
+                      venv_ui_path.read_text().strip() != current_ui
+
+if venv_needs_reinstall:
+    if VENV.exists():
+        print("🗑️ Удаление старого venv...")
+        shutil.rmtree(VENV)
+        clear_output()
+
+    if current_ui == 'ReForge':
+        venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python310-venv-torch251-cu121-C-ReForge.tar.lz4"
+    else:
+        venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python310-venv-torch251-cu121-C-fca.tar.lz4"
+
     print("♻️ Установка VENV, это займет некоторое время...")
-    setup_venv()
+    print(venv_url)
+    setup_venv(venv_url)
+
+    # Create a marker for the current UI
+    (SCR_PATH / '.venv_ui').write_text(current_ui)
     clear_output()
 
 ## ================ loading settings V5 ==================
