@@ -71,7 +71,7 @@ def update(filepath, key, value):
         current_level = current_level.setdefault(part, {})
 
     last_key = keys[-1]
-    
+
     if last_key in current_level:
         if isinstance(current_level[last_key], dict) and isinstance(value, dict):
             current_level[last_key].update(value)

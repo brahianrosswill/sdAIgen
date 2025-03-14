@@ -79,7 +79,7 @@ async def download_configuration():
         "https://github.com/anxety-solo/webui_timer timer",
         "https://github.com/anxety-solo/anxety-theme",
         "https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus",
-        
+
         ## OTHER | ON
         "https://github.com/gutris1/sd-image-viewer Image-Viewer",
         "https://github.com/gutris1/sd-image-info Image-Info",
@@ -109,7 +109,7 @@ async def download_configuration():
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         ))
-    
+
     await asyncio.gather(*tasks)
 
 def unpack_webui():

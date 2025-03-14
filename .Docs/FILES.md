@@ -36,7 +36,7 @@
 - **setup-{lang}.py**: Downloading files for work.
 - **downloading-{lang}.py**: The main script for downloading data.
 - **widgets-{lang}.py**: Script for creating and displaying main widgets.
-  
+
 #### Subdirectory -> `UIs`
 
 - Downloading the WebUI repository, downloading its config files and installing extensions/nodes.

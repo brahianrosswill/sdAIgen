@@ -28,7 +28,7 @@
     --aw-checkbox-sdxl-bg: #ea861a;
     --aw-checkbox-empowerment-bg: #df6b91;
     --aw-checkbox-handle-bg: white;
-  
+
     /* Popup */
     --aw-popup-bg: rgba(255, 255, 255, 0.05);
     --aw-popup-color: #ffffff;
@@ -36,7 +36,7 @@
     --aw-popup-sample-bg: rgba(255, 255, 255, 0.2);
     --aw-popup-sample-color: #c6e2ff;
     --aw-popup-sample-border: 2px solid rgba(255, 255, 255, 0.2);
-  
+
     /* Term Colors (Popup) */
     --aw-term-sample-label: #dbafff;
     --aw-term-braces: #ffff00;
@@ -49,7 +49,7 @@
     --aw-scrollbar-thumb-bg: #475254;
     --aw-scrollbar-track-bg: #111111;
     --aw-scrollbar-thumb-hover: var(--aw-accent-color);
-  
+
     /* Buttons */
     --aw-button-gradient: radial-gradient(circle at top left, purple 10%, violet 90%);
     --aw-button-save-hover: radial-gradient(circle at top left, purple 10%, #93ac47 90%);
@@ -267,13 +267,13 @@ a {
     background-color: var(--aw-checkbox-checked-bg);
 }
 .inpaint input[type="checkbox"]:checked {
-    background-color: var(--aw-checkbox-inpaint-bg);  
+    background-color: var(--aw-checkbox-inpaint-bg);
 }
 .sdxl input[type="checkbox"]:checked {
-    background-color: var(--aw-checkbox-sdxl-bg);  
+    background-color: var(--aw-checkbox-sdxl-bg);
 }
 .empowerment input[type="checkbox"]:checked {
-    background-color: var(--aw-checkbox-empowerment-bg);  
+    background-color: var(--aw-checkbox-empowerment-bg);
 }
 
 .widget-checkbox input[type="checkbox"]:before {

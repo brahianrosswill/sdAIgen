@@ -104,7 +104,7 @@ class WidgetFactory:
         """Create a dropdown widget."""
         if value is None and options:
             value = options[0]
-            
+
         return self._create_widget(
             widgets.Dropdown,
             options=options,

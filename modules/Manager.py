@@ -299,7 +299,7 @@ def clean_url(url):
 def m_clone(input_source, log=False):
     """Main function to clone repositories"""
     commands = process_input_source(input_source, log)
-    
+
     if not commands:
         log_message(">> No valid repositories to clone", log)
         return
@@ -310,12 +310,12 @@ def m_clone(input_source, log=False):
 def process_input_source(input_source, log=False):
     input_path = Path(input_source).expanduser()
     commands = []
-    
+
     def build_command(line):
         line = line.strip()
         if not line:
             return None
-            
+
         # Extract base command and URL
         parts = shlex.split(line)
         if len(parts) >= 2 and parts[0] == "git" and parts[1] == "clone":
@@ -324,15 +324,15 @@ def process_input_source(input_source, log=False):
         else:
             url = line
             base_command = ["git", "clone", url]
-        
+
         if not url:
             log_message(f">> Skipping invalid command: {line}", log)
             return None
-            
+
         # Add shallow clone parameters
         if "--depth" not in base_command:
             base_command += ["--depth", "1"]
-            
+
         return " ".join(base_command)
 
     # Process different input types
@@ -365,7 +365,7 @@ def execute_command(command, log=False):
         output = process.stdout.readline()
         if not output and process.poll() is not None:
             break
-            
+
         output = output.strip()
         if not output:
             continue
@@ -375,7 +375,7 @@ def execute_command(command, log=False):
             repo_path = re.search(r"'(.+?)'", output).group(1)
             repo_name = "/".join(repo_path.split("/")[-3:])
             log_message(f">> Cloning: {repo_name} -> {repo_url}", log)
-            
+
         # Handle error messages
         if "fatal" in output.lower():
             log_message(f">> \033[31m[Error]:\033[0m {output}", log)

@@ -49,7 +49,7 @@ def _set_webui_paths(ui):
     output_dir = webui / webui_output
 
     config_dir = (webui / 'user/default' if ui == 'ComfyUI' else webui)
-    
+
     # other
     adetailer_dir = models / ('ultralytics' if ui == 'ComfyUI' else 'adetailer')
     clip_dir = models / ('clip' if ui == 'ComfyUI' else 'text_encoder')
@@ -75,7 +75,7 @@ def _set_webui_paths(ui):
         'output_dir': str(output_dir),
         'config_dir': str(config_dir)
     }
-    
+
     js.update(SETTINGS_PATH, 'WEBUI', paths)
 
 def handle_setup_timer(webui_path, timer_webui):

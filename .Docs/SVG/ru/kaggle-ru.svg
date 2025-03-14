@@ -48,7 +48,7 @@
                     user-select: none;
                     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
                 }
-                
+
                 .H1 {
                     color: #FFFFFF;
                     font-size: 45px;
@@ -77,7 +77,7 @@
                     animation: letterSpacingH2 ease-in-out 1s infinite alternate, moveUp 1s ease forwards 4s;
                     margin-top: -15px;
                 }
-                
+
                 .source {
                     position: absolute;
                     top: 98px;
@@ -95,11 +95,11 @@
                     font-weight: bold;
                 }
             </style>
-            
+
             <div class="container">
                 <div class="H1">Открыть в</div>
                 <div class="H2">KAGGLE</div>
-                
+
                 <div class="source">
                     <p>Нажмите, чтобы скопировать Блокнот</p>
                 </div>

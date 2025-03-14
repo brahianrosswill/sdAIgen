@@ -91,7 +91,7 @@ async def download_configuration():
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         ))
-    
+
     await asyncio.gather(*tasks)
 
 def unpack_webui():

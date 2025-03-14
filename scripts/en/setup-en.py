@@ -186,7 +186,7 @@ def display_info(env, scr_folder, branch):
       const snowContainer = document.getElementById('snow-container');
       const snowflake = document.createElement('div');
       snowflake.className = 'snowflake';
-      
+
       // Set random size
       const size = Math.random() * 5 + 3; // Size from 3 to 8 pixels
       snowflake.style.width = size + 'px';
@@ -292,7 +292,7 @@ def save_environment_to_json(data, scr_folder):
     """Save environment data to a JSON file."""
     file_path = scr_folder / 'settings.json'
     existing_data = {}
-    
+
     if file_path.exists():
         with open(file_path, 'r') as json_file:
             existing_data = json.load(json_file)
@@ -370,10 +370,10 @@ async def download_files_async(scr_path, lang, branch):
     }
 
     file_list = process_files(scr_path, files_dict, branch)
-    
+
     async with aiohttp.ClientSession() as session:
         tasks = [download_file(session, file_url, file_path) for file_url, file_path in file_list]
-        
+
         for future in tqdm(asyncio.as_completed(tasks), total=len(tasks), desc="Downloading files", unit="file"):
             await future
 

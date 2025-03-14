@@ -73,7 +73,7 @@ def get_all_files_list(directory, extensions, excluded_dirs=[]):
     for root, dirs, files in os.walk(directory):
         # Exclude specified directories
         dirs[:] = [d for d in dirs if d not in excluded_dirs]
-        
+
         for file in files:
             if file.endswith(extensions) and not file.endswith(tuple(EXCLUDED_EXTENSIONS)):
                 files_list.append(file)  # Store only the file name

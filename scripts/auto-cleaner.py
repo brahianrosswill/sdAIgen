@@ -62,12 +62,12 @@ def clean_directory(directory, directory_type):
             if directory_type == 'Models' and file.endswith(tuple(image_extensions)):
                 os.remove(file_path)
                 continue
-            
+
             if not file.endswith(tuple(trash_extensions)) and '.' in file:
                 deleted_files += 1
-            
+
             os.remove(file_path)
-  
+
     return deleted_files
 
 def generate_messages(deleted_files_dict):

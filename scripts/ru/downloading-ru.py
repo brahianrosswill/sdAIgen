@@ -179,7 +179,7 @@ if latest_webui or latest_extensions:
             CD(WEBUI)
             # ipySys('git restore .')
             # ipySys('git pull -X theirs --rebase --autostash')
-            
+
             ipySys('git stash')
             ipySys('git pull --rebase')
             ipySys('git stash pop')
@@ -488,7 +488,7 @@ def _clone_repository(repo, repo_name, extension_dir):
     repo_name = repo_name or repo.split('/')[-1]
     command = f'cd {extension_dir} && git clone --depth 1 --recursive {repo} {repo_name} && cd {repo_name} && git fetch'
     ipySys(command)
-    
+
 extension_type = 'нодов' if UI == 'ComfyUI' else 'расширений'
 
 if extension_repo:

@@ -1,9 +1,9 @@
 <div align="center">
 <img width="1080px" height="auto" src="https://raw.githubusercontent.com/anxety-solo/sdAIgen/dev/.Docs/Imgs/sample.png"/></br>
 <h1>~ ANXETY | Stable Diffusion WebUI | NoteBook V2 ~</h1>
-	
+
 English | [Русский](README.ru-ru.md)
- 
+
 </div>
 
 <div align="center">
@@ -32,7 +32,7 @@ English | [Русский](README.ru-ru.md)
 - [ADetailer](https://github.com/Bing-su/adetailer)
 - [anxety-theme](https://github.com/anxety-solo/anxety-theme)
 - [Aspect-Ratio-Helper](https://github.com/thomasasfk/sd-webui-aspect-ratio-helper)
-- [CivitAi-Browser-plus](https://github.com/anxety-solo/sd-civitai-browser-plus) 
+- [CivitAi-Browser-plus](https://github.com/anxety-solo/sd-civitai-browser-plus)
 - [ControlNet](https://github.com/Mikubill/sd-webui-controlnet)
 - [Infinite-Image-Browsing](https://github.com/zanllp/sd-webui-infinite-image-browsing)
 - [Regional-Prompter](https://github.com/hako-mikan/sd-webui-regional-prompter)
