@@ -108,9 +108,13 @@ if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
 current_ui = js.read(SETTINGS_PATH, 'WEBUI.current')
 venv_ui_path = SCR_PATH / '.venv_ui'
 
-venv_needs_reinstall = not VENV.exists() or \
-                      not venv_ui_path.exists() or \
-                      venv_ui_path.read_text().strip() != current_ui
+# Determine whether to reinstall venv
+venv_needs_reinstall = (
+    not VENV.exists()  # venv is missing
+    or not venv_ui_path.exists()  # file marker is missing
+     # Check category change (ReForge <-> other)
+    or (venv_ui_path.read_text().strip() == 'ReForge') != (current_ui == 'ReForge')
+)
 
 if venv_needs_reinstall:
     if VENV.exists():
