@@ -353,14 +353,14 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     image_url, image_name = None, None
 
     if 'civitai' in url:
-        civitai = CivitAiAPI(civitai_token)
-        if not (data := civitai.fetch_data(url)) or civitai.check_early_access(data):
-            return  # Terminate if no data or requires payment
+        api = CivitAiAPI(civitai_token)
+        if not (data := api.validate_download(url, file_name)):
+            return
 
-        model_type, file_name = civitai.get_model_info(data, url, file_name)
-        download_url = civitai.get_download_url(data, url)
-        clean_url, url = civitai.get_full_and_clean_download_url(download_url)
-        image_url, image_name = civitai.get_image_info(data, file_name, model_type)
+        model_type = data.model_type
+        file_name = data.model_name
+        clean_url, url = data.clean_url, data.download_url
+        image_url, image_name = data.image_url, data.image_name
 
         # Download preview images
         if image_url and image_name:

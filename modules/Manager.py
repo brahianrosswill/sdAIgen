@@ -1,6 +1,7 @@
 """ Manager Module | by ANXETY """
 
-import json_utils as js    # JSON
+from CivitaiAPI import CivitAiAPI    # CivitAI API
+import json_utils as js              # JSON
 
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
@@ -242,45 +243,12 @@ def execute_shell_command(command, log):
 @handle_errors
 def clean_url(url):
     """Clean and format URLs to ensure correct access."""
-    if "civitai.com" in url:
-        if '?token=' in url:
-            url = url.split('?token=')[0]
-        if '?type=' in url:
-            url = url.replace('?type=', f'?token={CAI_TOKEN}&type=')
-        else:
-            url = f"{url}?token={CAI_TOKEN}"
+    if "civitai.com/models/" in url:
+        api = CivitAiAPI(CAI_TOKEN)
+        if not (data := api.validate_download(url)):
+            return
 
-        try:
-            if "civitai.com/models/" in url:
-                if '?modelVersionId=' in url:
-                    version_id = url.split('?modelVersionId=')[1]
-                    response = requests.get(f"https://civitai.com/api/v1/model-versions/{version_id}")
-                else:
-                    model_id = url.split('/models/')[1].split('/')[0]
-                    response = requests.get(f"https://civitai.com/api/v1/models/{model_id}")
-
-                data = response.json()
-
-                if response.status_code != 200:
-                    log_message(f"> \033[31m[CivitAI API Error]:\033[0m {response.status_code} - {response.text}", True)
-                    return None
-
-                early_access = data.get("availability") == "EarlyAccess" or data.get("earlyAccessEndsAt", None)
-                if early_access:
-                    model_id = data.get("modelId")
-                    version_id = data.get("id")
-
-                    log_message(f"> \n\033[34m[CivitAI API]:\033[0m The model is in early access and requires payment for downloading.", True)
-                    if model_id and version_id:
-                        page = f"https://civitai.com/models/{model_id}?modelVersionId={version_id}"
-                        log_message(f"> \033[32m[CivitAI Page]:\033[0m {page}\n", True)
-                    return None
-
-                download_url = data["downloadUrl"] if "downloadUrl" in data else data["modelVersions"][0]["downloadUrl"]
-                return f"{download_url}?token={CAI_TOKEN}"
-        except Exception as e:
-            log_message(f"> \033[31m[Error]:\033[0m {e}", True)
-            return None
+        url = data.download_url
 
     elif "huggingface.co" in url:
         if '/blob/' in url:
