@@ -1,12 +1,4 @@
-"""
-CivitAi API Module | by ANXETY
-
-Provides interface for CivitAI API operations including:
-- Model data validation
-- Download URL processing
-- Early access checks
-- Preview image extraction
-"""
+""" CivitAi API Module | by ANXETY """
 
 from urllib.parse import urlparse, parse_qs, urlencode
 from typing import Optional, Tuple, Dict, Any
@@ -97,15 +89,38 @@ class CivitAiAPI:
 
     def _extract_version_id(self, url: str) -> Optional[str]:
         """Extract model version ID from different URL formats"""
-        if "civitai.com/models/" in url:
-            if 'modelVersionId=' in url:
-                return url.split('modelVersionId=')[1].split('&')[0]
-            else:
-                model_id = url.split('/models/')[1].split('/')[0]
+        try:
+            # Basic URL format validation
+            if not url.startswith(("http://", "https://")):
+                self.logger.error(f"Invalid URL format: {url}")
+                return None
+
+            # Handle model page URLs
+            if "civitai.com/models/" in url:
+                if 'modelVersionId=' in url:
+                    version_part = url.split('modelVersionId=')[1]
+                    return version_part.split('&')[0].split('#')[0]
+
+                model_id_part = url.split('/models/')[1]
+                model_id = model_id_part.split('/')[0].split('?')[0]
+                if not model_id.isdigit():
+                    self.logger.error(f"Invalid model ID format: {model_id}")
+                    return None
+
                 model_data = self._fetch_json(self._build_url(f'models/{model_id}'))
                 return model_data['modelVersions'][0]['id'] if model_data else None
-        else:
-            return url.split('/api/download/models/')[1].split('?')[0]
+
+            # Handle direct download URLs
+            if "/api/download/models/" in url:
+                version_part = url.split('/api/download/models/')[1]
+                return version_part.split('?')[0].split('/')[0]
+
+            self.logger.error(f"Unsupported URL format: {url}")
+            return None
+
+        except (IndexError, AttributeError, KeyError) as e:
+            self.logger.error(f"Failed to parse URL: {url} ({str(e)})")
+            return None
 
     def _get_preview_metadata(self, images: list, model_name: str) -> Tuple[Optional[str], Optional[str]]:
         """Extract appropriate preview image from model metadata"""
@@ -162,6 +177,16 @@ class CivitAiAPI:
             return data['model']['type'], custom_name
         return data['model']['type'], original_name
 
+    def _get_version_data(self, url: str) -> Tuple[Optional[str], Optional[Dict]]:
+        """Helper method to extract version ID and fetch API data"""
+        version_id = self._extract_version_id(url)
+        if not version_id:
+            self.logger.error("Invalid model URL")
+            return None, None
+        api_data = self._fetch_json(self._build_url(f'model-versions/{version_id}'))
+        return api_data
+
+    # -- Special function for 'sdAIgen' --
     def validate_download(self, url: str, file_name: Optional[str] = None) -> Optional[ModelData]:
         """
         Validate and process model download URL
@@ -173,21 +198,20 @@ class CivitAiAPI:
         Returns:
             ModelData object with processed metadata or None
         """
-        version_id = self._extract_version_id(url)
-        if not version_id:
-            self.logger.error("Invalid model URL")
-            return None
-
-        api_data = self._fetch_json(self._build_url(f'model-versions/{version_id}'))
+        api_data = self._get_version_data(url)
         if not api_data:
             return None
 
         model_info = self._prepare_model_metadata(api_data, file_name)
         if model_info.is_early_access:
             self.logger.warning(
-                f"Model {model_info.model_id} requires Early Access\n"
-                f"  > URL: https://civitai.com/models/{model_info.model_id}?modelVersionId={model_info.version_id}"
+                f"Model: {model_info.model_id} | Version: {model_info.version_id} -> requires Early Access\n"
+                f"    > URL: https://civitai.com/models/{model_info.model_id}?modelVersionId={model_info.version_id}"
             )
             return None
 
         return model_info
+
+    def get_data(self, url: str) -> Optional[Dict]:
+        """Get Full Model Version metadata"""
+        return self._get_version_data(url)
