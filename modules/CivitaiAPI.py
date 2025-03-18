@@ -154,6 +154,8 @@ class CivitAiAPI:
                 model_name=final_name
             )
 
+        early_access = data.get('availability') == 'EarlyAccess' or data.get("earlyAccessEndsAt", None)
+
         return ModelData(
             download_url=full_url,
             clean_url=clean_url,
@@ -161,7 +163,7 @@ class CivitAiAPI:
             model_type=model_type,
             version_id=data['id'],
             model_id=data['modelId'],
-            is_early_access=data.get('availability') == 'EarlyAccess' or data.get("earlyAccessEndsAt", None),
+            is_early_access=early_access,
             image_url=preview_url,
             image_name=preview_name
         )

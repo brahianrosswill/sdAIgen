@@ -128,9 +128,6 @@ if venv_needs_reinstall:
 
     print(f"♻️ Installing {'ReForge VENV' if UI == 'ReForge' else 'VENV'}, this will take some time...")
     setup_venv(venv_url)
-
-    # Create a marker for the current UI
-    (SCR_PATH / '.venv_ui').write_text(current_ui)
     clear_output()
 
 ## ================ loading settings V5 ==================
