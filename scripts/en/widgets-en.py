@@ -108,6 +108,11 @@ zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 
 commandline_arguments_widget = factory.create_text('Arguments:', webui_selection['A1111'])
 
+accent_colors_options = ["anxety", "pink", "red", "peach", "yellow", "green", "blue"]
+theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Theme Accent:', 'anxety', layout={'width': 'auto'})
+
+additional_footer = factory.create_hbox([commandline_arguments_widget, theme_accent_widget])
+
 additional_widget_list = [
     additional_header,
     choose_changes_widget,
@@ -116,7 +121,8 @@ additional_widget_list = [
     commit_hash_widget,
     civitai_token_widget, huggingface_token_widget, zrok_widget, ngrok_widget,
     HR,
-    commandline_arguments_widget
+    # commandline_arguments_widget,
+    additional_footer
 ]
 
 # --- CUSTOM DOWNLOAD ---
@@ -229,12 +235,14 @@ def update_change_webui(change, widget):
     if selected_webui == 'ComfyUI':
         latest_extensions_widget.layout.display = 'none'
         latest_extensions_widget.value = False
-        check_custom_nodes_deps_widget.layout.display = 'inline-block'
+        check_custom_nodes_deps_widget.layout.display = ''
+        theme_accent_widget.layout.display = 'none'
         Extensions_url_widget.description = 'Custom Nodes:'
     else:
-        latest_extensions_widget.layout.display = 'inline-block'
+        latest_extensions_widget.layout.display = ''
         latest_extensions_widget.value = True
         check_custom_nodes_deps_widget.layout.display = 'none'
+        theme_accent_widget.layout.display = ''
         Extensions_url_widget.description = 'Extensions:'
 
 # Callback functions for Empowerment
@@ -271,7 +279,7 @@ SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',
       'latest_webui', 'latest_extensions', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
       'controlnet', 'controlnet_num', 'commit_hash',
-      'civitai_token', 'huggingface_token', 'zrok_token', 'ngrok_token', 'commandline_arguments',
+      'civitai_token', 'huggingface_token', 'zrok_token', 'ngrok_token', 'commandline_arguments', 'theme_accent',
       # CustomDL
       'empowerment', 'empowerment_output',
       'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'ADetailer_url',

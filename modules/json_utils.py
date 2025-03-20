@@ -218,7 +218,7 @@ def update(*args):
             current[last_key] = value
     else:
         logger.warning(f"Key '{'.'.join(keys)}' not found. Update failed.")
-    
+
     _write_json(filepath, data)
 
 @validate_args(2, 2)

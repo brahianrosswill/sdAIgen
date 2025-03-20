@@ -89,6 +89,10 @@ def get_launch_command(tunnel_port):
     if ENV_NAME == "Kaggle":
         common_args += f' --encrypt-pass={password}'
 
+    # Accent Color For 'Anxety-Theme'
+    if theme_accent != 'anxety':
+        common_args += f' --anxety {theme_accent}'
+
     if UI == 'ComfyUI':
         return f'{py} main.py {base_args}'
     else:
