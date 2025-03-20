@@ -1,107 +1,348 @@
-""" Json Utils Module | by ANXETY """
+""" JSON Utilities Module | by ANXETY """
 
+from functools import wraps
+import logging
 import json
 import os
 
-def _get_nested_value(data, keys):
-    """Gets a value by key from a nested data structure."""
-    current_level = data
-    for part in keys:
-        current_level = current_level.get(part)
-        if current_level is None:
+# ==================== Logger Configuration ====================
+
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
+
+class CustomFormatter(logging.Formatter):
+    """Custom log formatter with color support for warnings/errors"""
+    colors = {
+        logging.WARNING: '\033[33m',
+        logging.ERROR: '\033[31m',
+        'ENDC': '\033[0m'
+    }
+
+    def format(self, record):
+        color = self.colors.get(record.levelno, '')
+        message = super().format(record)
+        return f"{color}{message}{self.colors['ENDC']}"
+
+handler = logging.StreamHandler()
+handler.setFormatter(CustomFormatter())
+logger.addHandler(handler)
+logger.propagate = False
+
+# ==================== Argument Validation Decorator ====================
+
+def validate_args(min_args: int, max_args: int):
+    """Decorator to validate number of arguments in variadic functions
+
+    Args:
+        min_args: Minimum required arguments (inclusive)
+        max_args: Maximum allowed arguments (inclusive)
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args):
+            if not (min_args <= len(args) <= max_args):
+                logger.error(
+                    f"Invalid argument count for {func.__name__}. "
+                    f"Expected {min_args}-{max_args}, got {len(args)}"
+                )
+                return None
+            return func(*args)
+        return wrapper
+    return decorator
+
+# ==================== Core Functionality ====================
+
+def parse_key(key: str) -> list[str]:
+    """
+    Parse dot-separated key with escape support for double dots
+
+    Args:
+        key: Input key string (e.g., "parent..child.prop")
+
+    Returns:
+        List of parsed key segments (e.g., ["parent.child", "prop"])
+    """
+    if not isinstance(key, str):
+        logger.error("Key must be a string")
+        return []
+
+    temp_char = '\uE000'
+    parts = key.replace('..', temp_char).split('.')
+    return [p.replace(temp_char, '.') for p in parts]
+
+def _recursive_get(data: any, target_key: str) -> any:
+    """
+    Deep-search for first occurrence of a key in nested dict/list structures
+
+    Args:
+        data: Nested data structure to search
+        target_key: Key to find in structure
+
+    Returns:
+        First matching value or None if not found
+    """
+    if isinstance(data, dict):
+        if target_key in data:
+            return data[target_key]
+        for value in data.values():
+            result = _recursive_get(value, target_key)
+            if result is not None:
+                return result
+    elif isinstance(data, list):
+        for item in data:
+            result = _recursive_get(item, target_key)
+            if result is not None:
+                return result
+    return None
+
+def _get_nested_value(data: dict, keys: list) -> any:
+    """
+    Get value using explicit path through nested dictionaries
+
+    Args:
+        data: Root dictionary
+        keys: List of keys forming exact path
+
+    Returns:
+        Value at specified path or None if path breaks
+    """
+    current = data
+    for key in keys:
+        if not isinstance(current, dict):
             return None
-    return current_level
+        current = current.get(key)
+        if current is None:
+            return None
+    return current
 
-def _set_nested_value(data, keys, value):
-    """Sets a value by key into a nested data structure."""
-    current_level = data
-    for part in keys[:-1]:
-        current_level = current_level.setdefault(part, {})
-    current_level[keys[-1]] = value
+def _update_nested_value(data: dict, keys: list, value: any):
+    """
+    Update existing nested structure without overwriting sibling keys
 
-def _read_json(filepath):
-    """Reads JSON data from a file."""
-    if not os.path.exists(filepath):
+    Args:
+        data: Root dictionary to modify
+        keys: Path to target location
+        value: New value to set at target
+    """
+    current = data
+    for key in keys[:-1]:
+        if key not in current or not isinstance(current[key], dict):
+            current[key] = {}
+        current = current[key]
+    current[keys[-1]] = value
+
+def _overwrite_nested_value(data: dict, keys: list, value: any):
+    """
+    Force-create path to target location, overwriting any non-dict values
+
+    Args:
+        data: Root dictionary to modify
+        keys: Path to create
+        value: Value to set at final key
+    """
+    current = data
+    for key in keys[:-1]:
+        current = current.setdefault(key, {})
+        if not isinstance(current, dict):
+            current = {}
+    current[keys[-1]] = value
+
+def _read_json(filepath: str) -> dict:
+    """
+    Safely read JSON file, returning empty dict on error/missing file
+
+    Args:
+        filepath: Path to JSON file
+
+    Returns:
+        Parsed data or empty dict
+    """
+    if not isinstance(filepath, str):
+        logger.error("Filepath must be a string")
         return {}
 
     try:
-        with open(filepath, 'r') as json_file:
-            return json.load(json_file)
-    except json.JSONDecodeError:
-        print(f"Error decoding JSON from file: {filepath}")
-        return {}
+        if not os.path.exists(filepath):
+            return {}
+
+        with open(filepath, 'r') as f:
+            content = f.read()
+            return json.loads(content) if content.strip() else {}
     except Exception as e:
-        print(f"An error occurred while reading the file: {e}")
+        logger.error(f"Read error ({filepath}): {str(e)}")
         return {}
 
-def _write_json(filepath, data):
-    """Writes JSON data to a file."""
+def _write_json(filepath: str, data: dict):
+    """
+    Write JSON file with directory creation and error handling
+
+    Args:
+        filepath: Destination path
+        data: Dictionary to serialize
+    """
+    if not isinstance(filepath, str):
+        logger.error("Filepath must be a string")
+        return
+
     try:
-        with open(filepath, 'w') as json_file:
-            json.dump(data, json_file, indent=4)
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, 'w') as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
     except Exception as e:
-        print(f"An error occurred while writing to the file: {e}")
+        logger.error(f"Write error ({filepath}): {str(e)}")
 
-## =================== Main Functions ====================
+# ==================== Main Functions ====================
 
-def read(filepath, key=None, default=None):
-    """Reads a value by key from a JSON file, or returns the entire content if no key is provided."""
+@validate_args(1, 3)
+def read(*args) -> any:
+    """
+    Read value from JSON file using explicit path
+
+    Args:
+        filepath (str): Path to JSON file
+        key (str, optional): Dot-separated key path
+        default (any, optional): Default if key not found
+
+    Returns:
+        Value at key path, entire data, or default
+    """
+    filepath, key, default = args[0], None, None
+    if len(args) > 1: key = args[1]
+    if len(args) > 2: default = args[2]
+
     data = _read_json(filepath)
     if key is None:
         return data
 
-    keys = key.split('.')
+    keys = parse_key(key)
+    if not keys:
+        return default
+
     result = _get_nested_value(data, keys)
     return result if result is not None else default
 
-def save(filepath, key, value):
-    """Saves a value by key in a JSON file, supporting nested structures."""
+@validate_args(2, 3)
+def get(*args) -> any:
+    """
+    Deep-search for key across nested structures
+
+    Args:
+        filepath (str): Path to JSON file
+        key (str): Key to search for
+        default (any, optional): Default if key not found
+
+    Returns:
+        First found value or default
+    """
+    filepath, key = args[0], args[1]
+    default = args[2] if len(args) > 2 else None
+
     data = _read_json(filepath)
-    keys = key.split('.')
-    _set_nested_value(data, keys, value)
-    _write_json(filepath, data)
+    keys = parse_key(key)
+    if not keys:
+        return default
 
-def update(filepath, key, value):
-    """Updates a value by key in a JSON file, supporting nested structures."""
-    data = _read_json(filepath)
-    keys = key.split('.')
-    current_level = data
-
-    for part in keys[:-1]:
-        current_level = current_level.setdefault(part, {})
-
-    last_key = keys[-1]
-
-    if last_key in current_level:
-        if isinstance(current_level[last_key], dict) and isinstance(value, dict):
-            current_level[last_key].update(value)
-        else:
-            current_level[last_key] = value
+    if len(keys) > 1:
+        result = _get_nested_value(data, keys)
     else:
-        print(f"Key '{last_key}' does not exist. No update performed.")
+        result = _recursive_get(data, keys[0])
 
+    return result if result is not None else default
+
+@validate_args(3, 3)
+def save(*args):
+    """
+    Save value creating full path (overwrites intermediate structures)
+
+    Args:
+        filepath (str): JSON file path
+        key (str): Dot-separated target path
+        value (any): Value to store
+    """
+    filepath, key, value = args[0], args[1], args[2]
+
+    data = _read_json(filepath)
+    keys = parse_key(key)
+    if not keys:
+        return
+
+    _overwrite_nested_value(data, keys, value)
     _write_json(filepath, data)
 
-def key_exists(filepath, key=None, value=None):
-    """Checks for the existence of a key or value in a JSON file, supporting nested structures."""
+@validate_args(3, 3)
+def update(*args):
+    """
+    Update existing path preserving surrounding data
+
+    Args:
+        filepath (str): JSON file path
+        key (str): Dot-separated target path
+        value (any): New value to set
+    """
+    filepath, key, value = args[0], args[1], args[2]
+
     data = _read_json(filepath)
-    keys = key.split('.') if key else []
-    result = _get_nested_value(data, keys)
+    keys = parse_key(key)
+    if not keys:
+        return
 
-    return (result == value) if value is not None else (result is not None)
+    try:
+        _update_nested_value(data, keys, value)
+        _write_json(filepath, data)
+    except Exception as e:
+        logger.error(f"Update failed: {str(e)}")
 
-def delete_key(filepath, key):
-    """Deletes a key from a JSON file, supporting nested structures."""
+@validate_args(2, 2)
+def delete_key(*args):
+    """
+    Remove specified key from JSON data
+
+    Args:
+        filepath (str): JSON file path
+        key (str): Dot-separated path to delete
+    """
+    filepath, key = args[0], args[1]
+
     data = _read_json(filepath)
-    keys = key.split('.')
-    current_level = data
+    keys = parse_key(key)
+    if not keys:
+        return
 
-    for part in keys[:-1]:
-        current_level = current_level.get(part)
-        if current_level is None:
+    current = data
+    for k in keys[:-1]:
+        current = current.get(k)
+        if not isinstance(current, dict):
+            logger.warning(f"Invalid path: '{key}'")
             return
 
     last_key = keys[-1]
-    current_level.pop(last_key, None)
+    if last_key in current:
+        del current[last_key]
+        _write_json(filepath, data)
 
-    _write_json(filepath, data)
+@validate_args(2, 3)
+def key_exists(*args) -> bool:
+    """
+    Check if key path exists with optional value check
+
+    Args:
+        filepath (str): JSON file path
+        key (str): Dot-separated path to check
+        value (any, optional): Verify exact value match
+
+    Returns:
+        True if path exists (and value matches if provided)
+    """
+    filepath, key = args[0], args[1]
+    value = args[2] if len(args) > 2 else None
+
+    data = _read_json(filepath)
+    keys = parse_key(key)
+    if not keys:
+        return False
+
+    result = _get_nested_value(data, keys)
+
+    if value is not None:
+        return result == value
+    return result is not None
