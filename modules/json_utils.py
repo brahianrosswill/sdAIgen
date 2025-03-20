@@ -71,31 +71,6 @@ def parse_key(key: str) -> list[str]:
     parts = key.replace('..', temp_char).split('.')
     return [p.replace(temp_char, '.') for p in parts]
 
-def _recursive_get(data: any, target_key: str) -> any:
-    """
-    Deep-search for first occurrence of a key in nested dict/list structures
-
-    Args:
-        data: Nested data structure to search
-        target_key: Key to find in structure
-
-    Returns:
-        First matching value or None if not found
-    """
-    if isinstance(data, dict):
-        if target_key in data:
-            return data[target_key]
-        for value in data.values():
-            result = _recursive_get(value, target_key)
-            if result is not None:
-                return result
-    elif isinstance(data, list):
-        for item in data:
-            result = _recursive_get(item, target_key)
-            if result is not None:
-                return result
-    return None
-
 def _get_nested_value(data: dict, keys: list) -> any:
     """
     Get value using explicit path through nested dictionaries
@@ -116,7 +91,7 @@ def _get_nested_value(data: dict, keys: list) -> any:
             return None
     return current
 
-def _update_nested_value(data: dict, keys: list, value: any):
+def _set_nested_value(data: dict, keys: list, value: any):
     """
     Update existing nested structure without overwriting sibling keys
 
@@ -132,22 +107,6 @@ def _update_nested_value(data: dict, keys: list, value: any):
         current = current[key]
     current[keys[-1]] = value
 
-def _overwrite_nested_value(data: dict, keys: list, value: any):
-    """
-    Force-create path to target location, overwriting any non-dict values
-
-    Args:
-        data: Root dictionary to modify
-        keys: Path to create
-        value: Value to set at final key
-    """
-    current = data
-    for key in keys[:-1]:
-        current = current.setdefault(key, {})
-        if not isinstance(current, dict):
-            current = {}
-    current[keys[-1]] = value
-
 def _read_json(filepath: str | Path) -> dict:
     """
     Safely read JSON file, returning empty dict on error/missing file
@@ -155,13 +114,6 @@ def _read_json(filepath: str | Path) -> dict:
     Args:
         filepath: Path to JSON file (str or Path object)
     """
-    # Convert Path to a string
-    if isinstance(filepath, Path):
-        filepath = str(filepath)
-    elif not isinstance(filepath, str):
-        logger.error("Filepath must be a string or Path object")
-        return {}
-
     try:
         if not os.path.exists(filepath):
             return {}
@@ -180,13 +132,6 @@ def _write_json(filepath: str | Path, data: dict):
     Args:
         filepath: Destination path (str or Path object)
     """
-    # Convert Path to a string
-    if isinstance(filepath, Path):
-        filepath = str(filepath)
-    elif not isinstance(filepath, str):
-        logger.error("Filepath must be a string or Path object")
-        return
-
     try:
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, 'w') as f:
@@ -224,38 +169,10 @@ def read(*args) -> any:
     result = _get_nested_value(data, keys)
     return result if result is not None else default
 
-@validate_args(2, 3)
-def get(*args) -> any:
-    """
-    Deep-search for key across nested structures
-
-    Args:
-        filepath (str): Path to JSON file
-        key (str): Key to search for
-        default (any, optional): Default if key not found
-
-    Returns:
-        First found value or default
-    """
-    filepath, key = args[0], args[1]
-    default = args[2] if len(args) > 2 else None
-
-    data = _read_json(filepath)
-    keys = parse_key(key)
-    if not keys:
-        return default
-
-    if len(keys) > 1:
-        result = _get_nested_value(data, keys)
-    else:
-        result = _recursive_get(data, keys[0])
-
-    return result if result is not None else default
-
 @validate_args(3, 3)
 def save(*args):
     """
-    Save value creating full path (overwrites intermediate structures)
+    Save value creating full path 
 
     Args:
         filepath (str): JSON file path
@@ -269,7 +186,7 @@ def save(*args):
     if not keys:
         return
 
-    _overwrite_nested_value(data, keys, value)
+    _set_nested_value(data, keys, value)
     _write_json(filepath, data)
 
 @validate_args(3, 3)
@@ -289,11 +206,20 @@ def update(*args):
     if not keys:
         return
 
-    try:
-        _update_nested_value(data, keys, value)
-        _write_json(filepath, data)
-    except Exception as e:
-        logger.error(f"Update failed: {str(e)}")
+    current = data
+    for part in keys[:-1]:
+        current = current.setdefault(part, {})
+
+    last_key = keys[-1]
+    if last_key in current:
+        if isinstance(current[last_key], dict) and isinstance(value, dict):
+            current[last_key].update(value)
+        else:
+            current[last_key] = value
+    else:
+        logger.warning(f"Key '{'.'.join(keys)}' not found. Update failed.")
+    
+    _write_json(filepath, data)
 
 @validate_args(2, 2)
 def delete_key(*args):
@@ -312,10 +238,9 @@ def delete_key(*args):
         return
 
     current = data
-    for k in keys[:-1]:
-        current = current.get(k)
+    for part in keys[:-1]:
+        current = current.get(part)
         if not isinstance(current, dict):
-            logger.warning(f"Invalid path: '{key}'")
             return
 
     last_key = keys[-1]
