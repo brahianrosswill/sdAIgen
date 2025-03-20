@@ -10,6 +10,7 @@ from pathlib import Path
 import subprocess
 import requests
 import logging
+import asyncio
 import shlex
 import time
 import json
@@ -117,9 +118,9 @@ class TunnelManager:
     def __init__(self, tunnel_port):
         self.tunnel_port = tunnel_port
         self.tunnels = []
-        self.success_urls = []
-        self.error_urls = []
+        self.error_reasons = []
         self.public_ip = self._get_public_ip()
+        self.checking_queue = asyncio.Queue()
 
     def _get_public_ip(self) -> str:
         """Retrieve and cache public IPv4 address"""
@@ -136,38 +137,81 @@ class TunnelManager:
             print(f"Error getting public IP address: {e}")
             return 'N/A'
 
-    def _check_service_availability(self, url, name):
-        """Check if a tunnel service is reachable"""
-        try:
-            response = requests.get(url, timeout=2)
-            if response.status_code == 200:
-                print(f"\033[32m> [SUCCESS]: Tunnel '\033[0m{name}\033[32m' is reachable at \033[0m{url}")
-                self.success_urls.append(url)
-                return True
-        except requests.RequestException as e:
-            print(f"\033[31m> [ERROR]: Tunnel '\033[0m{name}\033[31m' - {e}\033[0m")
-            self.error_urls.append(url)
-        return False
+    async def _print_status(self):
+        """Async status printer"""
+        print("\033[33mChecking tunnels:\033[0m")
+        while True:
+            service_name = await self.checking_queue.get()
+            print(f"  🕒 Checking \033[36m{service_name}\033[0m...")
+            self.checking_queue.task_done()
 
-    def setup_tunnels(self):
-        """Configure all available tunnel services"""
+    async def _test_tunnel(self, name, config):
+        """Async tunnel testing"""
+        await self.checking_queue.put(name)
+        try:
+            process = await asyncio.create_subprocess_exec(
+                *shlex.split(config["command"]),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.STDOUT
+            )
+
+            start_time = time.time()
+            timeout = 15
+            output = []
+            pattern_found = False
+
+            while True:
+                try:
+                    line = await asyncio.wait_for(
+                        process.stdout.readline(),
+                        timeout=2
+                    )
+                    if not line:
+                        break
+                        
+                    line = line.decode().strip()
+                    output.append(line)
+                    
+                    if config["pattern"].search(line):
+                        pattern_found = True
+                        break
+
+                except asyncio.TimeoutError:
+                    if time.time() - start_time > timeout:
+                        break
+
+            if process.returncode is None:
+                process.terminate()
+                await process.wait()
+
+            if pattern_found:
+                return True, None
+                
+            error_msg = "\n".join(output[-3:]) or "No output received"
+            return False, f"{error_msg[:200]}..."
+
+        except Exception as e:
+            return False, f"Process error: {str(e)}"
+
+    async def setup_tunnels(self):
+        """Async tunnel configuration"""
         services = [
-            ('https://www.cloudflare.com', 'Cloudflared', {
-                "command": f"cl tunnel --url localhost:{self.tunnel_port}",
-                "pattern": re.compile(r"[\w-]+\.trycloudflare\.com")
+            ('Serveo', {
+                "command": f"ssh -o StrictHostKeyChecking=no -R 80:localhost:{self.tunnel_port} serveo.net",
+                "pattern": re.compile(r"[\w-]+\.serveo\.net")
             }),
-            ('https://pinggy.io', 'Pinggy', {
+            ('Pinggy', {
                 "command": f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{self.tunnel_port} a.pinggy.io",
                 "pattern": re.compile(r"[\w-]+\.a\.free\.pinggy\.link")
             }),
-            ('https://localtunnel.me', 'Localtunnel', {
+            ('Cloudflared', {
+                "command": f"cl tunnel --url localhost:{self.tunnel_port}",
+                "pattern": re.compile(r"[\w-]+\.trycloudflare\.com")
+            }),
+            ('Localtunnel', {
                 "command": f"lt --port {self.tunnel_port}",
                 "pattern": re.compile(r"[\w-]+\.loca\.lt"),
                 "note": f"Password: \033[32m{self.public_ip}\033[0m"
-            }),
-            ('https://serveo.net', 'Serveo', {
-                "command": f"ssh -o StrictHostKeyChecking=no -R 80:localhost:{self.tunnel_port} serveo.net",
-                "pattern": re.compile(r"[\w-]+\.serveo\.net")
             })
         ]
 
@@ -183,7 +227,7 @@ class TunnelManager:
                 ipySys('zrok disable &> /dev/null')
                 ipySys(f'zrok enable {zrok_token} &> /dev/null')
 
-            services.append(('https://status.zrok.io', 'Zrok', {
+            services.append(('Zrok', {
                 "command": f"zrok share public http://localhost:{self.tunnel_port}/ --headless",
                 "pattern": re.compile(r"[\w-]+\.share\.zrok\.io")
             }))
@@ -199,23 +243,46 @@ class TunnelManager:
             if current_token != ngrok_token:
                 ipySys(f'ngrok config add-authtoken {ngrok_token}')
 
-            services.append(('https://ngrok.com', 'Ngrok', {
+            services.append(('Ngrok', {
                 "command": f"ngrok http http://localhost:{self.tunnel_port} --log stdout",
                 "pattern": re.compile(r"https://[\w-]+\.ngrok-free\.app")
             }))
 
-        for url, name, config in services:
-            if self._check_service_availability(url, name):
+        # Create status printer task
+        printer_task = asyncio.create_task(self._print_status())
+
+        # Run all tests concurrently
+        tasks = []
+        for name, config in services:
+            tasks.append(self._test_tunnel(name, config))
+
+        results = await asyncio.gather(*tasks)
+
+        # Cancel status printer
+        printer_task.cancel()
+        try:
+            await printer_task
+        except asyncio.CancelledError:
+            pass
+
+        # Process results
+        for (name, config), (success, error) in zip(services, results):
+            if success:
                 self.tunnels.append({**config, "name": name})
+            else:
+                self.error_reasons.append({"name": name, "reason": error})
 
         return (
             self.tunnels,
-            len(self.success_urls + self.error_urls),    # Total Tunnel
-            len(self.success_urls),
-            len(self.error_urls)
+            len(services),
+            len(self.tunnels),
+            len(self.error_reasons)
         )
 
 ## ========================= Main ========================
+
+import nest_asyncio
+nest_asyncio.apply()
 
 if __name__ == "__main__":
     """Main execution flow"""
@@ -224,7 +291,11 @@ if __name__ == "__main__":
     # Initialize tunnel manager and services
     tunnel_port = 8188 if UI == 'ComfyUI' else 7860
     tunnel_mgr = TunnelManager(tunnel_port)
-    tunnels, total, success, errors = tunnel_mgr.setup_tunnels()
+    
+    # Run async setup
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    tunnels, total, success, errors = loop.run_until_complete(tunnel_mgr.setup_tunnels())
 
     # Set up tunneling service
     tunnelingService = Tunnel(tunnel_port)
@@ -259,6 +330,14 @@ if __name__ == "__main__":
                 clear_output(wait=True)
 
         print(f"\033[34m>> Total Tunnels:\033[0m {total} | \033[32mSuccess:\033[0m {success} | \033[31mErrors:\033[0m {errors}\n")
+        
+        # Display error details if any
+        if errors > 0:
+            print("\033[31m>> Failed Tunnels:\033[0m")
+            for error in tunnel_mgr.error_reasons:
+                print(f"  - {error['name']}: {error['reason']}")
+            print()
+
         print(f"🔧 WebUI: \033[34m{UI}\033[0m")
 
         try:
@@ -269,7 +348,7 @@ if __name__ == "__main__":
     # Post-execution cleanup
     if zrok_token:
         ipySys('zrok disable &> /dev/null')
-        print('🔐 Zrok tunnel disabled :3')
+        print('/n🔐 Zrok tunnel disabled :3')
 
     # Display session duration
     try:
