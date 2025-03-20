@@ -109,7 +109,8 @@ zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 commandline_arguments_widget = factory.create_text('Аргументы:', webui_selection['A1111'])
 
 accent_colors_options = ["anxety", "pink", "red", "peach", "yellow", "green", "blue"]
-theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Акцент Темы:', 'anxety', layout={'width': 'auto'})
+theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Акцент Темы:', 'anxety',
+                                              layout={'width': 'auto', 'margin': '0 0 0 8px'})    # margin-left
 
 additional_footer = factory.create_hbox([commandline_arguments_widget, theme_accent_widget])
 
@@ -237,12 +238,14 @@ def update_change_webui(change, widget):
         latest_extensions_widget.value = False
         check_custom_nodes_deps_widget.layout.display = ''
         theme_accent_widget.layout.display = 'none'
+        theme_accent_widget.layout.value = 'anxety'
         Extensions_url_widget.description = 'Custom Nodes:'
     else:
         latest_extensions_widget.layout.display = ''
         latest_extensions_widget.value = True
         check_custom_nodes_deps_widget.layout.display = 'none'
         theme_accent_widget.layout.display = ''
+        theme_accent_widget.layout.value = 'anxety'
         Extensions_url_widget.description = 'Extensions:'
 
 # Callback functions for Empowerment
