@@ -1,6 +1,7 @@
 """ JSON Utilities Module | by ANXETY """
 
 from functools import wraps
+from pathlib import Path
 import logging
 import json
 import os
@@ -147,18 +148,18 @@ def _overwrite_nested_value(data: dict, keys: list, value: any):
             current = {}
     current[keys[-1]] = value
 
-def _read_json(filepath: str) -> dict:
+def _read_json(filepath: str | Path) -> dict:
     """
     Safely read JSON file, returning empty dict on error/missing file
 
     Args:
-        filepath: Path to JSON file
-
-    Returns:
-        Parsed data or empty dict
+        filepath: Path to JSON file (str or Path object)
     """
-    if not isinstance(filepath, str):
-        logger.error("Filepath must be a string")
+    # Convert Path to a string
+    if isinstance(filepath, Path):
+        filepath = str(filepath)
+    elif not isinstance(filepath, str):
+        logger.error("Filepath must be a string or Path object")
         return {}
 
     try:
@@ -172,16 +173,18 @@ def _read_json(filepath: str) -> dict:
         logger.error(f"Read error ({filepath}): {str(e)}")
         return {}
 
-def _write_json(filepath: str, data: dict):
+def _write_json(filepath: str | Path, data: dict):
     """
     Write JSON file with directory creation and error handling
 
     Args:
-        filepath: Destination path
-        data: Dictionary to serialize
+        filepath: Destination path (str or Path object)
     """
-    if not isinstance(filepath, str):
-        logger.error("Filepath must be a string")
+    # Convert Path to a string
+    if isinstance(filepath, Path):
+        filepath = str(filepath)
+    elif not isinstance(filepath, str):
+        logger.error("Filepath must be a string or Path object")
         return
 
     try:
