@@ -142,7 +142,7 @@ class TunnelManager:
         print("\033[33mChecking tunnels:\033[0m")
         while True:
             service_name = await self.checking_queue.get()
-            print(f"  🕒 Checking \033[36m{service_name}\033[0m...")
+            print(f"- 🕒 Checking \033[36m{service_name}\033[0m...")
             self.checking_queue.task_done()
 
     async def _test_tunnel(self, name, config):

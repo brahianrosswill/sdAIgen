@@ -82,6 +82,22 @@ a {
 }
 
 
+/* Special fixes for IpyWidgets */
+/* Fix Vertical Centering */
+.widget-hbox,
+.jupyter-widgets label {
+  display: flex;
+  align-items: center;
+}
+
+/* Fix Checkbox Width */ 
+.widget-checkbox {
+    width: auto;
+    display: inline-flex;
+    min-width: unset;
+}
+
+
 /* Special Styles */
 
 ::selection {
@@ -166,7 +182,6 @@ a {
 /* Container style */
 
 .mainContainer {
-    /* width: auto; */
     padding: 5px;
     gap: 5px;
     /* overflow: hidden; */
@@ -243,17 +258,9 @@ a {
 
 /* Slider Checkbox style */
 
-/* Fix Checkbox Width */ 
-.widget-checkbox {
-    width: auto;
-    display: inline-flex;
-    min-width: unset;
-}
-
 .widget-checkbox input[type="checkbox"] {
     appearance: none;
     position: relative;
-    top: 0.25em;
     width: 40px;
     height: 20px;
     border: none;
