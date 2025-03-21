@@ -59,7 +59,7 @@ HR = widgets.HTML('<hr>')
 model_header = factory.create_header('Model Selection')
 model_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'model')
 model_widget = factory.create_dropdown(model_options, 'Model:', '4. Counterfeit [Anime] [V3] + INP')
-model_num_widget = factory.create_text('Model Number:', '', 'Enter the model numbers for the download.')
+model_num_widget = factory.create_text('Model Number:', '', 'Enter the model numbers for download.')
 inpainting_model_widget = factory.create_checkbox('Inpainting Models', False, class_names=['inpaint'], layout={'width': '25%'})
 XL_models_widget = factory.create_checkbox('SDXL', False, class_names=['sdxl'])
 
@@ -70,7 +70,7 @@ switch_model_widget = factory.create_hbox([inpainting_model_widget, XL_models_wi
 vae_header = factory.create_header('VAE Selection')
 vae_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'vae')
 vae_widget = factory.create_dropdown(vae_options, 'Vae:', '3. Blessed2.vae')
-vae_num_widget = factory.create_text('Vae Number:', '', 'Enter vae numbers for the download.')
+vae_num_widget = factory.create_text('Vae Number:', '', 'Enter the vae numbers for download.')
 
 # --- ADDITIONAL ---
 """Create additional configuration widgets."""
@@ -93,7 +93,7 @@ choose_changes_widget = factory.create_hbox(
 
 controlnet_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'cnet')
 controlnet_widget = factory.create_dropdown(controlnet_options, 'ControlNet:', 'none')
-controlnet_num_widget = factory.create_text('ControlNet Number:', '', 'Enter the ControlNet model numbers for the download.')
+controlnet_num_widget = factory.create_text('ControlNet Number:', '', 'Enter the ControlNet model numbers for download.')
 commit_hash_widget = factory.create_text('Commit Hash:', '', 'Switching between branches or commits.')
 civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Enter your CivitAi API token.')
 huggingface_token_widget = factory.create_text('HuggingFace Token:')
@@ -108,7 +108,7 @@ zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 
 commandline_arguments_widget = factory.create_text('Arguments:', webui_selection['A1111'])
 
-accent_colors_options = ["anxety", "pink", "red", "peach", "yellow", "green", "blue"]
+accent_colors_options = ['anxety', 'blue', 'green', 'peach', 'pink', 'red', 'yellow']
 theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Theme Accent:', 'anxety',
                                               layout={'width': 'auto', 'margin': '0 0 0 8px'})    # margin-left
 

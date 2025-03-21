@@ -168,10 +168,10 @@ class TunnelManager:
                     )
                     if not line:
                         break
-                        
+
                     line = line.decode().strip()
                     output.append(line)
-                    
+
                     if config["pattern"].search(line):
                         pattern_found = True
                         break
@@ -186,7 +186,7 @@ class TunnelManager:
 
             if pattern_found:
                 return True, None
-                
+
             error_msg = "\n".join(output[-3:]) or "No output received"
             return False, f"{error_msg[:200]}..."
 
@@ -291,7 +291,7 @@ if __name__ == "__main__":
     # Initialize tunnel manager and services
     tunnel_port = 8188 if UI == 'ComfyUI' else 7860
     tunnel_mgr = TunnelManager(tunnel_port)
-    
+
     # Run async setup
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
@@ -330,7 +330,7 @@ if __name__ == "__main__":
                 clear_output(wait=True)
 
         print(f"\033[34m>> Total Tunnels:\033[0m {total} | \033[32mSuccess:\033[0m {success} | \033[31mErrors:\033[0m {errors}\n")
-        
+
         # Display error details if any
         if errors > 0:
             print("\033[31m>> Failed Tunnels:\033[0m")

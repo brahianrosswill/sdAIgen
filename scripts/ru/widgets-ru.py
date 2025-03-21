@@ -108,7 +108,7 @@ zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 
 commandline_arguments_widget = factory.create_text('Аргументы:', webui_selection['A1111'])
 
-accent_colors_options = ["anxety", "pink", "red", "peach", "yellow", "green", "blue"]
+accent_colors_options = ['anxety', 'blue', 'green', 'peach', 'pink', 'red', 'yellow']
 theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Акцент Темы:', 'anxety',
                                               layout={'width': 'auto', 'margin': '0 0 0 8px'})    # margin-left
 
