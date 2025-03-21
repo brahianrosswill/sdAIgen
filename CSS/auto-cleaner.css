@@ -39,6 +39,15 @@ hr {
 }
 
 
+/* Special fixes for IpyWidgets */
+/* Fix Vertical Centering */
+.widget-hbox,
+.jupyter-widgets label {
+    display: flex;
+    align-items: center;
+}
+
+
 /* Text FONTs */
 
 .instruction,
@@ -128,12 +137,12 @@ hr {
     display: flex;
     justify-content: space-between; 
     gap: 5px;
+    align-items: stretch;
 }
 
 .custom_select_multiple,
 .output_panel {
     flex: 1;
-    min-height: 100px;
     box-sizing: border-box;
     margin: 0;
 }
