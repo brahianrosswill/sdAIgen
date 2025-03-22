@@ -238,14 +238,14 @@ def update_change_webui(change, widget):
         latest_extensions_widget.value = False
         check_custom_nodes_deps_widget.layout.display = ''
         theme_accent_widget.layout.display = 'none'
-        theme_accent_widget.layout.value = 'anxety'
+        theme_accent_widget.value = 'anxety'
         Extensions_url_widget.description = 'Custom Nodes:'
     else:
         latest_extensions_widget.layout.display = ''
         latest_extensions_widget.value = True
         check_custom_nodes_deps_widget.layout.display = 'none'
         theme_accent_widget.layout.display = ''
-        theme_accent_widget.layout.value = 'anxety'
+        theme_accent_widget.value = 'anxety'
         Extensions_url_widget.description = 'Extensions:'
 
 # Callback functions for Empowerment
