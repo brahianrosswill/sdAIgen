@@ -130,18 +130,17 @@ def download_with_aria2(url, filename, log):
         "--allow-overwrite=true --console-log-level=error --stderr=true "
         "-c -x16 -s16 -k1M -j5"
     )
+    if HF_TOKEN and "huggingface.co" in url:
+        aria2_args += f" --header='Authorization: Bearer {HF_TOKEN}'"
 
     command = f"{aria2_args} '{url}'"
-
-    if HF_TOKEN and "huggingface.co" in url:
-        command += f" --header='Authorization: Bearer {HF_TOKEN}'"
 
     if not filename:
         filename = get_file_name(url)
     if filename:
         command += f" -o '{filename}'"
 
-    monitor_aria2_download(command, filename, url, log)
+    monitor_aria2_download(command, log)
 
 def download_google_drive(url, filename, log):
     """Download from Google Drive using gdown."""
@@ -168,7 +167,7 @@ def unzip_file(zip_filepath, log):
     log_message(f">> Successfully unpacked: {zip_filepath}", log)
 
 @handle_errors
-def monitor_aria2_download(command, filename, url, log):
+def monitor_aria2_download(command, log):
     """Monitor aria2c download progress."""
     try:
         process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
