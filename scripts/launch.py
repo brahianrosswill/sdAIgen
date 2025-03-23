@@ -9,6 +9,7 @@ from datetime import timedelta
 from pathlib import Path
 import subprocess
 import requests
+import argparse
 import logging
 import asyncio
 import shlex
@@ -64,7 +65,12 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-## ======================= Other =========================
+## ====================== Helpers ========================
+
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-l', '--log', action='store_true', help='Show failed tunnel details')
+    return parser.parse_args()
 
 def Trashing():
     dirs = ["A1111", "ComfyUI", "Forge", "ReForge", "SD-UX"]
@@ -121,6 +127,7 @@ class TunnelManager:
         self.error_reasons = []
         self.public_ip = self._get_public_ip()
         self.checking_queue = asyncio.Queue()
+        self.timeout = 5
 
     def _get_public_ip(self) -> str:
         """Retrieve and cache public IPv4 address"""
@@ -156,18 +163,18 @@ class TunnelManager:
             )
 
             start_time = time.time()
-            timeout = 15
             output = []
             pattern_found = False
+            check_interval = 0.5
 
-            while True:
+            while time.time() - start_time < self.timeout:
                 try:
                     line = await asyncio.wait_for(
                         process.stdout.readline(),
-                        timeout=2
+                        timeout=check_interval
                     )
                     if not line:
-                        break
+                        continue
 
                     line = line.decode().strip()
                     output.append(line)
@@ -177,18 +184,20 @@ class TunnelManager:
                         break
 
                 except asyncio.TimeoutError:
-                    if time.time() - start_time > timeout:
-                        break
+                    continue
 
             if process.returncode is None:
-                process.terminate()
-                await process.wait()
+                try:
+                    process.terminate()
+                    await asyncio.wait_for(process.wait(), timeout=2)
+                except:
+                    pass
 
             if pattern_found:
                 return True, None
 
             error_msg = "\n".join(output[-3:]) or "No output received"
-            return False, f"{error_msg[:200]}..."
+            return False, f"{error_msg[:300]}..."
 
         except Exception as e:
             return False, f"Process error: {str(e)}"
@@ -286,6 +295,7 @@ nest_asyncio.apply()
 
 if __name__ == "__main__":
     """Main execution flow"""
+    args = parse_arguments()
     print('Please Wait...\n')
 
     # Initialize tunnel manager and services
@@ -332,7 +342,7 @@ if __name__ == "__main__":
         print(f"\033[34m>> Total Tunnels:\033[0m {total} | \033[32mSuccess:\033[0m {success} | \033[31mErrors:\033[0m {errors}\n")
 
         # Display error details if any
-        if errors > 0:
+        if args.log and errors > 0:
             print("\033[31m>> Failed Tunnels:\033[0m")
             for error in tunnel_mgr.error_reasons:
                 print(f"  - {error['name']}: {error['reason']}")
