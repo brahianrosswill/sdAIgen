@@ -42,6 +42,8 @@ BIN = str(VENV / 'bin')
 PKG = str(VENV / 'lib/python3.10/site-packages')
 
 os.environ["PYTHONWARNINGS"] = "ignore"
+
+sys.path.insert(0, PKG)
 if BIN not in os.environ["PATH"]:
     os.environ["PATH"] = BIN + ":" + os.environ["PATH"]
 if PKG not in os.environ["PYTHONPATH"]:
@@ -109,6 +111,8 @@ def get_launch_command(tunnel_port):
     # Accent Color For 'Anxety-Theme'
     if theme_accent != 'anxety':
         common_args += f' --anxety {theme_accent}'
+
+    os.environ.setdefault('IIB_ACCESS_CONTROL', 'disable')
 
     if UI == 'ComfyUI':
         return f'{py} main.py {base_args}'

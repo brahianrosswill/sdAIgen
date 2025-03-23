@@ -73,6 +73,8 @@ def setup_venv(url):
     PKG = str(VENV / 'lib/python3.10/site-packages')
 
     os.environ["PYTHONWARNINGS"] = "ignore"
+
+    sys.path.insert(0, PKG)
     if BIN not in os.environ["PATH"]:
         os.environ["PATH"] = BIN + ":" + os.environ["PATH"]
     if PKG not in os.environ["PYTHONPATH"]:
