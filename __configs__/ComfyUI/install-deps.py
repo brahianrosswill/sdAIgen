@@ -1,128 +1,186 @@
-""" install-deps.py | by ANXETY """ 
+""" install-deps.py | by ANXETY """
 
 from importlib.metadata import distribution, PackageNotFoundError
 from pathlib import Path
 import subprocess
+import importlib
 import sys
 import re
 import os
 
-def get_enabled_subdirectories_with_files(base_directory):
-    """Gets subdirectories containing requirements.txt and install.py files."""
+def get_enabled_subdirectories(base_directory):
+    """Find active directories with dependencies"""
     base_path = Path(base_directory)
-    subdirs_with_files = []
+    subdirs = []
 
     for subdir in base_path.iterdir():
         if subdir.is_dir() and not subdir.name.endswith(".disabled") and not subdir.name.startswith('.') and subdir.name != '__pycache__':
             print(f"\033[1;34mChecking dependencies >> \033[0m{subdir.name}")
-            requirements_file = subdir / "requirements.txt"
-            install_script = subdir / "install.py"
+            req_file = subdir / "requirements.txt"
+            inst_script = subdir / "install.py"
 
-            if requirements_file.exists() or install_script.exists():
-                subdirs_with_files.append((subdir, requirements_file, install_script))
+            if req_file.exists() or inst_script.exists():
+                subdirs.append((subdir, req_file, inst_script))
 
-    print()  # Space
-    return subdirs_with_files
+    print()
+    return subdirs
 
-def is_package_installed(package_name, required_version=None):
-    """Checks if the package is installed and compares versions."""
-    try:
-        dist = distribution(package_name)
-        installed_version = dist.version
-        if required_version:
-            return compare_versions(installed_version, required_version) >= 0
-        return True
-    except PackageNotFoundError:
+def get_git_package_name(git_url):
+    """Extract package name from Git URL"""
+    clean_url = git_url.split("git+")[-1].rstrip('/')
+
+    # Attempt to extract name from GitHub URL
+    if 'github.com' in clean_url:
+        match = re.search(r'github\.com/[^/]+/([^/]+)', clean_url)
+        if match:
+            return match.group(1).replace('.git', '')
+
+    # General case for .git repositories
+    match = re.search(r'/([^/]+?)(\.git)?$', clean_url)
+    return match.group(1) if match else None
+
+def is_git_installed(git_url):
+    """Check if Git package is installed by attempting import"""
+    pkg_name = get_git_package_name(git_url)
+    if not pkg_name: 
         return False
 
-def compare_versions(installed_version, required_version):
-    """Compares two version strings."""
-    installed_parts = list(map(int, re.findall(r'\d+', installed_version)))
-    required_parts = list(map(int, re.findall(r'\d+', required_version)))
+    variants = {
+        pkg_name,
+        pkg_name.lower(),
+        pkg_name.replace('-', '_'),
+        pkg_name.lower().replace('-', '_')
+    }
 
-    for installed, required in zip(installed_parts, required_parts):
-        if installed < required:
-            return -1
-        elif installed > required:
-            return 1
-    return len(installed_parts) - len(required_parts)
+    for variant in variants:
+        try:
+            importlib.import_module(variant)
+            return True
+        except ImportError:
+            continue
+    return False
+
+def check_package(package_spec):
+    """Check package installation with version verification"""
+    try:
+        if 'git+' in package_spec:
+            return is_git_installed(package_spec)
+
+        match = re.match(r'^([^=><]+)([<>=!]+)(.+)$', package_spec)
+        if not match:
+            dist = distribution(package_spec.strip())
+            return True
+
+        name, op, version = map(str.strip, match.groups())
+        installed = distribution(name).version
+        return compare_versions(installed, version, op)
+
+    except (PackageNotFoundError, AttributeError):
+        return False
+
+def compare_versions(v1, v2, operator):
+    """Universal version comparison"""
+    v1_parts = list(map(int, re.findall(r'\d+', v1)))
+    v2_parts = list(map(int, re.findall(r'\d+', v2)))
+
+    for a, b in zip(v1_parts, v2_parts):
+        if a != b:
+            break
+    else:
+        a, b = len(v1_parts), len(v2_parts)
+
+    if operator == '==': return a == b
+    if operator == '>=': return a >= b
+    if operator == '<=': return a <= b
+    if operator == '>': return a > b
+    if operator == '<': return a < b
+    return False
 
 def install_package(package_spec):
-    """Installs a package."""
+    """Install a package"""
     print(f"\033[1;32mInstalling >> \033[0m{package_spec}")
-    subprocess.run([sys.executable, "-m", "pip", "install", package_spec], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "-q", package_spec],
+        check=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
 
-def install_requirements(requirements_file_path, installed_packages):
-    """Installs libraries from requirements.txt."""
-    if requirements_file_path.exists():
-        with open(requirements_file_path, 'r') as f:
+def process_requirements(file_path, installed):
+    """Process requirements file"""
+    if not file_path.exists():
+        return
+
+    with open(file_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#') or line in installed:
+                continue
+
+            if not check_package(line):
+                install_package(line)
+                installed.add(line)
+
+def run_install_script(script_path, executed):
+    """Execute installation script"""
+    if script_path.exists() and str(script_path) not in executed:
+        print(f"\033[1;33mRunning install script >> \033[0m{script_path}")
+        subprocess.run(
+            [sys.executable, str(script_path)],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        executed.add(str(script_path))
+
+def save_state(installed, scripts, log_file):
+    """Save installation state to log file"""
+    with open(log_file, 'w') as f:
+        f.write("\n".join(installed))
+        f.write("\n\n# Executed scripts:\n")
+        f.write("\n".join(scripts))
+
+def load_previous_state(log_file):
+    """Load previous installation state from log"""
+    installed = set()
+    scripts = set()
+
+    if Path(log_file).exists():
+        with open(log_file) as f:
+            section = 0
             for line in f:
                 line = line.strip()
-                if not line or line in installed_packages:
+                if not line: continue
+
+                if line.startswith('# Executed scripts:'):
+                    section = 1
                     continue
 
-                match = re.match(r'^([^=><]+)([<>=!]+)(.+)', line)
-                if match:
-                    package_name, comparison_operator, required_version = map(str.strip, match.groups())
-                    if not is_package_installed(package_name, required_version):
-                        install_package(f"{package_name}{comparison_operator}{required_version}")
-                        installed_packages.add(line)
+                if section == 0:
+                    installed.add(line)
                 else:
-                    package_name = line.strip()
-                    if not is_package_installed(package_name):
-                        install_package(package_name)
-                        installed_packages.add(package_name)
+                    scripts.add(line)
 
-def run_install_script(install_script_path, executed_scripts):
-    """Runs install.py if it exists and hasn't been executed before."""
-    if install_script_path.exists() and str(install_script_path) not in executed_scripts:
-        print(f"\033[1;33mRunning install script from \033[0m{install_script_path}...")
-        subprocess.run([sys.executable, str(install_script_path)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        executed_scripts.add(str(install_script_path))  # Mark script as executed
-
-def log_installed_packages(installed_packages, executed_scripts, log_file_path):
-    """Logs installed packages and executed scripts to a file."""
-    with open(log_file_path, 'w') as f:
-        for package in installed_packages:
-            if '[' in package or ']' in package or package.startswith('git+'):  # filter name
-                f.write(package + '\n')
-        f.write("\n# Executed install scripts:\n")
-        for script in executed_scripts:
-            f.write(script + '\n')
+    return installed, scripts
 
 def main():
-    """Main function that searches for and installs libraries."""
-    custom_nodes_directory = "custom_nodes"
-    log_file_path = "installed_packages.txt"
-    installed_packages = set()    # Track installed packages
-    executed_scripts = set()      # Track executed install scripts
+    base_dir = "custom_nodes"
+    log_file = "installed_packages.txt"
 
-    # Load existing installed packages and executed scripts from log file
-    if Path(log_file_path).exists():
-        with open(log_file_path, 'r') as f:
-            for line in f:
-                stripped_line = line.strip()
-                if stripped_line and not stripped_line.startswith('#'):
-                    installed_packages.add(stripped_line)
-                elif stripped_line.startswith('# Executed install scripts:'):
-                    break  # Stop at the section for executed scripts
-            for line in f:
-                executed_scripts.add(line.strip())
-
-    subdirs_with_files = get_enabled_subdirectories_with_files(custom_nodes_directory)
+    installed, executed = load_previous_state(log_file)
+    directories = get_enabled_subdirectories(base_dir)
 
     try:
-        for full_path, requirements_file, install_script in subdirs_with_files:
-            install_requirements(requirements_file, installed_packages)
-            run_install_script(install_script, executed_scripts)
+        for _, req, script in directories:
+            process_requirements(req, installed)
+            run_install_script(script, executed)
 
-        # Log installed packages and executed scripts
-        log_installed_packages(installed_packages, executed_scripts, log_file_path)
+        save_state(installed, executed, log_file)
 
     except KeyboardInterrupt:
-        print("\n\033[1;31mScript interrupted by user. Exiting...\033[0m")
+        print("\n\033[1;31mInterrupted by user\033[0m")
     except Exception as e:
-        print(f"\n\033[1;31mAn error occurred: {e}\033[0m")
+        print(f"\n\033[1;31mError: {e}\033[0m")
 
 if __name__ == "__main__":
     main()
