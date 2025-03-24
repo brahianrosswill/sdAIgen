@@ -52,21 +52,21 @@ def setup_venv(url):
     CD(HOME)
     fn = Path(url).name
 
-    m_download(f'{url} {HOME} {fn}')
+    m_download(f"{url} {HOME} {fn}")
 
     # Install dependencies based on environment
     install_commands = []
     if ENV_NAME == 'Kaggle':
         install_commands.extend([
-            "pip install ipywidgets jupyterlab_widgets --upgrade",
-            "rm -f /usr/lib/python3.10/sitecustomize.py"
+            'pip install ipywidgets jupyterlab_widgets --upgrade',
+            'rm -f /usr/lib/python3.10/sitecustomize.py'
         ])
 
-    install_commands.append("sudo apt-get -y install lz4 pv")
+    install_commands.append('sudo apt-get -y install lz4 pv')
     install_dependencies(install_commands)
 
     # Unpack and clean
-    ipySys(f'pv {fn} | lz4 -d | tar xf -')
+    ipySys(f"pv {fn} | lz4 -d | tar xf -")
     Path(fn).unlink()
 
     BIN = str(VENV / 'bin')
@@ -101,7 +101,7 @@ if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
         'ngrok': "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
     }
 
-    print("💿 Installing the libraries will take a bit of time.")
+    print('💿 Installing the libraries will take a bit of time.')
     install_packages(install_lib)
     clear_output()
     js.update(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
@@ -119,7 +119,7 @@ venv_needs_reinstall = (
 
 if venv_needs_reinstall:
     if VENV.exists():
-        print("🗑️ Удаление старого venv...")
+        print('🗑️ Удаление старого venv...')
         shutil.rmtree(VENV)
         clear_output()
 
@@ -157,10 +157,10 @@ if UI not in ['ComfyUI', 'Forge', 'ReForge'] and not os.path.exists('/root/.cach
     name_zip = 'hf_cache_adetailer'
     chache_url = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main/hf_chache_adetailer.zip'
 
-    zip_path = f'{HOME}/{name_zip}.zip'
-    m_download(f'{chache_url} {HOME} {name_zip}')
-    ipySys(f'unzip -q -o {zip_path} -d /')
-    ipySys(f'rm -rf {zip_path}')
+    zip_path = f"{HOME}/{name_zip}.zip"
+    m_download(f"{chache_url} {HOME} {name_zip}")
+    ipySys(f"unzip -q -o {zip_path} -d /")
+    ipySys(f"rm -rf {zip_path}")
 
     clear_output()
 
@@ -170,7 +170,7 @@ if not os.path.exists(WEBUI):
     start_install = time.time()
     print(f"⌚ Распаковка Stable Diffusion... | WEBUI: \033[34m{UI}\033[0m", end='')
 
-    ipyRun('run', f'{SCRIPTS}/UIs/{UI}.py')
+    ipyRun('run', f"{SCRIPTS}/UIs/{UI}.py")
     handle_setup_timer(WEBUI, start_timer)		# Setup timer (for timer-extensions)
 
     install_time = time.time() - start_install
@@ -179,7 +179,7 @@ if not os.path.exists(WEBUI):
 
 else:
     print(f"🔧 Текущий WebUI: \033[34m{UI}\033[0m")
-    print("🚀 Распаковка завершена. Пропуск. ⚡")
+    print('🚀 Распаковка завершена. Пропуск. ⚡')
 
     timer_env = handle_setup_timer(WEBUI, start_timer)
     elapsed_time = str(timedelta(seconds=time.time() - timer_env)).split('.')[0]
@@ -188,7 +188,7 @@ else:
 
 ## Changes extensions and WebUi
 if latest_webui or latest_extensions:
-    action = "WebUI и Расширений" if latest_webui and latest_extensions else ('WebUI' if latest_webui else 'Расширений')
+    action = 'WebUI и Расширений' if latest_webui and latest_extensions else ('WebUI' if latest_webui else 'Расширений')
     print(f"⌚️ Обновление {action}...", end='')
     with capture.capture_output():
         ipySys('git config --global user.email "you@example.com"')
@@ -206,9 +206,9 @@ if latest_webui or latest_extensions:
 
         ## Update extensions
         if latest_extensions:
-            # ipySys('{\'for dir in \' + WEBUI + \'/extensions/*/; do cd \\"$dir\\" && git reset --hard && git pull; done\'}')
-            for entry in os.listdir(f'{WEBUI}/extensions'):
-                dir_path = f'{WEBUI}/extensions/{entry}'
+            # ipySys('{\'for dir in \' + WEBUI + \'/extensions/*/; do cd \\'$dir\\' && git reset --hard && git pull; done\'}')
+            for entry in os.listdir(f"{WEBUI}/extensions"):
+                dir_path = f"{WEBUI}/extensions/{entry}"
                 if os.path.isdir(dir_path):
                     subprocess.run(['git', 'reset', '--hard'], cwd=dir_path)
                     subprocess.run(['git', 'pull'], cwd=dir_path)
@@ -237,11 +237,11 @@ if commit_hash:
 # Get XL or 1.5 models list
 ## model_list | vae_list | controlnet_list
 model_files = '_xl-models-data.py' if XL_models else '_models-data.py'
-with open(f'{SCRIPTS}/{model_files}') as f:
+with open(f"{SCRIPTS}/{model_files}") as f:
     exec(f.read())
 
 ## Downloading model and stuff | oh~ Hey! If you're freaked out by that code too, don't worry, me too!
-print("📦 Скачивание моделей и прочего...", end='')
+print('📦 Скачивание моделей и прочего...', end='')
 
 extension_repo = []
 PREFIX_MAP = {
@@ -451,7 +451,7 @@ def _process_lines(lines):
     for line in lines:
         tag_line = line.strip().lower()
         for prefix, (_, short_tag) in PREFIX_MAP.items():
-            if (f'# {prefix}'.lower() in tag_line) or (short_tag and short_tag.lower() in tag_line):
+            if (f"# {prefix}".lower() in tag_line) or (short_tag and short_tag.lower() in tag_line):
                 current_tag = prefix
                 break
 
@@ -489,24 +489,24 @@ file_urls = [f"{f}.txt" if not f.endswith('.txt') else f for f in custom_file_ur
 
 # p -> prefix ; u -> url | Remember: don't touch the prefix!
 prefixed_urls = [f"{p}:{u}" for p, u in zip(PREFIX_MAP, urls_sources) if u for u in u.replace(',', '').split()]
-line += ", ".join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
+line += ', '.join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
 
 if detailed_download == 'on':
-    print("\n\n\033[33m# ====== Подробная Загрузка ====== #\n\033[0m")
+    print('\n\n\033[33m# ====== Подробная Загрузка ====== #\n\033[0m')
     download(line)
-    print("\n\033[33m# =============================== #\n\033[0m")
+    print('\n\033[33m# =============================== #\n\033[0m')
 else:
     with capture.capture_output():
         download(line)
 
-print("\r🏁 Скачивание Завершено!" + ' '*15)
+print('\r🏁 Скачивание Завершено!' + ' '*15)
 
 
 ## Install of Custom extensions
 def _clone_repository(repo, repo_name, extension_dir):
     """Clones the repository to the specified directory."""
     repo_name = repo_name or repo.split('/')[-1]
-    command = f'cd {extension_dir} && git clone --depth 1 --recursive {repo} {repo_name} && cd {repo_name} && git fetch'
+    command = f"cd {extension_dir} && git clone --depth 1 --recursive {repo} {repo_name} && cd {repo_name} && git fetch"
     ipySys(command)
 
 extension_type = 'нодов' if UI == 'ComfyUI' else 'расширений'
@@ -540,4 +540,4 @@ if UI == 'ComfyUI':
 
 
 ## List Models and stuff
-ipyRun('run', f'{SCRIPTS}/download-result.py')
+ipyRun('run', f"{SCRIPTS}/download-result.py")

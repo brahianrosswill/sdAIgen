@@ -57,7 +57,7 @@ HR = widgets.HTML('<hr>')
 # --- MODEL ---
 """Create model selection widgets."""
 model_header = factory.create_header('Model Selection')
-model_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'model')
+model_options = read_model_data(f"{SCRIPTS}/_models-data.py", 'model')
 model_widget = factory.create_dropdown(model_options, 'Model:', '4. Counterfeit [Anime] [V3] + INP')
 model_num_widget = factory.create_text('Model Number:', '', 'Enter the model numbers for download.')
 inpainting_model_widget = factory.create_checkbox('Inpainting Models', False, class_names=['inpaint'], layout={'width': '25%'})
@@ -68,7 +68,7 @@ switch_model_widget = factory.create_hbox([inpainting_model_widget, XL_models_wi
 # --- VAE ---
 """Create VAE selection widgets."""
 vae_header = factory.create_header('VAE Selection')
-vae_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'vae')
+vae_options = read_model_data(f"{SCRIPTS}/_models-data.py", 'vae')
 vae_widget = factory.create_dropdown(vae_options, 'Vae:', '3. Blessed2.vae')
 vae_num_widget = factory.create_text('Vae Number:', '', 'Enter the vae numbers for download.')
 
@@ -91,7 +91,7 @@ choose_changes_widget = factory.create_hbox(
     layout={'justify_content': 'space-between'}
 )
 
-controlnet_options = read_model_data(f'{SCRIPTS}/_models-data.py', 'cnet')
+controlnet_options = read_model_data(f"{SCRIPTS}/_models-data.py", 'cnet')
 controlnet_widget = factory.create_dropdown(controlnet_options, 'ControlNet:', 'none')
 controlnet_num_widget = factory.create_text('ControlNet Number:', '', 'Enter the ControlNet model numbers for download.')
 commit_hash_widget = factory.create_text('Commit Hash:', '', 'Switching between branches or commits.')
@@ -220,9 +220,9 @@ def update_XL_options(change, widget):
 
     # Get data - MODELs | VAEs | CNETs
     data_file = '_xl-models-data.py' if selected else '_models-data.py'
-    model_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'model')
-    vae_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'vae')
-    controlnet_widget.options = read_model_data(f'{SCRIPTS}/{data_file}', 'cnet')
+    model_widget.options = read_model_data(f"{SCRIPTS}/{data_file}", 'model')
+    vae_widget.options = read_model_data(f"{SCRIPTS}/{data_file}", 'vae')
+    controlnet_widget.options = read_model_data(f"{SCRIPTS}/{data_file}", 'cnet')
 
     # Set default values from the dictionary
     model_widget.value, vae_widget.value, controlnet_widget.value = default_model_values[selected]
@@ -291,7 +291,7 @@ SETTINGS_KEYS = [
 
 def save_settings():
     """Save widget values to settings."""
-    widgets_values = {key: globals()[f'{key}_widget'].value for key in SETTINGS_KEYS}
+    widgets_values = {key: globals()[f"{key}_widget"].value for key in SETTINGS_KEYS}
     js.save(SETTINGS_PATH, 'WIDGETS', widgets_values)
 
     update_current_webui(change_webui_widget.value)  # Upadte Selected WebUI in setting.json
@@ -302,7 +302,7 @@ def load_settings():
         widget_data = js.read(SETTINGS_PATH, 'WIDGETS')
         for key in SETTINGS_KEYS:
             if key in widget_data:
-                globals()[f'{key}_widget'].value = widget_data.get(key, '')
+                globals()[f"{key}_widget"].value = widget_data.get(key, '')
 
 def save_data(button):
     """Handle save button click."""

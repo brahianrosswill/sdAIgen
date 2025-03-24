@@ -136,9 +136,9 @@ def run_install_script(script_path, executed):
 def save_state(installed, scripts, log_file):
     """Save installation state to log file"""
     with open(log_file, 'w') as f:
-        f.write("\n".join(installed))
-        f.write("\n\n# Executed scripts:\n")
-        f.write("\n".join(scripts))
+        f.write('\n'.join(installed))
+        f.write('\n\n# Executed scripts:\n')
+        f.write('\n'.join(scripts))
 
 def load_previous_state(log_file):
     """Load previous installation state from log"""

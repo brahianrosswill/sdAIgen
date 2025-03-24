@@ -101,11 +101,11 @@ def _update_config_paths():
 def get_launch_command(tunnel_port):
     """Construct launch command based on configuration"""
     base_args = commandline_arguments
-    password = "ha4ez7147b5vdlu5u8f8flrllgn61kpbgbh6emil"
+    password = 'ha4ez7147b5vdlu5u8f8flrllgn61kpbgbh6emil'
 
-    common_args = " --enable-insecure-extension-access --disable-console-progressbars --theme dark --share"
+    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark --share'
     if ENV_NAME == 'Kaggle':
-        common_args += f' --encrypt-pass={password}'
+        common_args += f" --encrypt-pass={password}"
 
     # Accent Color For Anxety-Theme
     if theme_accent != 'anxety':
@@ -148,7 +148,7 @@ class TunnelManager:
 
     async def _print_status(self):
         """Async status printer"""
-        print("\033[33mChecking tunnels:\033[0m")
+        print('\033[33mChecking tunnels:\033[0m')
         while True:
             service_name = await self.checking_queue.get()
             print(f"- 🕒 Checking \033[36m{service_name}\033[0m...")
@@ -198,7 +198,7 @@ class TunnelManager:
             if pattern_found:
                 return True, None
 
-            error_msg = "\n".join(output[-3:]) or 'No output received'
+            error_msg = '\n'.join(output[-3:]) or 'No output received'
             return False, f"{error_msg[:300]}..."
 
         except Exception as e:
@@ -209,19 +209,19 @@ class TunnelManager:
         services = [
             ('Serveo', {
                 'command': f"ssh -o StrictHostKeyChecking=no -R 80:localhost:{self.tunnel_port} serveo.net",
-                'pattern': re.compile(r"[\w-]+\.serveo\.net")
+                'pattern': re.compile(r'[\w-]+\.serveo\.net')
             }),
             ('Pinggy', {
                 'command': f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{self.tunnel_port} a.pinggy.io",
-                'pattern': re.compile(r"[\w-]+\.a\.free\.pinggy\.link")
+                'pattern': re.compile(r'[\w-]+\.a\.free\.pinggy\.link')
             }),
             ('Cloudflared', {
                 'command': f"cl tunnel --url localhost:{self.tunnel_port}",
-                'pattern': re.compile(r"[\w-]+\.trycloudflare\.com")
+                'pattern': re.compile(r'[\w-]+\.trycloudflare\.com')
             }),
             ('Localtunnel', {
                 'command': f"lt --port {self.tunnel_port}",
-                'pattern': re.compile(r"[\w-]+\.loca\.lt"),
+                'pattern': re.compile(r'[\w-]+\.loca\.lt'),
                 'note': f"Password: \033[32m{self.public_ip}\033[0m"
             })
         ]
@@ -236,11 +236,11 @@ class TunnelManager:
 
             if current_token != zrok_token:
                 ipySys('zrok disable &> /dev/null')
-                ipySys(f'zrok enable {zrok_token} &> /dev/null')
+                ipySys(f"zrok enable {zrok_token} &> /dev/null")
 
             services.append(('Zrok', {
                 'command': f"zrok share public http://localhost:{self.tunnel_port}/ --headless",
-                'pattern': re.compile(r"[\w-]+\.share\.zrok\.io")
+                'pattern': re.compile(r'[\w-]+\.share\.zrok\.io')
             }))
 
         if ngrok_token:
@@ -252,11 +252,11 @@ class TunnelManager:
                     current_token = yaml.safe_load(f).get('agent', {}).get('authtoken')
 
             if current_token != ngrok_token:
-                ipySys(f'ngrok config add-authtoken {ngrok_token}')
+                ipySys(f"ngrok config add-authtoken {ngrok_token}")
 
             services.append(('Ngrok', {
                 'command': f"ngrok http http://localhost:{self.tunnel_port} --log stdout",
-                'pattern': re.compile(r"https://[\w-]+\.ngrok-free\.app")
+                'pattern': re.compile(r'https://[\w-]+\.ngrok-free\.app')
             }))
 
         # Create status printer task
@@ -326,7 +326,7 @@ if __name__ == '__main__':
     LAUNCHER = get_launch_command(tunnel_port)
 
     # Setup pinggy timer
-    ipySys(f'echo -n {int(time.time())+(3600+20)} > {WEBUI}/static/timer-pinggy.txt')
+    ipySys(f"echo -n {int(time.time())+(3600+20)} > {WEBUI}/static/timer-pinggy.txt")
 
     with tunnelingService:
         CD(WEBUI)
@@ -334,11 +334,11 @@ if __name__ == '__main__':
         if UI == 'ComfyUI':
             COMFYUI_SETTINGS_PATH = SCR_PATH / 'ComfyUI.json'
             if check_custom_nodes_deps:
-                ipySys(f'{py} install-deps.py')
+                ipySys(f"{py} install-deps.py")
                 clear_output(wait=True)
 
             if not js.key_exists(COMFYUI_SETTINGS_PATH, 'install_req', True):
-                print("Installing ComfyUI dependencies...")
+                print('Installing ComfyUI dependencies...')
                 subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 js.save(COMFYUI_SETTINGS_PATH, 'install_req', True)
                 clear_output(wait=True)
@@ -347,7 +347,7 @@ if __name__ == '__main__':
 
         # Display error details if any
         if args.log and errors > 0:
-            print("\033[31m>> Failed Tunnels:\033[0m")
+            print('\033[31m>> Failed Tunnels:\033[0m')
             for error in tunnel_mgr.error_reasons:
                 print(f"  - {error['name']}: {error['reason']}")
             print()
@@ -366,7 +366,7 @@ if __name__ == '__main__':
 
     # Display session duration
     try:
-        with open(f'{WEBUI}/static/timer.txt') as f:
+        with open(f"{WEBUI}/static/timer.txt") as f:
             timer = float(f.read())
             duration = timedelta(seconds=time.time() - timer)
             print(f"\n⌚️ Session duration: \033[33m{str(duration).split('.')[0]}\033[0m")

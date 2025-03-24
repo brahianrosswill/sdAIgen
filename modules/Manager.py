@@ -49,7 +49,7 @@ def m_download(line, log=False, unzip=False):
     links = [link.strip() for link in line.split(',') if link.strip()]
 
     if not links:
-        log_message("> Missing URL, downloading nothing", log)
+        log_message('> Missing URL, downloading nothing', log)
         return
 
     for link in links:
@@ -147,7 +147,7 @@ def download_google_drive(url, filename, log):
     cmd = 'gdown --fuzzy ' + url
     if filename:
         cmd += ' -O ' + filename
-    if "drive.google.com/drive/folders" in url:
+    if 'drive.google.com/drive/folders' in url:
         cmd += ' --folder'
 
     execute_shell_command(cmd, log)
@@ -188,7 +188,7 @@ def monitor_aria2_download(command, log):
                     if re.match(r'\[#\w{6}\s.*\]', output_line):
                         formatted_line = format_output_line(output_line)
                         if log:
-                            print(f"\r{' ' * 180}\r{formatted_line}", end="")
+                            print(f"\r{' ' * 180}\r{formatted_line}", end='')
                             sys.stdout.flush()
                         br = True
                         break
@@ -200,7 +200,7 @@ def monitor_aria2_download(command, log):
             if br:
                 print()
 
-            stripe = result.find("======+====+===========")
+            stripe = result.find('======+====+===========')
             if stripe != -1:
                 for line in result[stripe:].splitlines():
                     if '|' in line and 'OK' in line:
@@ -209,7 +209,7 @@ def monitor_aria2_download(command, log):
 
         process.wait()
     except KeyboardInterrupt:
-        log_message("\n> Download interrupted", log)
+        log_message('\n> Download interrupted', log)
 
 def format_output_line(line):
     """Format a line of output with ANSI color codes."""
@@ -268,7 +268,7 @@ def m_clone(input_source, log=False):
     commands = process_input_source(input_source, log)
 
     if not commands:
-        log_message(">> No valid repositories to clone", log)
+        log_message('>> No valid repositories to clone', log)
         return
 
     for command in commands:
@@ -287,7 +287,7 @@ def process_input_source(input_source, log=False):
         parts = shlex.split(line)
         if len(parts) >= 2 and parts[0] == 'git' and parts[1] == 'clone':
             base_command = parts
-            url = next((p for p in parts[2:] if re.match(r"https?://", p)), None)
+            url = next((p for p in parts[2:] if re.match(r'https?://', p)), None)
         else:
             url = line
             base_command = ['git', 'clone', url]
@@ -300,7 +300,7 @@ def process_input_source(input_source, log=False):
         if '--depth' not in base_command:
             base_command += ['--depth', '1']
 
-        return " ".join(base_command)
+        return ' '.join(base_command)
 
     # Process different input types
     if input_source.endswith('.txt') and input_path.is_file():
@@ -319,7 +319,7 @@ def process_input_source(input_source, log=False):
 
 @handle_errors
 def execute_command(command, log=False):
-    repo_url = re.search(r"https?://\S+", command).group()
+    repo_url = re.search(r'https?://\S+', command).group()
     process = subprocess.Popen(
         shlex.split(command),
         stdout=subprocess.PIPE,
@@ -340,7 +340,7 @@ def execute_command(command, log=False):
         # Parse cloning progress
         if 'Cloning into' in output:
             repo_path = re.search(r"'(.+?)'", output).group(1)
-            repo_name = "/".join(repo_path.split("/")[-3:])
+            repo_name = '/'.join(repo_path.split('/')[-3:])
             log_message(f">> Cloning: {repo_name} -> {repo_url}", log)
 
         # Handle error messages

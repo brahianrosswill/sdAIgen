@@ -49,7 +49,7 @@ class CivitAiAPI:
     Usage Example:
         api = CivitAiAPI()
         result = api.validate_download(
-            url="https://civitai.com/models/...",
+            url='https://civitai.com/models/...',
             file_name='model.safetensors'
         )
     """
@@ -69,7 +69,7 @@ class CivitAiAPI:
     def _fetch_json(self, url: str) -> Optional[Dict]:
         """Execute GET request and return parsed JSON response"""
         try:
-            headers = {'Authorization': f'Bearer {self.token}'} if self.token else {}
+            headers = {'Authorization': f"Bearer {self.token}"} if self.token else {}
             response = requests.get(url, headers=headers)
             response.raise_for_status()
             return response.json()
@@ -96,7 +96,7 @@ class CivitAiAPI:
                 return None
 
             # Handle model page URLs
-            if "civitai.com/models/" in url:
+            if 'civitai.com/models/' in url:
                 if 'modelVersionId=' in url:
                     version_part = url.split('modelVersionId=')[1]
                     return version_part.split('&')[0].split('#')[0]
@@ -107,11 +107,11 @@ class CivitAiAPI:
                     self.logger.error(f"Invalid model ID format: {model_id}")
                     return None
 
-                model_data = self._fetch_json(self._build_url(f'models/{model_id}'))
+                model_data = self._fetch_json(self._build_url(f"models/{model_id}"))
                 return model_data['modelVersions'][0]['id'] if model_data else None
 
             # Handle direct download URLs
-            if "/api/download/models/" in url:
+            if '/api/download/models/' in url:
                 version_part = url.split('/api/download/models/')[1]
                 return version_part.split('?')[0].split('/')[0]
 
@@ -185,7 +185,7 @@ class CivitAiAPI:
         if not version_id:
             self.logger.error('Invalid model URL')
             return None, None
-        api_data = self._fetch_json(self._build_url(f'model-versions/{version_id}'))
+        api_data = self._fetch_json(self._build_url(f"model-versions/{version_id}"))
         return api_data
 
     # -- Special function for 'sdAIgen' --

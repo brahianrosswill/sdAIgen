@@ -42,7 +42,7 @@ async def _download_file(url, directory, filename):
         os.remove(file_path)
 
     process = await asyncio.create_subprocess_shell(
-        f'curl -sLo {file_path} {url}',
+        f"curl -sLo {file_path} {url}",
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL
     )
@@ -60,45 +60,45 @@ async def download_files(file_list):
 
 async def download_configuration():
     ## FILES
-    url_cfg = f'https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{BRANCH}/__configs__'
+    url_cfg = f"https://raw.githubusercontent.com/anxety-solo/sdAIgen/refs/heads/{BRANCH}/__configs__"
     configs = [
         # settings
-        f'{url_cfg}/{UI}/config.json',
-        f'{url_cfg}/{UI}/ui-config.json',
-        f'{url_cfg}/styles.csv',
-        f'{url_cfg}/user.css',
+        f"{url_cfg}/{UI}/config.json",
+        f"{url_cfg}/{UI}/ui-config.json",
+        f"{url_cfg}/styles.csv",
+        f"{url_cfg}/user.css",
         # other
-        f'{url_cfg}/card-no-preview.png, {WEBUI}/html',
-        f'{url_cfg}/notification.mp3'
+        f"{url_cfg}/card-no-preview.png, {WEBUI}/html",
+        f"{url_cfg}/notification.mp3"
     ]
     await download_files(configs)
 
     ## REPOS
     extensions_list = [
         ## ANXETY Edits
-        "https://github.com/anxety-solo/webui_timer timer",
-        "https://github.com/anxety-solo/anxety-theme",
-        "https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus",
+        'https://github.com/anxety-solo/webui_timer timer',
+        'https://github.com/anxety-solo/anxety-theme',
+        'https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus',
 
         ## OTHER | ON
-        "https://github.com/gutris1/sd-image-viewer Image-Viewer",
-        "https://github.com/gutris1/sd-image-info Image-Info",
-        "https://github.com/gutris1/sd-hub SD-Hub",
+        'https://github.com/gutris1/sd-image-viewer Image-Viewer',
+        'https://github.com/gutris1/sd-image-info Image-Info',
+        'https://github.com/gutris1/sd-hub SD-Hub',
 
         ## OTHER | OFF
-        # "https://github.com/Bing-su/adetailer Adetailer",
-        # "https://github.com/thomasasfk/sd-webui-aspect-ratio-helper Aspect-Ratio-Helper",
-        # "https://github.com/Mikubill/sd-webui-controlnet ControlNet",
-        # "https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing",
-        # "https://github.com/hako-mikan/sd-webui-regional-prompter Regional-Prompter",
-        # "https://github.com/ilian6806/stable-diffusion-webui-state State",
-        # "https://github.com/hako-mikan/sd-webui-supermerger Supermerger",
-        # "https://github.com/DominikDoom/a1111-sd-webui-tagcomplete TagComplete",
-        # "https://github.com/Tsukreya/Umi-AI-Wildcards",
-        # "https://github.com/picobyte/stable-diffusion-webui-wd14-tagger wd14-tagger"
+        # 'https://github.com/Bing-su/adetailer Adetailer',
+        # 'https://github.com/thomasasfk/sd-webui-aspect-ratio-helper Aspect-Ratio-Helper',
+        # 'https://github.com/Mikubill/sd-webui-controlnet ControlNet',
+        # 'https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing',
+        # 'https://github.com/hako-mikan/sd-webui-regional-prompter Regional-Prompter',
+        # 'https://github.com/ilian6806/stable-diffusion-webui-state State',
+        # 'https://github.com/hako-mikan/sd-webui-supermerger Supermerger',
+        # 'https://github.com/DominikDoom/a1111-sd-webui-tagcomplete TagComplete',
+        # 'https://github.com/Tsukreya/Umi-AI-Wildcards',
+        # 'https://github.com/picobyte/stable-diffusion-webui-wd14-tagger wd14-tagger'
     ]
     if ENV_NAME == 'Kaggle':
-        extensions_list.append("https://github.com/gutris1/sd-encrypt-image Encrypt-Image")
+        extensions_list.append('https://github.com/gutris1/sd-encrypt-image Encrypt-Image')
 
     os.makedirs(EXTS, exist_ok=True)
     CD(EXTS)
@@ -106,7 +106,7 @@ async def download_configuration():
     tasks = []
     for command in extensions_list:
         tasks.append(asyncio.create_subprocess_shell(
-            f'git clone --depth 1 {command}',
+            f"git clone --depth 1 {command}",
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         ))

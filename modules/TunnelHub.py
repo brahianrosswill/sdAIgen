@@ -27,7 +27,7 @@ ListHandlersOrBool = Union[List[logging.Handler], bool]
 
 class ColoredFormatter(logging.Formatter):
     COLORS = {
-        logging.DEBUG: "\033[36m',        # Cyan
+        logging.DEBUG: '\033[36m',        # Cyan
         logging.INFO: '\033[32m',         # Green
         logging.WARNING: '\033[33m',      # Yellow
         logging.ERROR: '\033[31m',        # Red
@@ -184,7 +184,7 @@ class Tunnel:
     def start(self) -> None:
         """Start the tunnel and its associated threads."""
         if self._is_running:
-            raise RuntimeError("Tunnel is already running")
+            raise RuntimeError('Tunnel is already running')
 
         self.__enter__()
 
@@ -192,13 +192,13 @@ class Tunnel:
             while not self.printed.is_set():
                 time.sleep(1)
         except KeyboardInterrupt:
-            self.logger.warning("\033[33m⚠️  Keyboard Interrupt detected, stopping tunnel\033[0m")
+            self.logger.warning('\033[33m⚠️  Keyboard Interrupt detected, stopping tunnel\033[0m')
             self.stop()
 
     def stop(self) -> None:
         """Stop the tunnel and clean up resources."""
         if not self._is_running:
-            raise RuntimeError("Tunnel is not running")
+            raise RuntimeError('Tunnel is not running')
 
         self.logger.info(f"💣 \033[32mTunnels:\033[0m \033[34m{self.get_tunnel_names()}\033[0m -> \033[31mKilled.\033[0m")
         self.stop_event.set()
@@ -229,10 +229,10 @@ class Tunnel:
     def __enter__(self):
         """Enter the runtime context for the tunnel."""
         if self._is_running:
-            raise RuntimeError("Tunnel is already running by another method")
+            raise RuntimeError('Tunnel is already running by another method')
 
         if not self.tunnel_list:
-            raise ValueError("No tunnels added")
+            raise ValueError('No tunnels added')
 
         print_job = Thread(target=self._print)
         print_job.start()
@@ -331,7 +331,7 @@ class Tunnel:
         try:
             callback(link, note, name)
         except Exception:
-            self.logger.error("An error occurred while invoking URL callback", exc_info=True)
+            self.logger.error('An error occurred while invoking URL callback', exc_info=True)
 
     def _run(self, cmd: str, name: str) -> None:
         """Run the specified command in a subprocess, monitoring its output."""
@@ -399,7 +399,7 @@ class Tunnel:
             interval=1,
             timeout=self.timeout,
         ):
-            self.logger.warning("Timeout while getting tunnel URLs, print available URLs")
+            self.logger.warning('Timeout while getting tunnel URLs, print available URLs')
 
         if not self.stop_event.is_set():
             self.display_urls()
@@ -411,14 +411,14 @@ class Tunnel:
             tunnel_name_width = max(len(name) for _, _, name in self.urls) if self.urls else 6
 
             # Print the header
-            print("\n\033[32m+" + '=' * (width - 2) + "+\033[0m\n")
+            print('\n\033[32m+' + '=' * (width - 2) + '+\033[0m\n')
 
             # Print each URL
             for url, note, name in self.urls:
                 print(f"\033[32m 🔗 Tunnel \033[0m{name:<{tunnel_name_width}}  \033[32mURL: \033[0m{url} {note or ''}")
 
             # Print the footer
-            print("\n\033[32m+" + '=' * (width - 2) + "+\033[0m\n")
+            print('\n\033[32m+' + '=' * (width - 2) + '+\033[0m\n')
 
             if self.callback:
                 self.invoke_callback(self.callback, self.urls)

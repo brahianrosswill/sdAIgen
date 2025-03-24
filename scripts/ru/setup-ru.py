@@ -364,7 +364,7 @@ async def download_files_async(scr_path, lang, branch):
         'modules': ['json_utils.py', 'webui_utils.py', 'widget_factory.py', 'TunnelHub.py', 'CivitaiAPI.py', 'Manager.py'],
         'scripts': {
             'UIs': ['A1111.py', 'ComfyUI.py', 'Forge.py', 'ReForge.py', 'SD-UX.py'],
-            lang: [f'widgets-{lang}.py', f'downloading-{lang}.py'],
+            lang: [f"widgets-{lang}.py", f"downloading-{lang}.py"],
             '': ['launch.py', 'auto-cleaner.py', 'download-result.py', '_models-data.py', '_xl-models-data.py']
         }
     }
