@@ -68,5 +68,23 @@ controlnet_list = {
     ],
     "14. T2I Adapter Diffusers XL Sketch": [
         {'url': "https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/t2i-adapter_diffusers_xl_sketch.safetensors"}
+    ],
+    "15. IP Adapter SDXL": [
+        {'url': "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl.safetensors"}
+    ],
+    "16. IP Adapter SDXL VIT-H": [
+        {'url': "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl_vit-h.safetensors"}
+    ],
+    "17. Diffusers XL Canny Mid": [
+        {'url': "https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_canny_mid.safetensors"}
+    ],
+    "18. Diffusers XL Depth Mid": [
+        {'url': "https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_depth_mid.safetensors
+    ],
+    "19. Controlnet Union SDXL 1.0": [
+        {'url': "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors", 'name': "controlnet-union-sdxl-1.0.safetensors"}
+    ],
+    "20. Controlnet Union SDXL Pro Max": [
+        {'url': "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model_promax.safetensors", 'name': "controlnet-union-sdxl-promax.safetensors"}
     ]
 }
