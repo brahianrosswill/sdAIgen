@@ -142,7 +142,7 @@ class CivitAiAPI:
     def _prepare_model_metadata(self, data: Dict, file_name: Optional[str]) -> ModelData:
         """Transform raw API response into structured ModelData"""
         model_type, final_name = self._determine_model_name(
-            data=data, 
+            data=data,
             custom_name=file_name
         )
         clean_url, full_url = self._process_download_url(data['downloadUrl'])

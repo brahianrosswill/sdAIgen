@@ -323,7 +323,7 @@ def create_environment_data(env, scr_folder, lang, branch):
             'install_deps': install_deps,
             'home_path': str(scr_folder.parent),
             'venv_path': str(scr_folder.parent / 'venv'),
-            'scr_path': str(scr_folder), 
+            'scr_path': str(scr_folder),
             'start_timer': start_timer,
             'public_ip': ''
         }

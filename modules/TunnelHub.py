@@ -64,7 +64,7 @@ class Tunnel:
     A class for creating and managing tunnels.
 
     This class allows for the establishment of tunnels to redirect traffic through specified ports.
-    It supports local port checking, process and thread management, as well as logging for debugging 
+    It supports local port checking, process and thread management, as well as logging for debugging
     and monitoring tunnel operations.
 
     Attributes:
@@ -75,12 +75,12 @@ class Tunnel:
         propagate (bool): Flag indicating whether to propagate logs to the parent logger.
         log_handlers (List[logging.Handler]): List of log handlers for configuring log output.
         log_dir (StrOrPath): Directory for storing logs. If not specified, the current working directory is used.
-        callback (Callable[[List[Tuple[str, Optional[str]]]], None]): A callback function that will be invoked with 
+        callback (Callable[[List[Tuple[str, Optional[str]]]], None]): A callback function that will be invoked with
             a list of URLs after the tunnel is created.
 
     Instance Attributes:
         _is_running (bool): Indicates whether the tunnel is currently running.
-        urls (List[Tuple[str, Optional[str], Optional[str]]]): List of URLs associated with the tunnel, 
+        urls (List[Tuple[str, Optional[str], Optional[str]]]): List of URLs associated with the tunnel,
             including the URL, note, and name of the tunnel.
         urls_lock (Lock): Mutex for safe access to the list of URLs, ensuring thread-safety.
         jobs (List[Thread]): List of threads associated with the tunnel, used for managing tunnel processes.
@@ -88,7 +88,7 @@ class Tunnel:
         tunnel_list (List[TunnelDict]): List of dictionaries containing parameters for each tunnel added.
         stop_event (Event): Event used to signal the stopping of tunnel operations.
         printed (Event): Event indicating whether tunnel information has been printed to the console.
-        logger (logging.Logger): Logger for recording information about the tunnel's operation, including 
+        logger (logging.Logger): Logger for recording information about the tunnel's operation, including
             errors and status updates.
 
     Exceptions:
@@ -161,7 +161,7 @@ class Tunnel:
             for path in os.environ['PATH'].split(os.pathsep)
         )
 
-    def add_tunnel(self, *, command: str, pattern: StrOrRegexPattern, name: str, 
+    def add_tunnel(self, *, command: str, pattern: StrOrRegexPattern, name: str,
                  note: str = None, callback: Callable[[str, Optional[str], Optional[str]], None] = None) -> None:
         """Add a new tunnel with the specified command, pattern, name, and optional note and callback."""
         cmd_name = command.split()[0]
@@ -366,7 +366,7 @@ class Tunnel:
         if not log.handlers:
             handler = logging.FileHandler(log_path, encoding='utf-8')
             handler.setLevel(logging.DEBUG)
-            handler.setFormatter(FileFormatter("[%(name)s]: %(message)s")) 
+            handler.setFormatter(FileFormatter("[%(name)s]: %(message)s"))
             log.addHandler(handler)
 
     def wait_for_port_if_needed(self) -> None:

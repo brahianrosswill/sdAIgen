@@ -254,7 +254,7 @@ def update_empowerment(change, widget):
 
     customDL_widgets = [
         Model_url_widget,
-        Vae_url_widget, 
+        Vae_url_widget,
         LoRA_url_widget,
         Embedding_url_widget,
         Extensions_url_widget,

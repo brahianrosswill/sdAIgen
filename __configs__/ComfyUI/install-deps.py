@@ -42,7 +42,7 @@ def get_git_package_name(git_url):
 def is_git_installed(git_url):
     """Check if Git package is installed by attempting import"""
     pkg_name = get_git_package_name(git_url)
-    if not pkg_name: 
+    if not pkg_name:
         return False
 
     variants = {

@@ -172,7 +172,7 @@ def read(*args) -> any:
 @validate_args(3, 3)
 def save(*args):
     """
-    Save value creating full path 
+    Save value creating full path
 
     Args:
         filepath (str): JSON file path
