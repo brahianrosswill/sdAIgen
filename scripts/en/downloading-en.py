@@ -274,7 +274,7 @@ def _center_text(text, terminal_width=45):
 def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
     info = '[NONE]'
     if file_name:
-        info = _center_text(f"[{file_name.split('.')[0]}]")
+        info = _center_text(f"[{file_name.rsplit('.', 1)[0]}]")
     if not file_name and 'drive.google.com' in url:
       info = _center_text('[GDrive]')
 
@@ -379,27 +379,39 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
 
 # Separation of merged numbers
 def _parse_selection_numbers(num_str, max_num):
-    """Split a string of numbers into unique integers."""
+    """Split a string of numbers into unique integers, considering max_num as the upper limit."""
     num_str = num_str.replace(',', ' ').strip()
     unique_numbers = set()
+    max_length = len(str(max_num))
 
-    # Handling space-separated and concatenated numbers
     for part in num_str.split():
-        if part.isdigit():
-            part_int = int(part)
-            if part_int <= max_num:
-                unique_numbers.add(part_int)
+        if not part.isdigit():
+            continue
 
-    # Handle the case where numbers can be written as concatenates
-    for i in range(len(num_str)):
-        for length in range(2, 0, -1):
-            if i + length <= len(num_str):
-                substring = num_str[i:i + length]
+        # Check if the entire part is a valid number
+        part_int = int(part)
+        if part_int <= max_num:
+            unique_numbers.add(part_int)
+            continue  # No need to split further
+
+        # Split the part into valid numbers starting from the longest possible
+        current_position = 0
+        part_len = len(part)
+        while current_position < part_len:
+            found = False
+            # Try lengths from max_length down to 1
+            for length in range(min(max_length, part_len - current_position), 0, -1):
+                substring = part[current_position:current_position + length]
                 if substring.isdigit():
-                    part = int(substring)
-                    if part <= max_num:
-                        unique_numbers.add(part)
+                    num = int(substring)
+                    if num <= max_num and num != 0:
+                        unique_numbers.add(num)
+                        current_position += length
+                        found = True
                         break
+            if not found:
+                # Move to the next character if no valid number found
+                current_position += 1
 
     return sorted(unique_numbers)
 
