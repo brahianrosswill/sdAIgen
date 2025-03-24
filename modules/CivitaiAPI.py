@@ -50,16 +50,16 @@ class CivitAiAPI:
         api = CivitAiAPI()
         result = api.validate_download(
             url="https://civitai.com/models/...",
-            file_name="model.safetensors"
+            file_name='model.safetensors'
         )
     """
     SUPPORTED_TYPES = {'Checkpoint', 'TextualInversion', 'LORA'}
-    BASE_URL = "https://civitai.com/api/v1"
+    BASE_URL = 'https://civitai.com/api/v1'
     is_KAGGLE = os.getenv('KAGGLE_URL_BASE')    # to check NSFW
 
     def __init__(self, token: str = None):
         """Initialize API client with optional authentication token"""
-        self.token = token or "65b66176dcf284b266579de57fbdc024"    # FAKE
+        self.token = token or '65b66176dcf284b266579de57fbdc024'    # FAKE
         self.logger = CivitAiLogger()
 
     def _build_url(self, endpoint: str) -> str:
@@ -91,7 +91,7 @@ class CivitAiAPI:
         """Extract model version ID from different URL formats"""
         try:
             # Basic URL format validation
-            if not url.startswith(("http://", "https://")):
+            if not url.startswith(('http://', 'https://')):
                 self.logger.error(f"Invalid URL format: {url}")
                 return None
 
@@ -154,7 +154,7 @@ class CivitAiAPI:
                 model_name=final_name
             )
 
-        early_access = data.get('availability') == 'EarlyAccess' or data.get("earlyAccessEndsAt", None)
+        early_access = data.get('availability') == 'EarlyAccess' or data.get('earlyAccessEndsAt', None)
 
         return ModelData(
             download_url=full_url,
@@ -183,7 +183,7 @@ class CivitAiAPI:
         """Helper method to extract version ID and fetch API data"""
         version_id = self._extract_version_id(url)
         if not version_id:
-            self.logger.error("Invalid model URL")
+            self.logger.error('Invalid model URL')
             return None, None
         api_data = self._fetch_json(self._build_url(f'model-versions/{version_id}'))
         return api_data

@@ -19,7 +19,7 @@ class WidgetFactory:
     def load_css(self, css_path):
         """Load CSS from a file and display it in the notebook."""
         try:
-            with open(css_path, "r") as file:
+            with open(css_path, 'r') as file:
                 data = file.read()
                 display(HTML(f"<style>{data}</style>"))
         except Exception as e:
@@ -28,7 +28,7 @@ class WidgetFactory:
     def load_js(self, js_path):
         """Load JavaScript from a file and display it in the notebook."""
         try:
-            with open(js_path, "r") as file:
+            with open(js_path, 'r') as file:
                 data = file.read()
                 display(HTML(f"<script>{data}</script>"))
         except Exception as e:
@@ -43,7 +43,7 @@ class WidgetFactory:
 
     def create_header(self, name, class_names=None):
         """Create a header HTML widget."""
-        class_names_str = ' '.join(class_names) if class_names else "header"
+        class_names_str = ' '.join(class_names) if class_names else 'header'
         header = f'<div class="{class_names_str}">{name}</div>'
         return self.create_html(header)
 

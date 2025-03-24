@@ -58,13 +58,13 @@ def parse_key(key: str) -> list[str]:
     Parse dot-separated key with escape support for double dots
 
     Args:
-        key: Input key string (e.g., "parent..child.prop")
+        key: Input key string (e.g., 'parent..child.prop')
 
     Returns:
-        List of parsed key segments (e.g., ["parent.child", "prop"])
+        List of parsed key segments (e.g., ['parent.child', 'prop'])
     """
     if not isinstance(key, str):
-        logger.error("Key must be a string")
+        logger.error('Key must be a string')
         return []
 
     temp_char = '\uE000'

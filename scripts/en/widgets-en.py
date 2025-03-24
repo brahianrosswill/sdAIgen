@@ -32,13 +32,13 @@ def read_model_data(file_path, data_type):
     with open(file_path) as f:
         exec(f.read(), {}, local_vars)
 
-    if data_type == "model":
+    if data_type == 'model':
         model_names = list(local_vars['model_list'].keys())   # Return model names
         return ['none'] + model_names
-    elif data_type == "vae":
+    elif data_type == 'vae':
         vae_names = list(local_vars['vae_list'].keys())    # Return the VAE names
         return ['none', 'ALL'] + vae_names
-    elif data_type == "cnet":
+    elif data_type == 'cnet':
         cnet_names = list(local_vars['controlnet_list'].keys())   # Return ControlNet names
         return ['none', 'ALL'] + cnet_names
 
@@ -99,11 +99,11 @@ civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Enter your Civ
 huggingface_token_widget = factory.create_text('HuggingFace Token:')
 
 ngrok_token_widget = factory.create_text('Ngrok Token:')
-ngrok_button = factory.create_html('<a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank">Get Ngrok Token</a>', class_names=["button", "button_zrok"])
+ngrok_button = factory.create_html('<a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank">Get Ngrok Token</a>', class_names=['button', 'button_zrok'])
 ngrok_widget = factory.create_hbox([ngrok_token_widget, ngrok_button])
 
 zrok_token_widget = factory.create_text('Zrok Token:')
-zrok_button = factory.create_html('<a href="https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU" target="_blank">Register Zrok Token</a>', class_names=["button", "button_zrok"])
+zrok_button = factory.create_html('<a href="https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU" target="_blank">Register Zrok Token</a>', class_names=['button', 'button_zrok'])
 zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 
 commandline_arguments_widget = factory.create_text('Arguments:', webui_selection['A1111'])
@@ -169,7 +169,7 @@ custom_file_urls_widget = factory.create_text('File (txt):')
 
 # --- Save Button ---
 """Create button widgets."""
-save_button = factory.create_button('Save', class_names=["button", "button_save"])
+save_button = factory.create_button('Save', class_names=['button', 'button_save'])
 
 ## ================== DISPLAY / SETTINGS =================
 
@@ -194,13 +194,13 @@ custom_download_widgets = [
 ]
 
 # Create Boxes
-model_box = factory.create_vbox(model_widgets, class_names=["container"])
-vae_box = factory.create_vbox(vae_widgets, class_names=["container"])
-additional_box = factory.create_vbox(additional_widgets, class_names=["container"])
-custom_download_box = factory.create_vbox(custom_download_widgets, class_names=["container", "container_cdl"])
+model_box = factory.create_vbox(model_widgets, class_names=['container'])
+vae_box = factory.create_vbox(vae_widgets, class_names=['container'])
+additional_box = factory.create_vbox(additional_widgets, class_names=['container'])
+custom_download_box = factory.create_vbox(custom_download_widgets, class_names=['container', 'container_cdl'])
 
 WIDGET_LIST = factory.create_vbox([model_box, vae_box, additional_box, custom_download_box, save_button],
-                                  class_names=["mainContainer"])
+                                  class_names=['mainContainer'])
 factory.display(WIDGET_LIST)
 
 ## ================== CALLBACK FUNCTION ==================
@@ -230,7 +230,7 @@ def update_XL_options(change, widget):
 # Callback functions for updating widgets
 def update_change_webui(change, widget):
     selected_webui = change['new']
-    commandline_arguments = webui_selection.get(selected_webui, "")
+    commandline_arguments = webui_selection.get(selected_webui, '')
     commandline_arguments_widget.value = commandline_arguments
 
     if selected_webui == 'ComfyUI':
@@ -291,8 +291,8 @@ SETTINGS_KEYS = [
 
 def save_settings():
     """Save widget values to settings."""
-    widgets_values = {key: globals()[f"{key}_widget"].value for key in SETTINGS_KEYS}
-    js.save(SETTINGS_PATH, "WIDGETS", widgets_values)
+    widgets_values = {key: globals()[f'{key}_widget'].value for key in SETTINGS_KEYS}
+    js.save(SETTINGS_PATH, 'WIDGETS', widgets_values)
 
     update_current_webui(change_webui_widget.value)  # Upadte Selected WebUI in setting.json
 
@@ -302,7 +302,7 @@ def load_settings():
         widget_data = js.read(SETTINGS_PATH, 'WIDGETS')
         for key in SETTINGS_KEYS:
             if key in widget_data:
-                globals()[f"{key}_widget"].value = widget_data.get(key, "")
+                globals()[f'{key}_widget'].value = widget_data.get(key, '')
 
 def save_data(button):
     """Handle save button click."""

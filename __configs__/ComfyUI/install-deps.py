@@ -14,10 +14,10 @@ def get_enabled_subdirectories(base_directory):
     subdirs = []
 
     for subdir in base_path.iterdir():
-        if subdir.is_dir() and not subdir.name.endswith(".disabled") and not subdir.name.startswith('.') and subdir.name != '__pycache__':
+        if subdir.is_dir() and not subdir.name.endswith('.disabled') and not subdir.name.startswith('.') and subdir.name != '__pycache__':
             print(f"\033[1;34mChecking dependencies >> \033[0m{subdir.name}")
-            req_file = subdir / "requirements.txt"
-            inst_script = subdir / "install.py"
+            req_file = subdir / 'requirements.txt'
+            inst_script = subdir / 'install.py'
 
             if req_file.exists() or inst_script.exists():
                 subdirs.append((subdir, req_file, inst_script))
@@ -27,7 +27,7 @@ def get_enabled_subdirectories(base_directory):
 
 def get_git_package_name(git_url):
     """Extract package name from Git URL"""
-    clean_url = git_url.split("git+")[-1].rstrip('/')
+    clean_url = git_url.split('git+')[-1].rstrip('/')
 
     # Attempt to extract name from GitHub URL
     if 'github.com' in clean_url:
@@ -100,7 +100,7 @@ def install_package(package_spec):
     """Install a package"""
     print(f"\033[1;32mInstalling >> \033[0m{package_spec}")
     subprocess.run(
-        [sys.executable, "-m", "pip", "install", "-q", package_spec],
+        [sys.executable, '-m', 'pip', 'install', '-q', package_spec],
         check=True,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL
@@ -164,8 +164,8 @@ def load_previous_state(log_file):
     return installed, scripts
 
 def main():
-    base_dir = "custom_nodes"
-    log_file = "installed_packages.txt"
+    base_dir = 'custom_nodes'
+    log_file = 'installed_packages.txt'
 
     installed, executed = load_previous_state(log_file)
     directories = get_enabled_subdirectories(base_dir)
@@ -182,5 +182,5 @@ def main():
     except Exception as e:
         print(f"\n\033[1;31mError: {e}\033[0m")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

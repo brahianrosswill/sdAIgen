@@ -280,7 +280,7 @@ def clear_module_cache(modules_folder):
 def setup_module_folder(scr_folder):
     """Set up the module folder by clearing the cache and adding it to sys.path."""
     clear_module_cache(scr_folder)
-    modules_folder = scr_folder / "modules"
+    modules_folder = scr_folder / 'modules'
     modules_folder.mkdir(parents=True, exist_ok=True)
     if str(modules_folder) not in sys.path:
         sys.path.append(str(modules_folder))
@@ -374,7 +374,7 @@ async def download_files_async(scr_path, lang, branch):
     async with aiohttp.ClientSession() as session:
         tasks = [download_file(session, file_url, file_path) for file_url, file_path in file_list]
 
-        for future in tqdm(asyncio.as_completed(tasks), total=len(tasks), desc="Downloading files", unit="file"):
+        for future in tqdm(asyncio.as_completed(tasks), total=len(tasks), desc='Downloading files', unit='file'):
             await future
 
     clear_output()
@@ -401,5 +401,5 @@ async def main_async():
 
     display_info(env, SCR_PATH, args.branch)   # display info text
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(main_async())

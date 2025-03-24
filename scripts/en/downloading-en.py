@@ -72,18 +72,18 @@ def setup_venv(url):
     BIN = str(VENV / 'bin')
     PKG = str(VENV / 'lib/python3.10/site-packages')
 
-    os.environ["PYTHONWARNINGS"] = "ignore"
+    os.environ['PYTHONWARNINGS'] = 'ignore'
 
     sys.path.insert(0, PKG)
-    if BIN not in os.environ["PATH"]:
-        os.environ["PATH"] = BIN + ":" + os.environ["PATH"]
-    if PKG not in os.environ["PYTHONPATH"]:
-        os.environ["PYTHONPATH"] = PKG + ":" + os.environ["PYTHONPATH"]
+    if BIN not in os.environ['PATH']:
+        os.environ['PATH'] = BIN + ':' + os.environ['PATH']
+    if PKG not in os.environ['PYTHONPATH']:
+        os.environ['PYTHONPATH'] = PKG + ':' + os.environ['PYTHONPATH']
 
 def install_packages(install_lib):
     """Install packages from the provided library dictionary."""
     for index, (package, install_cmd) in enumerate(install_lib.items(), start=1):
-        print(f"\r[{index}/{len(install_lib)}] \033[32m>>\033[0m Installing \033[33m{package}\033[0m..." + " " * 35, end='')
+        print(f"\r[{index}/{len(install_lib)}] \033[32m>>\033[0m Installing \033[33m{package}\033[0m..." + ' ' * 35, end='')
         result = subprocess.run(install_cmd, shell=True, capture_output=True)
         if result.returncode != 0:
             print(f"\n\033[31mError installing {package}: {result.stderr.decode()}\033[0m")
@@ -92,13 +92,13 @@ def install_packages(install_lib):
 if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
     install_lib = {
         ## Libs
-        "aria2": "pip install aria2",
-        "gdown": "pip install gdown",
+        'aria2': "pip install aria2",
+        'gdown': "pip install gdown",
         ## Tunnels
-        "localtunnel": "npm install -g localtunnel",
-        "cloudflared": "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64; chmod +x /usr/bin/cl",
-        "zrok": "wget -qO zrok_1.0.0_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v1.0.0/zrok_1.0.0_linux_amd64.tar.gz; tar -xzf zrok_1.0.0_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_1.0.0_linux_amd64.tar.gz",
-        "ngrok": "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
+        'localtunnel': "npm install -g localtunnel",
+        'cloudflared': "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64; chmod +x /usr/bin/cl",
+        'zrok': "wget -qO zrok_1.0.0_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v1.0.0/zrok_1.0.0_linux_amd64.tar.gz; tar -xzf zrok_1.0.0_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_1.0.0_linux_amd64.tar.gz",
+        'ngrok': "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
     }
 
     print("💿 Installing the libraries will take a bit of time.")
@@ -175,7 +175,7 @@ if not os.path.exists(WEBUI):
 
     install_time = time.time() - start_install
     minutes, seconds = divmod(int(install_time), 60)
-    print(f"\r🚀 Unpacking \033[34m{UI}\033[0m is complete! {minutes:02}:{seconds:02} ⚡" + " "*25)
+    print(f"\r🚀 Unpacking \033[34m{UI}\033[0m is complete! {minutes:02}:{seconds:02} ⚡" + ' '*25)
 
 else:
     print(f"🔧 Current WebUI: \033[34m{UI}\033[0m")
@@ -188,7 +188,7 @@ else:
 
 ## Changes extensions and WebUi
 if latest_webui or latest_extensions:
-    action = "WebUI and Extensions" if latest_webui and latest_extensions else ("WebUI" if latest_webui else "Extensions")
+    action = "WebUI and Extensions" if latest_webui and latest_extensions else ('WebUI' if latest_webui else 'Extensions')
     print(f"⌚️ Update {action}...", end='')
     with capture.capture_output():
         ipySys('git config --global user.email "you@example.com"')
@@ -224,7 +224,7 @@ with capture.capture_output():
 
 ## Version switching
 if commit_hash:
-    print('🔄 Switching to the specified version...', end="")
+    print('🔄 Switching to the specified version...', end='')
     with capture.capture_output():
         CD(WEBUI)
         ipySys('git config --global user.email "you@example.com"')
@@ -246,21 +246,21 @@ print("📦 Downloading models and stuff...", end='')
 extension_repo = []
 PREFIX_MAP = {
     # prefix : (dir_path , short-tag)
-    "model": (model_dir, "$ckpt"),
-    "vae": (vae_dir, None),
-    "lora": (lora_dir, None),
-    "embed": (embed_dir, "$emb"),
-    "extension": (extension_dir, "$ext"),
-    "adetailer": (adetailer_dir, "$ad"),
-    "control": (control_dir, "$cnet"),
-    "upscale": (upscale_dir, "$ups"),
+    'model': (model_dir, '$ckpt'),
+    'vae': (vae_dir, None),
+    'lora': (lora_dir, None),
+    'embed': (embed_dir, '$emb'),
+    'extension': (extension_dir, '$ext'),
+    'adetailer': (adetailer_dir, '$ad'),
+    'control': (control_dir, '$cnet'),
+    'upscale': (upscale_dir, '$ups'),
     # Other
-    "clip": (clip_dir, None),
-    "unet": (unet_dir, None),
-    "vision": (vision_dir, None),
-    "encoder": (encoder_dir, "$enc"),
-    "diffusion": (diffusion_dir, "$diff"),
-    "config": (config_dir, "$cfg")
+    'clip': (clip_dir, None),
+    'unet': (unet_dir, None),
+    'vision': (vision_dir, None),
+    'encoder': (encoder_dir, '$enc'),
+    'diffusion': (diffusion_dir, '$diff'),
+    'config': (config_dir, '$cfg')
 }
 for dir_path, _ in PREFIX_MAP.values():
     os.makedirs(dir_path, exist_ok=True)
@@ -272,11 +272,11 @@ def _center_text(text, terminal_width=45):
     return f"{' ' * padding}{text}{' ' * padding}"
 
 def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
-    info = "[ NONE ]"
+    info = '[NONE]'
     if file_name:
         info = _center_text(f"[{file_name.split('.')[0]}]")
     if not file_name and 'drive.google.com' in url:
-      info = _center_text("[ GDrive ]")
+      info = _center_text('[GDrive]')
 
     sep_line = '---' * 20
 
@@ -291,7 +291,7 @@ def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
 ''' Main Download Code '''
 
 def _clean_url(url):
-    if "huggingface.co" in url:
+    if 'huggingface.co' in url:
         return url.replace('/blob/', '/resolve/').split('?')[0]
     if 'github.com' in url:
         return url.replace('/blob/', '/raw/')
@@ -302,7 +302,7 @@ def _extract_filename(url):
         return match.group(1)
 
     parsed = urlparse(url)
-    if any(d in parsed.netloc for d in ["civitai.com", "drive.google.com"]):
+    if any(d in parsed.netloc for d in ['civitai.com', 'drive.google.com']):
         return None
 
     return Path(parsed.path).name
@@ -311,7 +311,7 @@ def _unpack_zips():
     for dir_path, _ in PREFIX_MAP.values():
         for root, _, files in os.walk(dir_path):
             for file in files:
-                if file.endswith(".zip"):
+                if file.endswith('.zip'):
                     zip_path = Path(root) / file
                     extract_path = zip_path.with_suffix('')
                     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
@@ -334,7 +334,7 @@ def download(line):
 
         if prefix:
             dir_path, _ = PREFIX_MAP[prefix]
-            if prefix == "extension":
+            if prefix == 'extension':
                 extension_repo.append((url, filename))
             else:
                 try:
@@ -406,8 +406,8 @@ def _parse_selection_numbers(num_str, max_num):
 def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url):
     selected_models = []
 
-    if selection != "none":
-        if selection == "ALL":
+    if selection != 'none':
+        if selection == 'ALL':
             selected_models = sum(model_dict.values(), [])
         else:
             if selection in model_dict:
@@ -430,13 +430,13 @@ def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url):
 
     # Filter inpainting
     for model in unique_models.values():
-        if not inpainting_model and "inpainting" in model['name']:
+        if not inpainting_model and 'inpainting' in model['name']:
             continue
         base_url += f"{model['url']} {model['dst_dir']} {model['name']}, "
 
     return base_url
 
-line = ""
+line = ''
 line = handle_submodels(model, model_num, model_list, model_dir, line)
 line = handle_submodels(vae, vae_num, vae_list, vae_dir, line)
 line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir, line)
@@ -446,7 +446,7 @@ line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir
 def _process_lines(lines):
     current_tag = None
     unique_urls = set()
-    files_urls = ""
+    files_urls = ''
 
     for line in lines:
         tag_line = line.strip().lower()
@@ -458,7 +458,7 @@ def _process_lines(lines):
         for url_part in [u.split('#')[0].strip() for u in line.split(',')]:
             filter_url = url_part.split('[')[0].strip()
             if current_tag is not None:
-                if url_part.startswith("http") and filter_url not in unique_urls:
+                if url_part.startswith('http') and filter_url not in unique_urls:
                     files_urls += f"{current_tag}:{url_part}, "
                     unique_urls.add(filter_url)
 
@@ -472,7 +472,7 @@ def process_file_downloads(file_urls, additional_lines=None):
     lines = additional_lines.splitlines() if additional_lines else []
 
     for source in file_urls:
-        if source.startswith("http"):
+        if source.startswith('http'):
             lines += requests.get(_clean_url(source)).text.splitlines()
         else:
             try:
@@ -491,7 +491,7 @@ file_urls = [f"{f}.txt" if not f.endswith('.txt') else f for f in custom_file_ur
 prefixed_urls = [f"{p}:{u}" for p, u in zip(PREFIX_MAP, urls_sources) if u for u in u.replace(',', '').split()]
 line += ", ".join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
 
-if detailed_download == "on":
+if detailed_download == 'on':
     print("\n\n\033[33m# ====== Detailed Download ====== #\n\033[0m")
     download(line)
     print("\n\033[33m# =============================== #\n\033[0m")
@@ -499,7 +499,7 @@ else:
     with capture.capture_output():
         download(line)
 
-print("\r🏁 Download Complete!" + " "*15)
+print("\r🏁 Download Complete!" + ' '*15)
 
 
 ## Install of Custom extensions

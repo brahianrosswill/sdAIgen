@@ -60,9 +60,9 @@ def output_container_generator(header, items, is_grid=False):
     content_widgets = [factory.create_html(f'<div class="output-item">{item}</div>') for item in items]
 
     container_method = factory.create_hbox if is_grid else factory.create_vbox    # hbox -> grid
-    content_container = container_method(content_widgets).add_class("_horizontal" if is_grid else "")
+    content_container = container_method(content_widgets).add_class('_horizontal' if is_grid else '')
 
-    return factory.create_vbox([header_widget, content_container]).add_class("output-section")
+    return factory.create_vbox([header_widget, content_container]).add_class('output-section')
 
 def get_all_files_list(directory, extensions, excluded_dirs=[]):
     """Get all files in the directory and its subdirectories, excluding specified directories."""
@@ -160,8 +160,8 @@ widgets_dict = {
 }
 
 outputs_widgets_list = [widget for widget, widget_list in widgets_dict.items() if widget_list]
-result_output_widget = factory.create_hbox(outputs_widgets_list).add_class("result-output-container")
+result_output_widget = factory.create_hbox(outputs_widgets_list).add_class('result-output-container')
 
 container_widget = factory.create_vbox([header_widget, HR, result_output_widget, HR],
-                                       layout={'width': '1080px'}).add_class("result-container")
+                                       layout={'width': '1080px'}).add_class('result-container')
 factory.display(container_widget)

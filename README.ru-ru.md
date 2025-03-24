@@ -37,7 +37,7 @@
 - [Infinite-Image-Browsing](https://github.com/zanllp/sd-webui-infinite-image-browsing)
 - [Regional-Prompter](https://github.com/hako-mikan/sd-webui-regional-prompter)
 - [Encrypt-Image](https://github.com/gutris1/sd-encrypt-image)
-- [SD-hHb](https://github.com/gutris1/sd-hub)
+- [SD-Hub](https://github.com/gutris1/sd-hub)
 - [Image-Info](https://github.com/gutris1/sd-image-info)
 - [Image-Viewer](https://github.com/gutris1/sd-image-viewer)
 - [State](https://github.com/ilian6806/stable-diffusion-webui-state)

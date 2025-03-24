@@ -113,12 +113,12 @@ async def download_configuration():
 
 def unpack_webui():
     zip_path = f"{HOME}/{UI}.zip"
-    m_download(f'{REPO_URL} {HOME} {UI}.zip')
-    ipySys(f'unzip -q -o {zip_path} -d {WEBUI}')
-    ipySys(f'rm -rf {zip_path}')
+    m_download(f"{REPO_URL} {HOME} {UI}.zip")
+    ipySys(f"unzip -q -o {zip_path} -d {WEBUI}")
+    ipySys(f"rm -rf {zip_path}")
 
 ## ====================== MAIN CODE ======================
-if __name__ == "__main__":
+if __name__ == '__main__':
     with capture.capture_output():
         unpack_webui()
         asyncio.run(download_configuration())

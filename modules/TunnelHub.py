@@ -27,15 +27,15 @@ ListHandlersOrBool = Union[List[logging.Handler], bool]
 
 class ColoredFormatter(logging.Formatter):
     COLORS = {
-        logging.DEBUG: "\033[36m",        # Cyan
-        logging.INFO: "\033[32m",         # Green
-        logging.WARNING: "\033[33m",      # Yellow
-        logging.ERROR: "\033[31m",        # Red
-        logging.CRITICAL: "\033[31;1m",   # Bold Red
+        logging.DEBUG: "\033[36m',        # Cyan
+        logging.INFO: '\033[32m',         # Green
+        logging.WARNING: '\033[33m',      # Yellow
+        logging.ERROR: '\033[31m',        # Red
+        logging.CRITICAL: '\033[31;1m',   # Bold Red
     }
 
     def format(self, record):
-        color = self.COLORS.get(record.levelno, "\033[0m")
+        color = self.COLORS.get(record.levelno, '\033[0m')
         message = super().format(record)
         return f"\n{color}[{record.name}]:\033[0m {message}"
 
@@ -121,7 +121,7 @@ class Tunnel:
         self.debug = debug
         self.timeout = timeout
         self.log_handlers = log_handlers or []
-        self.log_dir = Path(log_dir) if log_dir else Path.home() / "tunnel_logs"
+        self.log_dir = Path(log_dir) if log_dir else Path.home() / 'tunnel_logs'
         self.log_dir.mkdir(parents=True, exist_ok=True)
         self.callback = callback
 
@@ -129,7 +129,7 @@ class Tunnel:
 
     def setup_logger(self, propagate: bool) -> logging.Logger:
         """Set up the logger for the tunnel operations."""
-        logger = logging.getLogger("TunnelHub")
+        logger = logging.getLogger('TunnelHub')
         logger.setLevel(logging.DEBUG if self.debug else logging.INFO)
         logger.propagate = propagate
 
@@ -140,11 +140,11 @@ class Tunnel:
         if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
             stream_handler = logging.StreamHandler()
             stream_handler.setLevel(logger.level)
-            stream_handler.setFormatter(ColoredFormatter("{message}", style="{"))
+            stream_handler.setFormatter(ColoredFormatter('{message}', style='{'))
             logger.addHandler(stream_handler)
 
-        log_file = self.log_dir / "tunnelhub.log"
-        file_handler = logging.FileHandler(log_file, encoding="utf-8")
+        log_file = self.log_dir / 'tunnelhub.log'
+        file_handler = logging.FileHandler(log_file, encoding='utf-8')
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(FileFormatter("[%(asctime)s] [%(name)s]: %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
         logger.addHandler(file_handler)
@@ -158,7 +158,7 @@ class Tunnel:
         """Check if the specified command is available in the system PATH."""
         return any(
             os.access(os.path.join(path, command), os.X_OK)
-            for path in os.environ["PATH"].split(os.pathsep)
+            for path in os.environ['PATH'].split(os.pathsep)
         )
 
     def add_tunnel(self, *, command: str, pattern: StrOrRegexPattern, name: str, 
@@ -174,11 +174,11 @@ class Tunnel:
 
         self.logger.debug(f"Adding tunnel {command=} {pattern=} {name=} {note=} {callback=}")
         self.tunnel_list.append({
-            "command": command,
-            "pattern": pattern,
-            "name": name,
-            "note": note,
-            "callback": callback,
+            'command': command,
+            'pattern': pattern,
+            'name': name,
+            'note': note,
+            'callback': callback,
         })
 
     def start(self) -> None:
@@ -208,7 +208,7 @@ class Tunnel:
 
     def get_tunnel_names(self) -> str:
         """Get a comma-separated string of tunnel names."""
-        return ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
+        return ', '.join(tunnel['name'] for tunnel in self.tunnel_list)
 
     def terminate_processes(self) -> None:
         """Terminate all running subprocesses associated with the tunnels."""
@@ -247,8 +247,8 @@ class Tunnel:
     def start_tunnel_thread(self, tunnel: TunnelDict) -> None:
         """Start a new thread for the specified tunnel."""
         try:
-            cmd = tunnel["command"].format(port=self.port)
-            name = tunnel.get("name")
+            cmd = tunnel['command'].format(port=self.port)
+            name = tunnel.get('name')
             tunnel_thread = Thread(target=self._run, args=(cmd, name))
             tunnel_thread.start()
             self.jobs.append(tunnel_thread)
@@ -274,7 +274,7 @@ class Tunnel:
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.settimeout(1)
-                return s.connect_ex(("localhost", port)) == 0
+                return s.connect_ex(('localhost', port)) == 0
         except Exception:
             return False
 
@@ -308,15 +308,15 @@ class Tunnel:
 
     def extract_url(self, tunnel: TunnelDict, line: str) -> bool:
         """Extract a URL from a line of output based on the tunnel's regex pattern."""
-        regex = tunnel["pattern"]
+        regex = tunnel['pattern']
         matches = regex.search(line)
 
         if matches:
             link = matches.group().strip()
-            link = link if link.startswith("http") else "http://" + link
-            note = tunnel.get("note")
-            name = tunnel.get("name")
-            callback = tunnel.get("callback")
+            link = link if link.startswith('http') else 'http://' + link
+            note = tunnel.get('note')
+            name = tunnel.get('name')
+            callback = tunnel.get('callback')
 
             with self.urls_lock:
                 self.urls.append((link, note, name))
@@ -336,7 +336,7 @@ class Tunnel:
     def _run(self, cmd: str, name: str) -> None:
         """Run the specified command in a subprocess, monitoring its output."""
         log_path = self.log_dir / f"tunnel_{name}.log"
-        log_path.write_text("")  # Clear previous log file
+        log_path.write_text('')  # Clear previous log file
 
         log = self.logger.getChild(name)  # Create a child logger for this tunnel
         self.setup_file_logging(log, log_path)  # Set up file logging for this tunnel
@@ -364,7 +364,7 @@ class Tunnel:
     def setup_file_logging(self, log: logging.Logger, log_path: Path) -> None:
         """Set up file logging for the specified logger and log file path."""
         if not log.handlers:
-            handler = logging.FileHandler(log_path, encoding="utf-8")
+            handler = logging.FileHandler(log_path, encoding='utf-8')
             handler.setLevel(logging.DEBUG)
             handler.setFormatter(FileFormatter("[%(name)s]: %(message)s")) 
             log.addHandler(handler)
@@ -411,14 +411,14 @@ class Tunnel:
             tunnel_name_width = max(len(name) for _, _, name in self.urls) if self.urls else 6
 
             # Print the header
-            print("\n\033[32m+" + "=" * (width - 2) + "+\033[0m\n")
+            print("\n\033[32m+" + '=' * (width - 2) + "+\033[0m\n")
 
             # Print each URL
             for url, note, name in self.urls:
                 print(f"\033[32m 🔗 Tunnel \033[0m{name:<{tunnel_name_width}}  \033[32mURL: \033[0m{url} {note or ''}")
 
             # Print the footer
-            print("\n\033[32m+" + "=" * (width - 2) + "+\033[0m\n")
+            print("\n\033[32m+" + '=' * (width - 2) + "+\033[0m\n")
 
             if self.callback:
                 self.invoke_callback(self.callback, self.urls)

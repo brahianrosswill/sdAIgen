@@ -21,8 +21,8 @@ HOME = Path.home()
 SCR_PATH = Path(HOME / 'ANXETY')
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
-CAI_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.civitai_token') or "65b66176dcf284b266579de57fbdc024"
-HF_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.huggingface_token') or ""
+CAI_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.civitai_token') or '65b66176dcf284b266579de57fbdc024'
+HF_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.huggingface_token') or ''
 
 
 ## ====================== Download =======================
@@ -110,11 +110,11 @@ def handle_path_and_filename(parts, url):
 @handle_errors
 def download_file(url, filename, log):
     """Download a file from various sources."""
-    is_special_domain = any(domain in url for domain in ["civitai.com", "huggingface.co", "github.com"])
+    is_special_domain = any(domain in url for domain in ['civitai.com', 'huggingface.co', 'github.com'])
 
     if is_special_domain:
         download_with_aria2(url, filename, log)
-    elif "drive.google.com" in url:
+    elif 'drive.google.com' in url:
         download_google_drive(url, filename, log)
     else:
         """Download using curl."""
@@ -130,7 +130,7 @@ def download_with_aria2(url, filename, log):
         "--allow-overwrite=true --console-log-level=error --stderr=true "
         "-c -x16 -s16 -k1M -j5"
     )
-    if HF_TOKEN and "huggingface.co" in url:
+    if HF_TOKEN and 'huggingface.co' in url:
         aria2_args += f" --header='Authorization: Bearer {HF_TOKEN}'"
 
     command = f"{aria2_args} '{url}'"
@@ -144,17 +144,17 @@ def download_with_aria2(url, filename, log):
 
 def download_google_drive(url, filename, log):
     """Download from Google Drive using gdown."""
-    cmd = "gdown --fuzzy " + url
+    cmd = 'gdown --fuzzy ' + url
     if filename:
-        cmd += " -O " + filename
+        cmd += ' -O ' + filename
     if "drive.google.com/drive/folders" in url:
-        cmd += " --folder"
+        cmd += ' --folder'
 
     execute_shell_command(cmd, log)
 
 def get_file_name(url):
     """Get the file name based on the URL."""
-    if any(domain in url for domain in ["civitai.com", "drive.google.com"]):
+    if any(domain in url for domain in ['civitai.com', 'drive.google.com']):
         return None
     else:
         return Path(urlparse(url).path).name
@@ -172,7 +172,7 @@ def monitor_aria2_download(command, log):
     try:
         process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         error_codes, error_messages = [], []
-        result = ""
+        result = ''
         br = False
 
         while True:
@@ -213,8 +213,8 @@ def monitor_aria2_download(command, log):
 
 def format_output_line(line):
     """Format a line of output with ANSI color codes."""
-    line = re.sub(r'\[', "\033[35m【\033[0m", line)
-    line = re.sub(r'\]', "\033[35m】\033[0m", line)
+    line = re.sub(r'\[', '\033[35m【\033[0m', line)
+    line = re.sub(r'\]', '\033[35m】\033[0m', line)
     line = re.sub(r'(#)(\w+)', r'\1\033[32m\2\033[0m', line)
     line = re.sub(r'(\(\d+%\))', r'\033[36m\1\033[0m', line)
     line = re.sub(r'(CN:)(\d+)', r'\1\033[34m\2\033[0m', line)
@@ -236,26 +236,26 @@ def execute_shell_command(command, log):
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if log:
         for line in process.stderr:
-            print(line, end="")
+            print(line, end='')
     process.wait()
 
 @handle_errors
 def clean_url(url):
     """Clean and format URLs to ensure correct access."""
-    if "civitai.com/models/" in url:
+    if 'civitai.com/models/' in url:
         api = CivitAiAPI(CAI_TOKEN)
         if not (data := api.validate_download(url)):
             return
 
         url = data.download_url
 
-    elif "huggingface.co" in url:
+    elif 'huggingface.co' in url:
         if '/blob/' in url:
             url = url.replace('/blob/', '/resolve/')
         if '?' in url:
             url = url.split('?')[0]
 
-    elif "github.com" in url:
+    elif 'github.com' in url:
         if '/blob/' in url:
             url = url.replace('/blob/', '/raw/')
 
@@ -285,20 +285,20 @@ def process_input_source(input_source, log=False):
 
         # Extract base command and URL
         parts = shlex.split(line)
-        if len(parts) >= 2 and parts[0] == "git" and parts[1] == "clone":
+        if len(parts) >= 2 and parts[0] == 'git' and parts[1] == 'clone':
             base_command = parts
             url = next((p for p in parts[2:] if re.match(r"https?://", p)), None)
         else:
             url = line
-            base_command = ["git", "clone", url]
+            base_command = ['git', 'clone', url]
 
         if not url:
             log_message(f">> Skipping invalid command: {line}", log)
             return None
 
         # Add shallow clone parameters
-        if "--depth" not in base_command:
-            base_command += ["--depth", "1"]
+        if '--depth' not in base_command:
+            base_command += ['--depth', '1']
 
         return " ".join(base_command)
 
@@ -338,11 +338,11 @@ def execute_command(command, log=False):
             continue
 
         # Parse cloning progress
-        if "Cloning into" in output:
+        if 'Cloning into' in output:
             repo_path = re.search(r"'(.+?)'", output).group(1)
             repo_name = "/".join(repo_path.split("/")[-3:])
             log_message(f">> Cloning: {repo_name} -> {repo_url}", log)
 
         # Handle error messages
-        if "fatal" in output.lower():
+        if 'fatal' in output.lower():
             log_message(f">> \033[31m[Error]:\033[0m {output}", log)

@@ -42,13 +42,11 @@ py = 'python3'
 BIN = str(VENV / 'bin')
 PKG = str(VENV / 'lib/python3.10/site-packages')
 
-os.environ["PYTHONWARNINGS"] = "ignore"
-
 sys.path.insert(0, PKG)
-if BIN not in os.environ["PATH"]:
-    os.environ["PATH"] = BIN + ":" + os.environ["PATH"]
-if PKG not in os.environ["PYTHONPATH"]:
-    os.environ["PYTHONPATH"] = PKG + ":" + os.environ["PYTHONPATH"]
+if BIN not in os.environ['PATH']:
+    os.environ['PATH'] = BIN + ':' + os.environ['PATH']
+if PKG not in os.environ['PYTHONPATH']:
+    os.environ['PYTHONPATH'] = PKG + ':' + os.environ['PYTHONPATH']
 
 
 ## ================ loading settings V5 ==================
@@ -76,7 +74,7 @@ def parse_arguments():
     return parser.parse_args()
 
 def Trashing():
-    dirs = ["A1111", "ComfyUI", "Forge", "ReForge", "SD-UX"]
+    dirs = ['A1111', 'ComfyUI', 'Forge', 'ReForge', 'SD-UX']
     paths = [Path(HOME) / name for name in dirs]
 
     for path in paths:
@@ -86,11 +84,11 @@ def Trashing():
 def _update_config_paths():
     """Update configuration paths in WebUI config file"""
     config_mapping = {
-        "tagger_hf_cache_dir": f"{WEBUI}/models/interrogators/",
-        "ad_extra_models_dir": adetailer_dir,
-        "sd_checkpoint_hash": "",
-        "sd_model_checkpoint": "",
-        "sd_vae": "None"
+        'tagger_hf_cache_dir': f"{WEBUI}/models/interrogators/",
+        'ad_extra_models_dir': adetailer_dir,
+        'sd_checkpoint_hash': '',
+        'sd_model_checkpoint': '',
+        'sd_vae': 'None'
     }
 
     config_file = f"{WEBUI}/config.json"
@@ -103,23 +101,22 @@ def _update_config_paths():
 def get_launch_command(tunnel_port):
     """Construct launch command based on configuration"""
     base_args = commandline_arguments
-    password = 'ha4ez7147b5vdlu5u8f8flrllgn61kpbgbh6emil'
+    password = "ha4ez7147b5vdlu5u8f8flrllgn61kpbgbh6emil"
 
-    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark --share'
-    if ENV_NAME == "Kaggle":
+    common_args = " --enable-insecure-extension-access --disable-console-progressbars --theme dark --share"
+    if ENV_NAME == 'Kaggle':
         common_args += f' --encrypt-pass={password}'
 
-    # Accent Color For 'Anxety-Theme'
+    # Accent Color For Anxety-Theme
     if theme_accent != 'anxety':
-        common_args += f' --anxety {theme_accent}'
+        common_args += f" --anxety {theme_accent}"
 
     os.environ.setdefault('IIB_ACCESS_CONTROL', 'disable')
 
     if UI == 'ComfyUI':
-        return f'{py} main.py {base_args}'
+        return f"{py} main.py {base_args}"
     else:
-        # return f'COMMANDLINE_ARGS="{base_args}{common_args}" REQS_FILE="requirements_versions.txt" {py} launch.py'
-        return f'{py} launch.py {base_args}{common_args}'
+        return f"{py} launch.py {base_args}{common_args}"
 
 ## ===================== Tunneling =======================
 
@@ -143,7 +140,7 @@ class TunnelManager:
         try:
             response = requests.get('https://api64.ipify.org?format=json&ipv4=true', timeout=5)
             public_ip = response.json().get('ip', 'N/A')
-            js.update(SETTINGS_PATH, "ENVIRONMENT.public_ip", public_ip)
+            js.update(SETTINGS_PATH, 'ENVIRONMENT.public_ip', public_ip)
             return public_ip
         except Exception as e:
             print(f"Error getting public IP address: {e}")
@@ -162,7 +159,7 @@ class TunnelManager:
         await self.checking_queue.put(name)
         try:
             process = await asyncio.create_subprocess_exec(
-                *shlex.split(config["command"]),
+                *shlex.split(config['command']),
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.STDOUT
             )
@@ -184,7 +181,7 @@ class TunnelManager:
                     line = line.decode().strip()
                     output.append(line)
 
-                    if config["pattern"].search(line):
+                    if config['pattern'].search(line):
                         pattern_found = True
                         break
 
@@ -201,7 +198,7 @@ class TunnelManager:
             if pattern_found:
                 return True, None
 
-            error_msg = "\n".join(output[-3:]) or "No output received"
+            error_msg = "\n".join(output[-3:]) or 'No output received'
             return False, f"{error_msg[:300]}..."
 
         except Exception as e:
@@ -211,21 +208,21 @@ class TunnelManager:
         """Async tunnel configuration"""
         services = [
             ('Serveo', {
-                "command": f"ssh -o StrictHostKeyChecking=no -R 80:localhost:{self.tunnel_port} serveo.net",
-                "pattern": re.compile(r"[\w-]+\.serveo\.net")
+                'command': f"ssh -o StrictHostKeyChecking=no -R 80:localhost:{self.tunnel_port} serveo.net",
+                'pattern': re.compile(r"[\w-]+\.serveo\.net")
             }),
             ('Pinggy', {
-                "command": f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{self.tunnel_port} a.pinggy.io",
-                "pattern": re.compile(r"[\w-]+\.a\.free\.pinggy\.link")
+                'command': f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{self.tunnel_port} a.pinggy.io",
+                'pattern': re.compile(r"[\w-]+\.a\.free\.pinggy\.link")
             }),
             ('Cloudflared', {
-                "command": f"cl tunnel --url localhost:{self.tunnel_port}",
-                "pattern": re.compile(r"[\w-]+\.trycloudflare\.com")
+                'command': f"cl tunnel --url localhost:{self.tunnel_port}",
+                'pattern': re.compile(r"[\w-]+\.trycloudflare\.com")
             }),
             ('Localtunnel', {
-                "command": f"lt --port {self.tunnel_port}",
-                "pattern": re.compile(r"[\w-]+\.loca\.lt"),
-                "note": f"Password: \033[32m{self.public_ip}\033[0m"
+                'command': f"lt --port {self.tunnel_port}",
+                'pattern': re.compile(r"[\w-]+\.loca\.lt"),
+                'note': f"Password: \033[32m{self.public_ip}\033[0m"
             })
         ]
 
@@ -242,8 +239,8 @@ class TunnelManager:
                 ipySys(f'zrok enable {zrok_token} &> /dev/null')
 
             services.append(('Zrok', {
-                "command": f"zrok share public http://localhost:{self.tunnel_port}/ --headless",
-                "pattern": re.compile(r"[\w-]+\.share\.zrok\.io")
+                'command': f"zrok share public http://localhost:{self.tunnel_port}/ --headless",
+                'pattern': re.compile(r"[\w-]+\.share\.zrok\.io")
             }))
 
         if ngrok_token:
@@ -258,8 +255,8 @@ class TunnelManager:
                 ipySys(f'ngrok config add-authtoken {ngrok_token}')
 
             services.append(('Ngrok', {
-                "command": f"ngrok http http://localhost:{self.tunnel_port} --log stdout",
-                "pattern": re.compile(r"https://[\w-]+\.ngrok-free\.app")
+                'command': f"ngrok http http://localhost:{self.tunnel_port} --log stdout",
+                'pattern': re.compile(r"https://[\w-]+\.ngrok-free\.app")
             }))
 
         # Create status printer task
@@ -282,9 +279,9 @@ class TunnelManager:
         # Process results
         for (name, config), (success, error) in zip(services, results):
             if success:
-                self.tunnels.append({**config, "name": name})
+                self.tunnels.append({**config, 'name': name})
             else:
-                self.error_reasons.append({"name": name, "reason": error})
+                self.error_reasons.append({'name': name, 'reason': error})
 
         return (
             self.tunnels,
@@ -298,10 +295,12 @@ class TunnelManager:
 import nest_asyncio
 nest_asyncio.apply()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     """Main execution flow"""
     args = parse_arguments()
     print('Please Wait...\n')
+
+    os.environ['PYTHONWARNINGS'] = 'ignore'
 
     # Initialize tunnel manager and services
     tunnel_port = 8188 if UI == 'ComfyUI' else 7860
