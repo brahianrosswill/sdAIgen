@@ -23,6 +23,7 @@ widgets_css = CSS / 'download-result.css'
 
 
 ## ================= loading settings V5 =================
+
 def load_settings(path):
     """Load settings from a JSON file."""
     try:

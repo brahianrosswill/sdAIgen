@@ -39,17 +39,18 @@ WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 py = 'python3'
 
 
-BIN = str(VENV / 'bin')
-PKG = str(VENV / 'lib/python3.10/site-packages')
+# BIN = str(VENV / 'bin')
+# PKG = str(VENV / 'lib/python3.10/site-packages')
 
-sys.path.insert(0, PKG)
-if BIN not in os.environ['PATH']:
-    os.environ['PATH'] = BIN + ':' + os.environ['PATH']
-if PKG not in os.environ['PYTHONPATH']:
-    os.environ['PYTHONPATH'] = PKG + ':' + os.environ['PYTHONPATH']
+# sys.path.insert(0, PKG)
+# if BIN not in os.environ['PATH']:
+#     os.environ['PATH'] = BIN + ':' + os.environ['PATH']
+# if PKG not in os.environ['PYTHONPATH']:
+#     os.environ['PYTHONPATH'] = PKG + ':' + os.environ['PYTHONPATH']
 
 
 ## ================ loading settings V5 ==================
+
 def load_settings(path):
     """Load settings from a JSON file."""
     try:
