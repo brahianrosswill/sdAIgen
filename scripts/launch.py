@@ -34,19 +34,14 @@ ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
-# USER VENV | python
-# py = Path(VENV) / 'bin/python3'
-py = 'python3'
 
+BIN = str(VENV / 'bin')
+PKG = str(VENV / 'lib/python3.10/site-packages')
 
-# BIN = str(VENV / 'bin')
-# PKG = str(VENV / 'lib/python3.10/site-packages')
-
-# sys.path.insert(0, PKG)
-# if BIN not in os.environ['PATH']:
-#     os.environ['PATH'] = BIN + ':' + os.environ['PATH']
-# if PKG not in os.environ['PYTHONPATH']:
-#     os.environ['PYTHONPATH'] = PKG + ':' + os.environ['PYTHONPATH']
+if BIN not in os.environ['PATH']:
+    os.environ['PATH'] = BIN + ':' + os.environ['PATH']
+if PKG not in os.environ['PYTHONPATH']:
+    os.environ['PYTHONPATH'] = PKG + ':' + os.environ['PYTHONPATH']
 
 
 ## ================ loading settings V5 ==================
@@ -74,7 +69,7 @@ def parse_arguments():
     parser.add_argument('-l', '--log', action='store_true', help='Show failed tunnel details')
     return parser.parse_args()
 
-def Trashing():
+def _trashing():
     dirs = ['A1111', 'ComfyUI', 'Forge', 'ReForge', 'SD-UX']
     paths = [Path(HOME) / name for name in dirs]
 
@@ -99,7 +94,7 @@ def _update_config_paths():
         else:
             js.save(config_file, key, str(value))
 
-def get_launch_command(tunnel_port):
+def get_launch_command():
     """Construct launch command based on configuration"""
     base_args = commandline_arguments
     password = 'ha4ez7147b5vdlu5u8f8flrllgn61kpbgbh6emil'
@@ -115,9 +110,9 @@ def get_launch_command(tunnel_port):
     os.environ.setdefault('IIB_ACCESS_CONTROL', 'disable')
 
     if UI == 'ComfyUI':
-        return f"{py} main.py {base_args}"
+        return f"python3 main.py {base_args}"
     else:
-        return f"{py} launch.py {base_args}{common_args}"
+        return f"python3 launch.py {base_args}{common_args}"
 
 ## ===================== Tunneling =======================
 
@@ -322,9 +317,9 @@ if __name__ == '__main__':
     clear_output(wait=True)
 
     # Launch sequence
-    Trashing()
+    _trashing()
     _update_config_paths()
-    LAUNCHER = get_launch_command(tunnel_port)
+    LAUNCHER = get_launch_command()
 
     # Setup pinggy timer
     ipySys(f"echo -n {int(time.time())+(3600+20)} > {WEBUI}/static/timer-pinggy.txt")
@@ -335,7 +330,7 @@ if __name__ == '__main__':
         if UI == 'ComfyUI':
             COMFYUI_SETTINGS_PATH = SCR_PATH / 'ComfyUI.json'
             if check_custom_nodes_deps:
-                ipySys(f"{py} install-deps.py")
+                ipySys('python3 install-deps.py')
                 clear_output(wait=True)
 
             if not js.key_exists(COMFYUI_SETTINGS_PATH, 'install_req', True):

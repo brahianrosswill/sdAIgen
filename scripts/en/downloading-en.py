@@ -47,9 +47,10 @@ def install_dependencies(commands):
     for cmd in commands:
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def setup_venv(url):
+def setup_venv():
     """Customize the virtual environment using the specified URL."""
     CD(HOME)
+    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31015-venv-torch251-cu121-C-fca.tar.lz4"
     fn = Path(url).name
 
     m_download(f"{url} {HOME} {fn}")
@@ -110,26 +111,9 @@ if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
 current_ui = js.read(SETTINGS_PATH, 'WEBUI.current')
 latest_ui = js.read(SETTINGS_PATH, 'WEBUI.latest')
 
-# Determine whether to reinstall venv
-venv_needs_reinstall = (
-    not VENV.exists()  # venv is missing
-    # Check category change (ReForge <-> other)
-    or (latest_ui == 'ReForge') != (current_ui == 'ReForge')
-)
-
-if venv_needs_reinstall:
-    if VENV.exists():
-        print('🗑️ Removing old venv...')
-        shutil.rmtree(VENV)
-        clear_output()
-
-    if current_ui == 'ReForge':
-        venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python310-venv-torch251-cu121-C-ReForge.tar.lz4"
-    else:
-        venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python310-venv-torch251-cu121-C-fca.tar.lz4"
-
-    print(f"♻️ Installing {'ReForge VENV' if UI == 'ReForge' else 'VENV'}, this will take some time...")
-    setup_venv(venv_url)
+if not os.path.exists(VENV):
+    print('♻️ Installing VENV, this will take some time...')
+    setup_venv()
     clear_output()
 
 ## ================ loading settings V5 ==================
@@ -201,7 +185,7 @@ if latest_webui or latest_extensions:
             # ipySys('git restore .')
             # ipySys('git pull -X theirs --rebase --autostash')
 
-            ipySys('git stash')
+            ipySys('git stash push --include-untracked')
             ipySys('git pull --rebase')
             ipySys('git stash pop')
 
