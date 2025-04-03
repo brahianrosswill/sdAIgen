@@ -125,7 +125,7 @@ class TunnelManager:
         self.error_reasons = []
         self.public_ip = self._get_public_ip()
         self.checking_queue = asyncio.Queue()
-        self.timeout = 5
+        self.timeout = 10
 
     def _get_public_ip(self) -> str:
         """Retrieve and cache public IPv4 address"""

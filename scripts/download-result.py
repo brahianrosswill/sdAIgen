@@ -44,7 +44,7 @@ locals().update(settings)
 
 HR = widgets.HTML('<hr class="divider-line">')
 HEADER_DL = 'DOWNLOAD RESULTS'
-VERSION = 'v0.55'
+VERSION = 'v0.58'
 
 factory = WidgetFactory()
 

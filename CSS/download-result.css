@@ -101,7 +101,8 @@
     overflow: visible;
 }
 .output-section {
-    flex: 1 1 auto;
+    /* flex: 1 1 auto; */
+    flex: 1 auto;
     min-width: min-content;
     background-color: var(--aw-output-section-bg);
     padding: 10px 15px;
