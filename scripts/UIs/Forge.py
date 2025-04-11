@@ -80,13 +80,15 @@ async def download_configuration():
         'https://github.com/anxety-solo/anxety-theme',
         'https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus',
 
-        ## OTHER | ON
+        ## Gutris1
         'https://github.com/gutris1/sd-image-viewer Image-Viewer',
         'https://github.com/gutris1/sd-image-info Image-Info',
         'https://github.com/gutris1/sd-hub SD-Hub',
 
+        ## OTHER | ON
+        'https://github.com/Bing-su/adetailer',
+
         ## OTHER | OFF
-        # 'https://github.com/Bing-su/adetailer Adetailer',
         # 'https://github.com/thomasasfk/sd-webui-aspect-ratio-helper Aspect-Ratio-Helper',
         # 'https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing',
         # 'https://github.com/ilian6806/stable-diffusion-webui-state State',

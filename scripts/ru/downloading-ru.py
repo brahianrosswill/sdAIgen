@@ -50,7 +50,7 @@ def install_dependencies(commands):
 def setup_venv():
     """Customize the virtual environment using the specified URL."""
     CD(HOME)
-    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31015-venv-torch251-cu121-C-fca.tar.lz4"
+    url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31017-venv-torch251-cu121-C-fca.tar.lz4"
     fn = Path(url).name
 
     m_download(f"{url} {HOME} {fn}")
