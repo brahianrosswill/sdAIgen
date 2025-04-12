@@ -125,13 +125,10 @@ def download_file(url, filename, log):
 
 def download_with_aria2(url, filename, log):
     """Download using aria2c."""
-    aria2_args = (
-        "aria2c --header='User-Agent: Mozilla/5.0' "
-        "--allow-overwrite=true --console-log-level=error --stderr=true "
-        "-c -x16 -s16 -k1M -j5"
-    )
+    aria2_args = ('aria2c --header="User-Agent: Mozilla/5.0" --allow-overwrite=true --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5')
+
     if HF_TOKEN and 'huggingface.co' in url:
-        aria2_args += f" --header='Authorization: Bearer {HF_TOKEN}'"
+        aria2_args += f' --header="Authorization: Bearer {HF_TOKEN}"'
 
     command = f"{aria2_args} '{url}'"
 
