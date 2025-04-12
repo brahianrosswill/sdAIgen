@@ -195,8 +195,8 @@ if latest_webui or latest_extensions:
             for entry in os.listdir(f"{WEBUI}/extensions"):
                 dir_path = f"{WEBUI}/extensions/{entry}"
                 if os.path.isdir(dir_path):
-                    subprocess.run(['git', 'reset', '--hard'], cwd=dir_path, check=True)
-                    subprocess.run(['git', 'pull'], cwd=dir_path, check=True)
+                    subprocess.run(['git', 'reset', '--hard'], cwd=dir_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    subprocess.run(['git', 'pull'], cwd=dir_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     print(f"\r✨ Update {action} Completed!")
 
