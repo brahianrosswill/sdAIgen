@@ -1,7 +1,10 @@
 {
+    "Comfy.TutorialCompleted": true,
     "Comfy.Locale": "en",
     "Comfy.Sidebar.Size": "small",
     "Comfy.ColorPalette": "comfy-anxety",
+    "Comfy.Graph.LinkMarkers": 2,
+    "Comfy.NodeSuggestions.number": 10,
     "Comfy.CustomColorPalettes": {
         "comfy-anxety": {
             "id": "comfy-anxety",
@@ -73,7 +76,6 @@
             }
         }
     },
-    "Comfy.TutorialCompleted": true,
     "pysssss.ModelInfo.NsfwLevel": "PG",
     "pysssss.ImageFeed.Location": "hidden"
 }

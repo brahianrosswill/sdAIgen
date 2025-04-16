@@ -1,17 +1,20 @@
 ## MODEL
 
 model_list = {
-    "1. Nova IL [Anime] [V5.5] [XL]": [
+    "1. Hassaku-XL [Anime] [V2.1] [XL]": [
+        {'url': "https://civitai.com/api/download/models/1617798", 'name': "HassakuXL-illustrious_V21.safetensors"}
+    ],
+    "2. Nova IL [Anime] [V5.5] [XL]": [
         {'url': "https://civitai.com/api/download/models/1500882", 'name': "NovaIL_V55.safetensors"}
     ],
-    "2. NoobAI [Anime] [VP-1.0] [XL]": [
+    "3. NoobAI [Anime] [VP-1.0] [XL]": [
         {'url': "https://civitai.com/api/download/models/1190596", 'name': "NoobAI_VP1.safetensors"}
     ],
-    "3. WAI-illustrious [Anime] [V13] [XL]": [
-        {'url': "https://civitai.com/api/download/models/1612720", 'name': "WAI-illustrious_V13.safetensors"}
+    "4. WAI-illustrious [Anime] [V12] [XL]": [
+        {'url': "https://civitai.com/api/download/models/1490781", 'name': "WAI-illustrious_V12.safetensors"}
     ],
-    "4. Hassaku-XL [Anime] [V2.1] [XL]": [
-        {'url': "https://civitai.com/api/download/models/1617798", 'name': "HassakuXL-illustrious_V21.safetensors"}
+    "5. WAI-illustrious [Anime] [V13] [XL]": [
+        {'url': "https://civitai.com/api/download/models/1612720", 'name': "WAI-illustrious_V13.safetensors"}
     ]
 }
 
