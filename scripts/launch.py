@@ -328,6 +328,7 @@ if __name__ == '__main__':
         CD(WEBUI)
 
         if UI == 'ComfyUI':
+            COMFYUI_SETTINGS_PATH = SCR_PATH / 'ComfyUI.json'
             if check_custom_nodes_deps:
                 ipySys('python3 install-deps.py')
                 clear_output(wait=True)
