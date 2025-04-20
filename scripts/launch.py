@@ -333,11 +333,11 @@ if __name__ == '__main__':
                 ipySys('python3 install-deps.py')
                 clear_output(wait=True)
 
-            # if not js.key_exists(COMFYUI_SETTINGS_PATH, 'install_req', True):
-            #     print('Installing ComfyUI dependencies...')
-            #     subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            #     js.save(COMFYUI_SETTINGS_PATH, 'install_req', True)
-            #     clear_output(wait=True)
+            if not js.key_exists(COMFYUI_SETTINGS_PATH, 'install_req', True):
+                print('Installing ComfyUI dependencies...')
+                subprocess.run(['pip', 'install', '-r', 'requirements.txt'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                js.save(COMFYUI_SETTINGS_PATH, 'install_req', True)
+                clear_output(wait=True)
 
         print(f"\033[34m>> Total Tunnels:\033[0m {total} | \033[32mSuccess:\033[0m {success} | \033[31mErrors:\033[0m {errors}\n")
 
