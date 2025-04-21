@@ -45,7 +45,10 @@ WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 def install_dependencies(commands):
     """Run a list of installation commands."""
     for cmd in commands:
-        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
 
 def setup_venv():
     """Customize the virtual environment using the specified URL."""
@@ -85,9 +88,12 @@ def install_packages(install_lib):
     """Install packages from the provided library dictionary."""
     for index, (package, install_cmd) in enumerate(install_lib.items(), start=1):
         print(f"\r[{index}/{len(install_lib)}] \033[32m>>\033[0m Installing \033[33m{package}\033[0m..." + ' ' * 35, end='')
-        result = subprocess.run(install_cmd, shell=True, capture_output=True)
-        if result.returncode != 0:
-            print(f"\n\033[31mError installing {package}: {result.stderr.decode()}\033[0m")
+        try:
+            result = subprocess.run(install_cmd, shell=True, capture_output=True)
+            if result.returncode != 0:
+                print(f"\n\033[31mError installing {package}\033[0m")
+        except Exception:
+            pass
 
 # Check and install dependencies
 if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
@@ -106,10 +112,6 @@ if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
     install_packages(install_lib)
     clear_output()
     js.update(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
-
-# Check and setup virtual environment
-current_ui = js.read(SETTINGS_PATH, 'WEBUI.current')
-latest_ui = js.read(SETTINGS_PATH, 'WEBUI.latest')
 
 if not os.path.exists(VENV):
     print('♻️ Installing VENV, this will take some time...')
