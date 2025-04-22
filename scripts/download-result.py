@@ -71,7 +71,7 @@ def get_all_files_list(directory, extensions, excluded_dirs=[]):
         return []
 
     files_list = []
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(directory, followlinks=True):
         # Exclude specified directories
         dirs[:] = [d for d in dirs if d not in excluded_dirs]
 

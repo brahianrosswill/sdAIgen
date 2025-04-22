@@ -81,6 +81,14 @@ a {
     text-decoration: none;
 }
 
+ *,
+ *::before,
+ *::after {
+   box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+ }
+
 
 /* Special fixes for IpyWidgets */
 /* Fix Vertical Centering */
@@ -215,6 +223,35 @@ a {
 }
 .container_cdl.expanded {
     height: 305px;
+}
+
+/* GDrive Button | Ебать костыли :3 */
+.gdrive-btn {
+    align-self: flex-start;
+    min-width: 48px;
+    min-height: 48px;
+    margin: 0 15px !important;
+    padding: 0 !important;
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg');
+    background-color: var(--aw-container-bg);
+    border: var(--aw-container-border);
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.35), inset 0 0 10px rgba(0, 0, 0, 0.3) !important;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.15s ease;
+}
+.gdrive-btn.active {
+    background-color: #006d33;
+    border-color: #00d062;
+    transform: scale(0.9) !important;
+}
+
+.gdrive-btn.hidden {
+  display: none;
 }
 
 
@@ -425,11 +462,13 @@ a {
 /* Animation of elements */
 
 .container,
+.gdrive-btn,
 .button_save {
     animation: showedWidgets 0.8s forwards ease;
 }
 
 .container.hide,
+.gdrive-btn.hide, /* WIP! */
 .button_save.hide {
     animation: hideWidgets 0.5s forwards ease;
 }
