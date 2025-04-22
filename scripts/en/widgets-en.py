@@ -174,26 +174,29 @@ save_button = factory.create_button('Save', class_names=['button', 'button_save'
 
 ## ============ MODULE | GDrive Toggle Button ============
 """Create Google Drive toggle button for Colab only."""
-GD_status = js.read(SETTINGS_PATH, 'mountGDrive') or False
+from pathlib import Path
 
-GDrive_button = factory.create_button('', layout={'width': '48px', 'height': '48px'},
-                                      class_names=['gdrive-btn'])
-GDrive_button.tooltip = "Mount Google Drive storage"
+TOOLTIPS = ("Unmount Google Drive storage", "Mount Google Drive storage")
+BTN_STYLE = {'width': '48px', 'height': '48px'}
+
+GD_status = js.read(SETTINGS_PATH, 'mountGDrive') or False
+GDrive_button = factory.create_button('', layout=BTN_STYLE, class_names=['gdrive-btn'])
+
+# Init
+GDrive_button.tooltip = TOOLTIPS[0] if GD_status else TOOLTIPS[1]
 
 if ENV_NAME == 'Google Colab':
-    GDrive_button.toggle = (GD_status == True)
+    GDrive_button.toggle = GD_status
     if GDrive_button.toggle:
         GDrive_button.add_class('active')
 
-    def toggle_gdrive(btn):
+    def handle_toggle(btn):
+        """Toggle Google Drive button state"""
         btn.toggle = not btn.toggle
-        if btn.toggle:
-            btn.add_class('active')
-        else:
-            btn.remove_class('active')
+        btn.tooltip = TOOLTIPS[0] if btn.toggle else TOOLTIPS[1]
+        btn.add_class('active') if btn.toggle else btn.remove_class('active')
 
-    GDrive_button.on_click(toggle_gdrive)
-    # factory.display(GDrive_button)
+    GDrive_button.on_click(handle_toggle)
 else:
     GDrive_button.add_class('hidden')   # Hide GD-btn if ENV is not Colab
 
@@ -306,7 +309,7 @@ factory.connect_widgets([(change_webui_widget, 'value')], update_change_webui)
 factory.connect_widgets([(XL_models_widget, 'value')], update_XL_options)
 factory.connect_widgets([(empowerment_widget, 'value')], update_empowerment)
 
-## ============== Load / Save - Settings V3 ==============
+## ============== Load / Save - Settings V4 ==============
 
 SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',
@@ -327,7 +330,7 @@ def save_settings():
     # Save Status GDrive-btn
     js.save(SETTINGS_PATH, 'mountGDrive', True if GDrive_button.toggle else False)
 
-    update_current_webui(change_webui_widget.value)  # Upadte Selected WebUI in setting.json
+    update_current_webui(change_webui_widget.value)  # Update Selected WebUI in setting.json
 
 def load_settings():
     """Load widget values from settings."""
