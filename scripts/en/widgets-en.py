@@ -351,7 +351,9 @@ def load_settings():
 def save_data(button):
     """Handle save button click."""
     save_settings()
-    factory.close(list(WIDGET_LIST.children), class_names=['hide'], delay=0.8)
+    # factory.close(list(WIDGET_LIST.children), class_names=['hide'], delay=0.8)
+    all_widgets = [model_content, vae_box, additional_box, custom_download_box, save_button, GDrive_button]
+    factory.close(all_widgets, class_names=['hide'], delay=0.8)
 
 load_settings()
 save_button.on_click(save_data)

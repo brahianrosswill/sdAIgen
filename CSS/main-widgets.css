@@ -192,7 +192,7 @@ a {
 .mainContainer {
     padding: 5px;
     gap: 5px;
-    /* overflow: hidden; */
+    overflow: hidden;
 }
 
 .container {
@@ -468,7 +468,7 @@ a {
 }
 
 .container.hide,
-.gdrive-btn.hide, /* WIP! */
+.gdrive-btn.hide,
 .button_save.hide {
     animation: hideWidgets 0.5s forwards ease;
 }
