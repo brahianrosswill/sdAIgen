@@ -81,13 +81,6 @@ a {
     text-decoration: none;
 }
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box !important;
-    overflow: visible !important;
-}
-
 
 /* Special fixes for IpyWidgets */
 /* Fix Vertical Centering */
@@ -188,6 +181,10 @@ a {
 
 /* Container style */
 
+.mainContainer * { /* Fix For Containers Shadow */
+  overflow: visible !important;
+}
+
 .mainContainer {
     padding: 5px;
     gap: 5px;
@@ -223,12 +220,13 @@ a {
     height: 305px;
 }
 
-/* GDrive Button | Ебать костыли :3 */
+/* GDrive Button */
 .gdrive-btn {
     align-self: flex-start;
     min-width: 48px;
     min-height: 48px;
-    margin: 0 15px !important;
+    margin: 0 !important;
+    margin-left: 15px !important; /* SPACE */
     padding: 0 !important;
     background-size: 70%;
     background-position: center;
