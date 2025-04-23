@@ -81,13 +81,12 @@ a {
     text-decoration: none;
 }
 
- *,
- *::before,
- *::after {
-   box-sizing: border-box;
-   margin: 0;
-   padding: 0;
- }
+*,
+*::before,
+*::after {
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
 
 
 /* Special fixes for IpyWidgets */
@@ -202,7 +201,7 @@ a {
     border: var(--aw-container-border);
     border-radius: 16px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.35), inset 0 0 10px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
+    overflow: hidden !important;
 }
 .container::after {
     position: absolute;

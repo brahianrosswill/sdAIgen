@@ -330,7 +330,7 @@ def save_settings():
     # Save Status GDrive-btn
     js.save(SETTINGS_PATH, 'mountGDrive', True if GDrive_button.toggle else False)
 
-    update_current_webui(change_webui_widget.value)  # Upadte Selected WebUI in setting.json
+    update_current_webui(change_webui_widget.value)  # Update Selected WebUI in setting.json
 
 def load_settings():
     """Load widget values from settings."""
