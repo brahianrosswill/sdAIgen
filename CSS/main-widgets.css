@@ -184,7 +184,6 @@ a {
 .mainContainer * { /* Fix For Containers Shadow */
   overflow: visible !important;
 }
-
 .mainContainer {
     padding: 5px;
     gap: 5px;
@@ -244,10 +243,6 @@ a {
     background-color: #006d33;
     border-color: #00d062;
     transform: scale(0.9) !important;
-}
-
-.gdrive-btn.hidden {
-  display: none;
 }
 
 
