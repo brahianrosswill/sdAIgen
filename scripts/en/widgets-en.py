@@ -226,7 +226,7 @@ custom_download_widgets = [
 # Create Boxes
 # model_box = factory.create_vbox(model_widgets, class_names=['container'])
 model_content = factory.create_vbox(model_widgets, class_names=['container'])   # With GD-btn :#
-model_box = factory.create_hbox([model_content, GDrive_button])
+model_box = factory.create_hbox([model_content, GDrive_button], layout={'width': '1200px'})   # fix layout width...
 
 vae_box = factory.create_vbox(vae_widgets, class_names=['container'])
 additional_box = factory.create_vbox(additional_widgets, class_names=['container'])
