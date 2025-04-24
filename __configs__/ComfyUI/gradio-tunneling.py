@@ -190,7 +190,7 @@ def main():
 
         # Keep alive with interrupt handling
         while True:
-            time.sleep(3600)
+            time.sleep(3600 * 24 * 3)
     except KeyboardInterrupt:
         logger.info("Interrupt received. Exiting...")
     except Exception as e:
