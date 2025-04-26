@@ -12,6 +12,7 @@ parser.add_argument("-f", action="store_true", help=argparse.SUPPRESS)  # allows
 
 # ANXETY
 parser.add_argument("--hypernetwork-dir", type=normalized_filepath, default=os.path.join(models_path, 'hypernetworks'), help="hypernetwork directory")
+parser.add_argument("--lyco-dir-backcompat", type=str, default=os.path.join(models_path, 'Lora'), help="Backward compatibility option for LyCO models directory")
 
 
 parser.add_argument("--update-all-extensions", action="store_true", help="launch.py argument: download updates for all extensions when starting the program")

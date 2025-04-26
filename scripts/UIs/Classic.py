@@ -69,7 +69,7 @@ async def download_configuration():
         f"{url_cfg}/user.css",
         # other
         f"{url_cfg}/card-no-preview.png, {WEBUI}/html",
-        f"{url_cfg}/notification.mp3"
+        f"{url_cfg}/notification.mp3",
         
         # module
         f"{url_cfg}/{UI}/modules/cmd_args.py, {WEBUI}/modules",
@@ -97,11 +97,11 @@ async def download_configuration():
         'https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing',
         'https://github.com/ilian6806/stable-diffusion-webui-state State',
         'https://github.com/hako-mikan/sd-webui-supermerger Supermerger',
-        'https://github.com/DominikDoom/a1111-sd-webui-tagcomplete TagComplete',
         'https://github.com/Tsukreya/Umi-AI-Wildcards',
         
         ## NOT WORKING WITHOUT 'danbooru' MODULE... (and BACKEND)
         # 'https://github.com/picobyte/stable-diffusion-webui-wd14-tagger wd14-tagger'
+        # 'https://github.com/DominikDoom/a1111-sd-webui-tagcomplete TagComplete'
     ]
     if ENV_NAME == 'Kaggle':
         extensions_list.append('https://github.com/gutris1/sd-encrypt-image Encrypt-Image')
