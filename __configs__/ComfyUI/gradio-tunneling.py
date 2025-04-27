@@ -1,18 +1,18 @@
-import argparse
-import atexit
-import logging
-import os
-import platform
-import re
-import secrets
-import stat
-import subprocess
-import sys
-import time
-from pathlib import Path
 from typing import List, Optional, Tuple
-
+from pathlib import Path
+import subprocess
+import platform
+import argparse
 import requests
+import logging
+import secrets
+import atexit
+import stat
+import time
+import sys
+import os
+import re
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
