@@ -1,6 +1,6 @@
 # ~ setup.py | by ANXETY ~
 
-from IPython.display import clear_output
+from IPython.display import display, HTML, clear_output
 from urllib.parse import urljoin
 from pathlib import Path
 from tqdm import tqdm
@@ -79,7 +79,7 @@ def display_info(env, scr_folder, branch):
         <span>{config['icon']}</span>
       </div>
 
-      <div id="message-container">
+      <div class="message-container">
         <span>Готово! Теперь вы можете запустить ячейки ниже. ☄️</span>
         <span>Среда выполнения: <span class="env">{env}</span></span>
         <span>Расположение файлов: <span class="files-location">{scr_folder}</span></span>
@@ -102,6 +102,12 @@ def display_info(env, scr_folder, branch):
       min-height: 200px;
       background: {config['bg']};
       border-top: 2px solid {config['primary']};
+      animation: fadeIn 0.5s ease-in !important;
+    }}
+
+    @keyframes fadeIn {{
+      from {{ opacity: 0; }}
+      to {{ opacity: 1; }}
     }}
 
     .text-container {{
@@ -184,32 +190,39 @@ def display_info(env, scr_folder, branch):
         const snowflake = document.createElement('div');
         snowflake.className = 'snowflake';
 
+        // Set random size between 3px and 8px
         const size = Math.random() * 5 + 3;
         snowflake.style.width = `${size}px`;
         snowflake.style.height = `${size}px`;
 
+        // Position horizontally within container, start above view
         const containerRect = container.getBoundingClientRect();
         snowflake.style.left = `${Math.random() * (containerRect.width - size)}px`;
         snowflake.style.top = `-${size}px`;
 
+        // Set random opacity between 0.1 and 0.5
         const opacity = Math.random() * 0.4 + 0.1;
         snowflake.style.opacity = opacity;
 
-        const angle = (Math.random() * 50 - 25) * (Math.PI / 180);
-        const horizontal = Math.sin(angle) * (containerRect.height / 2);
-        const vertical = Math.cos(angle) * (containerRect.height + 10);
+        // Calculate movement parameters
+        const angle = (Math.random() * 50 - 25) * (Math.PI / 180); // -25° to +25° in radians
+        const horizontal = Math.sin(angle) * (containerRect.height / 2); // Original height-based calculation
+        const vertical = Math.cos(angle) * (containerRect.height + 10); // Vertical distance with overshoot
 
-        snowflake.animate([
+        // Create and handle animation
+        const animation = snowflake.animate([
           { transform: `translate(0, 0)`, opacity: 1 },
           { transform: `translate(${horizontal}px, ${vertical}px)`, opacity: 0 }
         ], {
-          duration: (Math.random() * 3 + 2) * 1000,
+          duration: (Math.random() * 3 + 2) * 1000, // 2-5 seconds
           easing: 'linear',
           fill: 'forwards'
         });
 
+        // Cleanup after animation
+        animation.onfinish = () => snowflake.remove();
+
         container.appendChild(snowflake);
-        setTimeout(() => snowflake.remove(), 5000);
       }
 
       clearSnowflakes();
@@ -284,6 +297,25 @@ def get_start_timer():
     return int(time.time() - 5)
 
 
+## ======================= MODULES =======================
+
+def clear_module_cache(modules_folder):
+    """Clear the module cache for modules in the specified folder."""
+    for module_name in list(sys.modules.keys()):
+        module = sys.modules[module_name]
+        if hasattr(module, '__file__') and module.__file__ and module.__file__.startswith(str(modules_folder)):
+            del sys.modules[module_name]
+    importlib.invalidate_caches()
+
+def setup_module_folder(scr_folder):
+    """Set up the module folder by clearing the cache and adding it to sys.path."""
+    clear_module_cache(scr_folder)
+    modules_folder = scr_folder / 'modules'
+    modules_folder.mkdir(parents=True, exist_ok=True)
+    if str(modules_folder) not in sys.path:
+        sys.path.append(str(modules_folder))
+
+
 # ===================== ENVIRONMENT SETUP =====================
 
 def detect_environment():
@@ -309,8 +341,7 @@ def create_environment_data(env, scr_folder, lang, fork_user, fork_repo, branch)
     return {
         'ENVIRONMENT': {
             'lang': lang,
-            'fork_user': fork_user,
-            'fork_repo': fork_repo,
+            'fork': f"{fork_user}/{fork_repo}",
             'branch': branch,
             'env_name': env,
             'install_deps': install_deps,
@@ -394,6 +425,8 @@ async def main_async(args=None):
 
     if not args.skip_download:
         await download_files_async(SCR_PATH, args.lang, user, repo, args.branch)    # download scripts files
+
+    setup_module_folder(SCR_PATH)   # setup main dir -> modules
 
     env_data = create_environment_data(env, SCR_PATH, args.lang, user, repo, args.branch)
     save_environment_to_json(SETTINGS_PATH, env_data)
