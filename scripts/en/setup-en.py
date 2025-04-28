@@ -164,6 +164,31 @@ def display_info(env, scr_folder, branch):
     </style>
     """
 
+    SCRIPT = """
+    <script>
+    (function() {
+      // Text animation
+      const textContainer = document.querySelector('.text-container');
+      const messageContainer = document.querySelector('.message-container');
+      const textSpans = textContainer.querySelectorAll('span');
+      const messageSpans = messageContainer.querySelectorAll('span');
+
+      textSpans.forEach((span, index) => {
+        span.style.transitionDelay = `${index * 25}ms`;
+      });
+
+      messageSpans.forEach((span, index) => {
+        span.style.transitionDelay = `${index * 50}ms`;
+      });
+
+      setTimeout(() => {
+        textContainer.classList.add('loaded');
+        messageContainer.classList.add('loaded');
+      }, 250);
+    })();
+    </script>
+    """
+
     SNOW_SCRIPT = """
     <script>
     (function() {
@@ -227,30 +252,15 @@ def display_info(env, scr_folder, branch):
 
       clearSnowflakes();
       setInterval(createSnowflake, 50);
-
-      // Text animation
-      const textContainer = document.querySelector('.text-container');
-      const messageContainer = document.querySelector('.message-container');
-      const textSpans = textContainer.querySelectorAll('span');
-      const messageSpans = messageContainer.querySelectorAll('span');
-
-      textSpans.forEach((span, index) => {
-        span.style.transitionDelay = `${index * 25}ms`;
-      });
-
-      messageSpans.forEach((span, index) => {
-        span.style.transitionDelay = `${index * 50}ms`;
-      });
-
-      setTimeout(() => {
-        textContainer.classList.add('loaded');
-        messageContainer.classList.add('loaded');
-      }, 250);
     })();
     </script>
     """
 
-    display(HTML(CONTENT + STYLE + SNOW_SCRIPT))
+    display(HTML(CONTENT + STYLE + SCRIPT))
+
+    # Season Scripts
+    if season == 'winter':
+        display(HTML(SNOW_SCRIPT))
 
 
 # ===================== UTILITIES (JSON/FILE OPERATIONS) =====================
