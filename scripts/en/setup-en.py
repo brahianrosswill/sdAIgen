@@ -44,25 +44,29 @@ def display_info(env, scr_folder, branch):
             'bg': 'linear-gradient(180deg, #66666633, transparent)',
             'primary': '#666666',
             'accent': '#ffffff',
-            'icon': '❄️'
+            'icon': '❄️',
+            'particle_color': '#ffffff'
         },
         'spring': {
             'bg': 'linear-gradient(180deg, #9366b433, transparent)',
             'primary': '#9366b4',
             'accent': '#dbcce6',
-            'icon': '🌸'
+            'icon': '🌸',
+            'particle_color': '#ffb3ba'
         },
         'summer': {
             'bg': 'linear-gradient(180deg, #ffe76633, transparent)',
             'primary': '#ffe766',
             'accent': '#fff7cc',
-            'icon': '🌴'
+            'icon': '🌴',
+            'particle_color': '#ffd700'
         },
         'autumn': {
             'bg': 'linear-gradient(180deg, #ff8f6633, transparent)',
             'primary': '#ff8f66',
             'accent': '#ffd9cc',
-            'icon': '🍁'
+            'icon': '🍁',
+            'particle_color': '#ff8f66'
         }
     }
     config = season_config.get(season, season_config['winter'])
@@ -189,78 +193,234 @@ def display_info(env, scr_folder, branch):
     </script>
     """
 
-    SNOW_SCRIPT = """
+    display(HTML(CONTENT + STYLE + SCRIPT))
+
+    # === Season Scripts ===
+
+    ## OLD VER
+    # WINTER_SCRIPT = """
+    # <script>
+    # (function() {
+    #   const container = document.querySelector('.season-container');
+    #   const style = document.createElement('style');
+    #   style.innerHTML = `
+    #     .snowflake {
+    #       position: absolute;
+    #       background: white;
+    #       border-radius: 50%;
+    #       filter: blur(1px);
+    #       opacity: 0;
+    #       animation: snow-fall linear forwards;
+    #     }
+    #     @keyframes snow-fall {
+    #       0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+    #       20% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+    #       100% { opacity: 0; transform: translate(-50%, 150%) scale(0.5); }
+    #     }
+    #   `;
+    #   document.head.appendChild(style);
+
+    #   function createSnowflake() {
+    #     const snowflake = document.createElement('div');
+    #     snowflake.className = 'snowflake';
+
+    #     const size = Math.random() * 5 + 3;
+    #     const x = Math.random() * 100;
+    #     const duration = Math.random() * 3 + 2;
+
+    #     snowflake.style.cssText = `
+    #       width: ${size}px;
+    #       height: ${size}px;
+    #       left: ${x}%;
+    #       top: ${Math.random() * 100}%;
+    #       animation: snow-fall ${duration}s linear forwards;
+    #     `;
+
+    #     snowflake.addEventListener('animationend', () => snowflake.remove());
+    #     container.appendChild(snowflake);
+    #   }
+
+    #   setInterval(createSnowflake, 50);
+    # })();
+    # </script>
+    # """
+
+    WINTER_SCRIPT = f"""
     <script>
-    (function() {
+    (function() {{
+      const container = document.querySelector('.season-container');
       const style = document.createElement('style');
       style.innerHTML = `
-        .snowflake {
+        .snowflake {{
           position: absolute;
-          background-color: white;
+          background: {config['particle_color']};
           border-radius: 50%;
-          box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-          pointer-events: none;
-          opacity: 0.8;
-          will-change: transform, opacity;
-        }
+          filter: blur(1px);
+          opacity: 0;
+          animation: snow-fall linear forwards;
+        }}
+        @keyframes snow-fall {{
+          0% {{ opacity: 0; transform: translate(-50%, -50%) scale(0); }}
+          20% {{ opacity: 0.8; transform: translate(-50%, -50%) scale(1); }}
+          100% {{ opacity: 0; transform: translate(-50%, 150%) scale(0.5); }}
+        }}
       `;
       document.head.appendChild(style);
 
-      function clearSnowflakes() {
-        document.querySelectorAll('.snowflake').forEach(s => s.remove());
-      }
-
-      function createSnowflake() {
-        const container = document.querySelector('.season-container');
+      function createSnowflake() {{
         const snowflake = document.createElement('div');
         snowflake.className = 'snowflake';
-
-        // Set random size between 3px and 8px
         const size = Math.random() * 5 + 3;
-        snowflake.style.width = `${size}px`;
-        snowflake.style.height = `${size}px`;
-
-        // Position horizontally within container, start above view
-        const containerRect = container.getBoundingClientRect();
-        snowflake.style.left = `${Math.random() * (containerRect.width - size)}px`;
-        snowflake.style.top = `-${size}px`;
-
-        // Set random opacity between 0.1 and 0.5
-        const opacity = Math.random() * 0.4 + 0.1;
-        snowflake.style.opacity = opacity;
-
-        // Calculate movement parameters
-        const angle = (Math.random() * 50 - 25) * (Math.PI / 180); // -25° to +25° in radians
-        const horizontal = Math.sin(angle) * (containerRect.height / 2); // Original height-based calculation
-        const vertical = Math.cos(angle) * (containerRect.height + 10); // Vertical distance with overshoot
-
-        // Create and handle animation
-        const animation = snowflake.animate([
-          { transform: `translate(0, 0)`, opacity: 1 },
-          { transform: `translate(${horizontal}px, ${vertical}px)`, opacity: 0 }
-        ], {
-          duration: (Math.random() * 3 + 2) * 1000, // 2-5 seconds
-          easing: 'linear',
-          fill: 'forwards'
-        });
-
-        // Cleanup after animation
-        animation.onfinish = () => snowflake.remove();
-
+        const x = Math.random() * 100;
+        const duration = Math.random() * 3 + 2;
+        snowflake.style.cssText = `
+          width: ${{size}}px;
+          height: ${{size}}px;
+          left: ${{x}}%;
+          top: ${{Math.random() * 100}}%;
+          animation: snow-fall ${{duration}}s linear forwards;
+        `;
+        snowflake.addEventListener('animationend', () => snowflake.remove());
         container.appendChild(snowflake);
-      }
-
-      clearSnowflakes();
+      }}
       setInterval(createSnowflake, 50);
-    })();
+    }})();
     </script>
     """
 
-    display(HTML(CONTENT + STYLE + SCRIPT))
+    SPRING_SCRIPT = f"""
+    <script>
+    (function() {{
+      const container = document.querySelector('.season-container');
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .petal {{
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          background: {config['particle_color']};
+          border-radius: 50% 50% 0 50%;
+          transform: rotate(45deg);
+          opacity: 0;
+          pointer-events: none;
+          filter: blur(0.5px);
+        }}
+        @keyframes spring-fall {{
+          0% {{ opacity: 0; transform: translate(-50%, -50%) scale(0); }}
+          20% {{ opacity: 0.8; transform: translate(-50%, -50%) scale(1) rotate(180deg); }}
+          100% {{ opacity: 0; transform: translate(-50%, 150%) scale(0.5) rotate(360deg); }}
+        }}
+      `;
+      document.head.appendChild(style);
+
+      function createPetal() {{
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        const startX = Math.random() * 100;
+        const duration = Math.random() * 3 + 3;
+        petal.style.cssText = `
+          left: ${{startX}}%;
+          top: ${{Math.random() * 100}}%;
+          animation: spring-fall ${{duration}}s linear forwards;
+        `;
+        petal.addEventListener('animationend', () => petal.remove());
+        container.appendChild(petal);
+      }}
+      setInterval(createPetal, 250);
+    }})();
+    </script>
+    """
+
+    SUMMER_SCRIPT = f"""
+    <script>
+    (function() {{
+      const container = document.querySelector('.season-container');
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .sun-ray {{
+          position: absolute;
+          width: 3px;
+          height: 20px;
+          background: linear-gradient(to bottom, {config['particle_color']}, transparent);
+          transform-origin: bottom center;
+          opacity: 0;
+        }}
+        @keyframes summer-shine {{
+          0%, 100% {{ opacity: 0; transform: rotate(var(--angle)) scale(0); }}
+          50% {{ opacity: 0.5; transform: rotate(var(--angle)) scale(1); }}
+        }}
+      `;
+      document.head.appendChild(style);
+
+      function createRay() {{
+        const ray = document.createElement('div');
+        ray.className = 'sun-ray';
+        const angle = Math.random() * 360;
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const duration = Math.random() * 1 + 1;
+        ray.style.cssText = `
+          left: ${{x}}%;
+          top: ${{y}}%;
+          --angle: ${{angle}}deg;
+          animation: summer-shine ${{duration}}s ease-in-out infinite;
+        `;
+        container.appendChild(ray);
+      }}
+      setInterval(createRay, 650);
+    }})();
+    </script>
+    """
+
+    AUTUMN_SCRIPT = f"""
+    <script>
+    (function() {{
+      const container = document.querySelector('.season-container');
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .leaf {{
+          position: absolute;
+          width: 12px;
+          height: 12px;
+          background: {config['particle_color']};
+          clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+          opacity: 0;
+        }}
+        @keyframes autumn-fall {{
+          0% {{ opacity: 0; transform: translate(-50%, -50%) rotate(0deg); }}
+          20% {{ opacity: 0.8; transform: translate(-50%, -50%) rotate(180deg); }}
+          100% {{ opacity: 0; transform: translate(-50%, 150%) rotate(360deg); }}
+        }}
+      `;
+      document.head.appendChild(style);
+
+      function createLeaf() {{
+        const leaf = document.createElement('div');
+        leaf.className = 'leaf';
+        const startX = Math.random() * 100;
+        const duration = Math.random() * 3 + 3;
+        leaf.style.cssText = `
+          left: ${{startX}}%;
+          top: ${{Math.random() * 100}}%;
+          animation: autumn-fall ${{duration}}s linear forwards;
+        `;
+        leaf.addEventListener('animationend', () => leaf.remove());
+        container.appendChild(leaf);
+      }}
+      setInterval(createLeaf, 250);
+    }})();
+    </script>
+    """
 
     # Season Scripts
     if season == 'winter':
-        display(HTML(SNOW_SCRIPT))
+        display(HTML(WINTER_SCRIPT))
+    elif season == 'spring':
+        display(HTML(SPRING_SCRIPT))
+    elif season == 'summer':
+        display(HTML(SUMMER_SCRIPT))
+    elif season == 'autumn':
+        display(HTML(AUTUMN_SCRIPT))
 
 
 # ===================== UTILITIES (JSON/FILE OPERATIONS) =====================
