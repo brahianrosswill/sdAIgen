@@ -24,6 +24,8 @@
 - **widget_factory.py**: Factory for creating ipywidgets.
 - **Manager.py**: Adding quick functions for downloading and cloning git repositories: `m_download` & `m_clone`.
 
+- **__season.py**: A special module for beautiful display of the encounter message - setup.py.
+
 ## Directory -> `scripts`
 
 - **_models-data.py**: Model data - url, name
@@ -31,10 +33,10 @@
 - **launch.py**: Main script to launch the WebUI.
 - **auto-cleaner.py**: Script for automatically cleaning up unnecessary files.
 - **download-result.py**: Script for processing download results.
+- **setup.py**: Downloading files for work.
 
 #### Subdirectory -> `en/ru`
 
-- **setup-{lang}.py**: Downloading files for work.
 - **downloading-{lang}.py**: The main script for downloading data.
 - **widgets-{lang}.py**: Script for creating and displaying main widgets.
 
