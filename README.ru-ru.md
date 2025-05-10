@@ -66,11 +66,14 @@
 
 </details>
 
-## Поддержать 💙
+## 💙 Поддержать:
 
 <div align="center">
     <a href="https://www.donationalerts.com/r/anxety">
         <img src=".Docs/SVG/DA_Logo_Color.svg" width="250" height="100" alt="DonationAlerts">
+    </a>
+    <a href="https://boosty.to/anxety/single-payment/donation/707920">
+        <img src=".Docs/SVG/Boosty_Logo_Color.svg" width="300" height="100" alt="Boosty">
     </a>
 </div>
 
