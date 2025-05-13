@@ -59,8 +59,8 @@
         "CLIP_stop_at_last_layers"
     ],
     "ui_tab_order": [
-        "Txt2img",
-        "Tmg2img",
+        "txt2img",
+        "tmg2img",
         "Image Info",
         "Checkpoint Merger",
         "HUB",

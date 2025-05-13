@@ -19,6 +19,10 @@ WEBUI_PATHS = {
     'ComfyUI': (
         'checkpoints', 'vae', 'loras', 
         'embeddings', 'custom_nodes', 'upscale_models', 'output'
+    ),
+    'Classic': (
+        'Stable-diffusion', 'VAE', 'Lora', 
+        'embeddings', 'extensions', 'ESRGAN', 'output'
     )
 }
 
