@@ -23,7 +23,7 @@
   - *Виджеты* для простого взаимодействия.
   - Предустановленные пользовательские настройки + стили.
   - Скачивание превью для *моделей, LoRa и embedding* (CivitAi) | ***Для Kaggle есть ограничения.***
-  - Выбор WebUI между *A1111*, *ComfyUI*, *Forge*, *ReForge*, *SD-UX.*
+  - Выбор WebUI между *A1111*, *ComfyUI*, *Forge*, *Classic (Forge)*, *ReForge*, *SD-UX.*
   - [Rentry Page](https://rentry.co/faq-sdAIgen-ru) - описание виджетов.
 
 <details>
@@ -73,7 +73,7 @@
         <img src=".Docs/SVG/DA_Logo_Color.svg" width="250" height="100" alt="DonationAlerts">
     </a>
     <a href="https://boosty.to/anxety/single-payment/donation/707920">
-        <img src=".Docs/SVG/Boosty_Logo_Color.svg" width="300" height="100" alt="Boosty">
+        <img src=".Docs/SVG/Boosty_Logo_Color.svg" width="250" height="100" alt="Boosty">
     </a>
 </div>
 

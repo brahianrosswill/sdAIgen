@@ -23,7 +23,7 @@ English | [Русский](README.ru-ru.md)
   - *Widgets* for easy interaction.
   - Preset custom settings + styles.
   - Download previews for *models, LoRa and embedding* (CivitAi) | ***There are limitations for Kaggle.***
-  - Choosing WebUI between *A1111*, *ComfyUI*, *Forge*, *ReForge*, *SD-UX.*
+  - Choosing WebUI between *A1111*, *ComfyUI*, *Forge*, *Classic (Forge)*, *ReForge*, *SD-UX.*
   - [Rentry Page](https://rentry.co/faq-sdAIgen-en) - widget description.
 
 <details>
@@ -73,7 +73,7 @@ English | [Русский](README.ru-ru.md)
         <img src=".Docs/SVG/DA_Logo_Color.svg" width="250" height="100" alt="DonationAlerts">
     </a>
     <a href="https://boosty.to/anxety/single-payment/donation/707920">
-        <img src=".Docs/SVG/Boosty_Logo_Color.svg" width="300" height="100" alt="Boosty">
+        <img src=".Docs/SVG/Boosty_Logo_Color.svg" width="250" height="100" alt="Boosty">
     </a>
 </div>
 
