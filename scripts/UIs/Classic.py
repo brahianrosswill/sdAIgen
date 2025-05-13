@@ -70,8 +70,7 @@ async def download_configuration():
         f"{url_cfg}/user.css",
         # other
         f"{url_cfg}/card-no-preview.png, {WEBUI}/html",
-        f"{url_cfg}/notification.mp3",
-        f"{url_cfg}/{UI}/modules/cmd_args.py, {WEBUI}/modules"
+        f"{url_cfg}/notification.mp3"
     ]
     await download_files(configs)
 
@@ -118,8 +117,26 @@ def unpack_webui():
     ipySys(f"unzip -q -o {zip_path} -d {WEBUI}")
     ipySys(f"rm -rf {zip_path}")
 
+def fixes_modules():
+    module_path = f"{WEBUI}/modules/cmd_args.py"
+    with open(module_path, 'r+', encoding='utf-8') as f:
+        content = f.read()
+        needs_nl = len(content) > 0 and not content.endswith('\n')
+
+        add_lines = [
+            '\n\n# Add for fix errors | ANXETY',
+            'parser.add_argument("--hypernetwork-dir", type=normalized_filepath, '
+            'default=os.path.join(models_path, \'hypernetworks\'), help="hypernetwork directory")'
+        ]
+
+        f.seek(0, 2)
+        if needs_nl:
+            f.write('\n')
+        f.write('\n'.join(add_lines) + '\n')
+
 ## ====================== MAIN CODE ======================
 if __name__ == '__main__':
     with capture.capture_output():
         unpack_webui()
         asyncio.run(download_configuration())
+        fixes_modules()
