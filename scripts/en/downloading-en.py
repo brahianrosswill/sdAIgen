@@ -132,12 +132,17 @@ if venv_needs_reinstall:
 
     if current_ui == 'Classic':
         venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31112-venv-torch251-cu121-C-Classic.tar.lz4"
+        py_version = '3.11.12'
     else:
         venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31017-venv-torch251-cu121-C-fca.tar.lz4"
+        py_version = '3.10.17'
 
-    print(f"♻️ Installing {'Classic VENV' if UI == 'Classic' else 'VENV'}, this will take some time...")
+    print(f"♻️ Installing VENV {py_version}, this will take some time...")
     setup_venv(venv_url)
     clear_output()
+
+    # Update latest UI version...
+    js.update(SETTINGS_PATH, 'WEBUI.latest', current_ui)
 
 # if not os.path.exists(VENV):
 #     print('♻️ Installing VENV, this will take some time...')
