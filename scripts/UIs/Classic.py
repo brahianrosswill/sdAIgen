@@ -122,18 +122,18 @@ def fixes_modules():
     module_path = f"{WEBUI}/modules/cmd_args.py"
     with open(module_path, 'r+', encoding='utf-8') as f:
         content = f.read()
-        needs_nl = len(content) > 0 and not content.endswith('\n')
+        if '# Arguments added by ANXETY' in content:
+            return
 
-        add_lines = [
-            '\n\n# Add for fix errors | ANXETY',
+        add_block = [
+            '\n\n# Arguments added by ANXETY',
             'parser.add_argument("--hypernetwork-dir", type=normalized_filepath, '
             'default=os.path.join(models_path, \'hypernetworks\'), help="hypernetwork directory")'
         ]
 
+        prefix = '\n' if content and not content.endswith('\n') else ''
         f.seek(0, 2)
-        if needs_nl:
-            f.write('\n')
-        f.write('\n'.join(add_lines) + '\n')
+        f.write(prefix + '\n'.join(add_block))
 
 ## ====================== MAIN CODE ======================
 if __name__ == '__main__':
