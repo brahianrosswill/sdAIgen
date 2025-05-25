@@ -70,7 +70,7 @@ def parse_arguments():
     return parser.parse_args()
 
 def _trashing():
-    dirs = ['A1111', 'ComfyUI', 'Forge', 'ReForge', 'SD-UX']
+    dirs = ['A1111', 'ComfyUI', 'Forge', 'Classic', 'ReForge', 'SD-UX']
     paths = [Path(HOME) / name for name in dirs]
 
     for path in paths:
