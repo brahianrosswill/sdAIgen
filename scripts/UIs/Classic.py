@@ -69,7 +69,6 @@ async def download_configuration():
         f"{url_cfg}/styles.csv",
         f"{url_cfg}/user.css",
         # other
-        f"{url_cfg}/card-no-preview.png, {WEBUI}/html",
         f"{url_cfg}/notification.mp3"
     ]
     await download_files(configs)
@@ -119,21 +118,18 @@ def unpack_webui():
     ipySys(f"rm -rf {zip_path}")
 
 def fixes_modules():
-    module_path = f"{WEBUI}/modules/cmd_args.py"
-    with open(module_path, 'r+', encoding='utf-8') as f:
-        content = f.read()
-        if '# Arguments added by ANXETY' in content:
+    path = WEBUI / "modules/cmd_args.py"
+    if not path.exists():
+        return
+
+    marker = '# Arguments added by ANXETY'
+    with open(path, 'r+', encoding='utf-8') as f:
+        if marker in f.read():
             return
 
-        add_block = [
-            '\n\n# Arguments added by ANXETY',
-            'parser.add_argument("--hypernetwork-dir", type=normalized_filepath, '
-            'default=os.path.join(models_path, \'hypernetworks\'), help="hypernetwork directory")'
-        ]
-
-        prefix = '\n' if content and not content.endswith('\n') else ''
-        f.seek(0, 2)
-        f.write(prefix + '\n'.join(add_block))
+        f.write(f"\n\n{marker}\n")
+        f.write('parser.add_argument("--hypernetwork-dir", type=normalized_filepath, '
+               'default=os.path.join(models_path, \'hypernetworks\'), help="hypernetwork directory")')
 
 ## ====================== MAIN CODE ======================
 if __name__ == '__main__':
