@@ -67,6 +67,7 @@ locals().update(settings)
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--log', action='store_true', help='Show failed tunnel details')
+    parser.add_argument('-f', '--full-install', action='store_true', help='Perform full installation UI deps (skip --skip-install)')
     return parser.parse_args()
 
 def _trashing():
@@ -107,7 +108,9 @@ def get_launch_command():
     if theme_accent != 'anxety':
         common_args += f" --anxety {theme_accent}"
 
-    # os.environ.setdefault('IIB_ACCESS_CONTROL', 'disable')
+    # Not Install UI-req
+    if not args.full_install:
+        common_args += ' --skip-install'
 
     if UI == 'ComfyUI':
         return f"python3 main.py {base_args}"
