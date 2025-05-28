@@ -45,7 +45,8 @@
         "Checkpoint Merger"
     ],
     "extra_networks_default_multiplier": 0.7,
-    "samples_filename_pattern": "[model_name]_[seed]",
+    "samples_filename_pattern": "M=[model_name]_S=[seed]_D=[date]",
+    "grid_extended_filename": true,
     "grid_text_active_color": "#ffffff",
     "grid_background_color": "#0b0b0b",
     "show_progress_grid": true,
