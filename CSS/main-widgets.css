@@ -53,7 +53,7 @@
     /* Buttons */
     --aw-button-gradient: radial-gradient(circle at top left, purple 10%, violet 90%);
     --aw-button-save-hover: radial-gradient(circle at top left, purple 10%, #93ac47 90%);
-    --aw-button-zrok-hover: radial-gradient(circle at top left, purple 10%, #1d94bb 90%);
+    --aw-button-api-hover: radial-gradient(circle at top left, purple 10%, #1d94bb 90%);
 }
 
 
@@ -423,7 +423,7 @@ a {
     height: 35px;
     font-weight: 650;
 }
-.button_zrok {
+.button_api {
     border-radius: 10px;
     font-size: 12px;
     height: 30px;
@@ -437,8 +437,8 @@ a {
 .button_save:hover {
     background-image: var(--aw-button-save-hover);
 }
-.button_zrok:hover {
-    background-image: var(--aw-button-zrok-hover);
+.button_api:hover {
+    background-image: var(--aw-button-api-hover);
 }
 
 /* Removes ugly stroke from widget buttons. */

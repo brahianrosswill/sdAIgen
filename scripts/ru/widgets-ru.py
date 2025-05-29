@@ -99,11 +99,11 @@ civitai_token_widget = factory.create_text('Токен CivitAI:', '', 'Введ�
 huggingface_token_widget = factory.create_text('Токен HuggingFace:')
 
 ngrok_token_widget = factory.create_text('Токен Ngrok:')
-ngrok_button = factory.create_html('<a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank">Получить Ngrok Токен</a>', class_names=['button', 'button_zrok'])
+ngrok_button = factory.create_html('<a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank">Получить Ngrok Токен</a>', class_names=['button', 'button_api'])
 ngrok_widget = factory.create_hbox([ngrok_token_widget, ngrok_button])
 
 zrok_token_widget = factory.create_text('Токен Zrok:')
-zrok_button = factory.create_html('<a href="https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU" target="_blank">Зарегать Zrok Токен</a>', class_names=['button', 'button_zrok'])
+zrok_button = factory.create_html('<a href="https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU" target="_blank">Зарегать Zrok Токен</a>', class_names=['button', 'button_api'])
 zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 
 commandline_arguments_widget = factory.create_text('Аргументы:', webui_selection['A1111'])
