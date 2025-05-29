@@ -27,8 +27,11 @@ widgets_js = JS / 'main-widgets.js'
 
 def create_expandable_button(text, url):
     return factory.create_html(f'''
-    <a href="{url}" target="_blank">{text}</a>
-    ''', class_names=['button', 'button_api'])
+    <a href="{url}" target="_blank" class="button button_api">
+        <span class="icon"><</span>
+        <span class="text">{text}</span>
+    </a>
+    ''')
 
 def read_model_data(file_path, data_type):
     """Reads model, VAE, or ControlNet data from the specified file."""
@@ -100,15 +103,21 @@ controlnet_options = read_model_data(f"{SCRIPTS}/_models-data.py", 'cnet')
 controlnet_widget = factory.create_dropdown(controlnet_options, 'ControlNet:', 'none')
 controlnet_num_widget = factory.create_text('ControlNet Number:', '', 'Enter ControlNet numbers for download.')
 commit_hash_widget = factory.create_text('Commit Hash:', '', 'Switching between branches or commits.')
-civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Enter your CivitAi API token.')
-huggingface_token_widget = factory.create_text('HuggingFace Token:')
 
-ngrok_token_widget = factory.create_text('Ngrok Token:')
+civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Enter your CivitAi API token.')
+civitai_button = create_expandable_button('Get CivitAI Token', 'https://civitai.com/user/account')
+civitai_widget = factory.create_hbox([civitai_token_widget, civitai_button])
+
+huggingface_token_widget = factory.create_text('HuggingFace Token:', '', 'Enter your HuggingFace API token.')
+huggingface_button = create_expandable_button('Get HuggingFace Token', 'https://huggingface.co/settings/tokens')
+huggingface_widget = factory.create_hbox([huggingface_token_widget, huggingface_button])
+
+ngrok_token_widget = factory.create_text('Ngrok Token:', '', 'Enter your Ngrok authtoken.')
 ngrok_button = create_expandable_button('Get Ngrok Token', 'https://dashboard.ngrok.com/get-started/your-authtoken')
 ngrok_widget = factory.create_hbox([ngrok_token_widget, ngrok_button])
 
-zrok_token_widget = factory.create_text('Zrok Token:')
-zrok_button = factory.create_html('Register Zrok Token', 'https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU')
+zrok_token_widget = factory.create_text('Zrok Token:', '', 'Enter your Zrok token.')
+zrok_button = create_expandable_button('Register Zrok Token', 'https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU')
 zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 
 commandline_arguments_widget = factory.create_text('Arguments:', webui_selection['A1111'])
@@ -125,7 +134,7 @@ additional_widget_list = [
     HR,
     controlnet_widget, controlnet_num_widget,
     commit_hash_widget,
-    civitai_token_widget, huggingface_token_widget, zrok_widget, ngrok_widget,
+    civitai_widget, huggingface_widget, zrok_widget, ngrok_widget,
     HR,
     # commandline_arguments_widget,
     additional_footer
