@@ -104,19 +104,19 @@ controlnet_widget = factory.create_dropdown(controlnet_options, 'ControlNet:', '
 controlnet_num_widget = factory.create_text('Номер ControlNet:', '', 'Введите номера моделей ControlNet для скачивания.')
 commit_hash_widget = factory.create_text('Commit Hash:', '', 'Переключение между ветвями или коммитами.')
 
-civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Enter your CivitAi API token.')
+civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Введите свой API-токен CivitAi.')
 civitai_button = create_expandable_button('Получить CivitAI Токен', 'https://civitai.com/user/account')
 civitai_widget = factory.create_hbox([civitai_token_widget, civitai_button])
 
-huggingface_token_widget = factory.create_text('HuggingFace Token:', '', 'Enter your HuggingFace API token.')
+huggingface_token_widget = factory.create_text('HuggingFace Token:')
 huggingface_button = create_expandable_button('Получить HuggingFace Токен', 'https://huggingface.co/settings/tokens')
 huggingface_widget = factory.create_hbox([huggingface_token_widget, huggingface_button])
 
-ngrok_token_widget = factory.create_text('Ngrok Token:', '', 'Enter your Ngrok authtoken.')
+ngrok_token_widget = factory.create_text('Ngrok Token:')
 ngrok_button = create_expandable_button('Получить Ngrok Токен', 'https://dashboard.ngrok.com/get-started/your-authtoken')
 ngrok_widget = factory.create_hbox([ngrok_token_widget, ngrok_button])
 
-zrok_token_widget = factory.create_text('Zrok Token:', '', 'Enter your Zrok token.')
+zrok_token_widget = factory.create_text('Zrok Token:')
 zrok_button = create_expandable_button('Зарегать Zrok Токен', 'https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU')
 zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 

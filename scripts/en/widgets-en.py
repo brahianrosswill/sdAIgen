@@ -108,15 +108,15 @@ civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Enter your Civ
 civitai_button = create_expandable_button('Get CivitAI Token', 'https://civitai.com/user/account')
 civitai_widget = factory.create_hbox([civitai_token_widget, civitai_button])
 
-huggingface_token_widget = factory.create_text('HuggingFace Token:', '', 'Enter your HuggingFace API token.')
+huggingface_token_widget = factory.create_text('HuggingFace Token:')
 huggingface_button = create_expandable_button('Get HuggingFace Token', 'https://huggingface.co/settings/tokens')
 huggingface_widget = factory.create_hbox([huggingface_token_widget, huggingface_button])
 
-ngrok_token_widget = factory.create_text('Ngrok Token:', '', 'Enter your Ngrok authtoken.')
+ngrok_token_widget = factory.create_text('Ngrok Token:')
 ngrok_button = create_expandable_button('Get Ngrok Token', 'https://dashboard.ngrok.com/get-started/your-authtoken')
 ngrok_widget = factory.create_hbox([ngrok_token_widget, ngrok_button])
 
-zrok_token_widget = factory.create_text('Zrok Token:', '', 'Enter your Zrok token.')
+zrok_token_widget = factory.create_text('Zrok Token:')
 zrok_button = create_expandable_button('Register Zrok Token', 'https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU')
 zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 

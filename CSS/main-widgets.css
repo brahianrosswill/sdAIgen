@@ -52,7 +52,7 @@
 
     /* Buttons */
     --aw-button-gradient: radial-gradient(circle at top left, purple 10%, violet 90%);
-        --aw-button-input-gradient: radial-gradient(circle at top left, var(--aw-input-bg));
+    --aw-button-input-gradient: radial-gradient(circle at top left, var(--aw-input-bg));
     --aw-button-save-hover: radial-gradient(circle at top left, purple 10%, #93ac47 90%);
     --aw-button-api-hover: radial-gradient(circle at top left, purple 10%, #1d94bb 90%);
 }
@@ -80,10 +80,18 @@ hr {
 a {
     color: inherit;
     text-decoration: none;
+    border: 0 !important;
 }
 
 
-/* Special fixes for IpyWidgets */
+/* == Special fixes for IpyWidgets == */
+/* Remove Shit-Spacing for HTML-Widgets (button) */
+.widget-html:has(.button),
+.widget-html-content:has(.button) {
+    padding: 0;
+    margin: 0;
+}
+
 /* Fix Vertical Centering */
 .widget-hbox,
 .jupyter-widgets label {
@@ -99,7 +107,7 @@ a {
 }
 
 
-/* Special Styles */
+/* Special Styles (ScrollBars) */
 
 ::selection {
     background: #3d4142;
@@ -414,13 +422,16 @@ a {
     font-size: 15px;
     transition: background 0.5s ease;
     margin: 0;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    white-space: nowrap;
 }
 .button_save {
     font-weight: 650;
     width: 120px;
     height: 35px;
     background-image: var(--aw-button-gradient);
-    background-size: 200% 200%;
+    background-size: 200% 100%;
     background-position: left bottom;
     border-radius: 15px;
 }
@@ -430,30 +441,31 @@ a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 30px;
+    height: 30px !important;
     min-width: 45px;
+    margin-left: 4px; /* SPACE */
     padding: 0;
     background-image: var(--aw-button-input-gradient);
-    background-size: 250% 250%;
+    background-size: 200% 100%;
     background-position: left bottom;
     border: var(--aw-input-border);
     border-radius: 10px;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    white-space: nowrap;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
 }
 .button_api .icon {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
+    pointer-events: none;
 }
 .button_api .text {
-    opacity: 0;
+    display: inline-block;
     max-width: 0;
-    overflow: hidden;
-    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s ease;
 }
 
 .button:hover {
@@ -464,8 +476,8 @@ a {
 }
 .button_api:hover {
     background-image: var(--aw-button-api-hover);
-    box-shadow: none;
-    border-color: transparent;
+    /* box-shadow: none; */
+    /* border-color: transparent; */
     padding: 0 12px 0 32px;
     max-width: 300px;
 }
