@@ -288,6 +288,33 @@ a {
     background-color: var(--aw-input-bg);
 }
 
+/* Animation when switching empowerment mode */
+.widget-text.empowerment-text-field,
+.widget-textarea.empowerment-output  {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+/* Standard state */
+.widget-text.empowerment-text-field {
+    opacity: 1;
+    max-height: 30px;
+    visibility: visible;
+}
+.widget-textarea.empowerment-output {
+    opacity: 1;
+    max-height: 200px;
+    visibility: visible;
+}
+/* Hidden state */
+.widget-text.empowerment-text-field.hidden,
+.widget-textarea.empowerment-output.hidden {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    visibility: hidden;
+}
+
 
 /* Slider Checkbox style */
 

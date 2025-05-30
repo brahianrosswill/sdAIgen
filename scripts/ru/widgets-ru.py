@@ -254,7 +254,8 @@ factory.display(WIDGET_LIST)
 
 # Initialize visibility | hidden
 check_custom_nodes_deps_widget.layout.display = 'none'
-empowerment_output_widget.layout.display = 'none'
+empowerment_output_widget.add_class('empowerment-output')
+empowerment_output_widget.add_class('hidden')
 
 # Callback functions for XL options
 def update_XL_options(change, widget):
@@ -307,16 +308,18 @@ def update_empowerment(change, widget):
         Extensions_url_widget,
         ADetailer_url_widget
     ]
+    for widget in customDL_widgets:    # For switching animation
+        widget.add_class('empowerment-text-field')
 
     # idk why, but that's the way it's supposed to be >_<'
     if selected_emp:
         for wg in customDL_widgets:
-            wg.layout.display = 'none'
-        empowerment_output_widget.layout.display = ''
+            wg.add_class('hidden')
+        empowerment_output_widget.remove_class('hidden')
     else:
         for wg in customDL_widgets:
-            wg.layout.display = ''
-        empowerment_output_widget.layout.display = 'none'
+            wg.remove_class('hidden')
+        empowerment_output_widget.add_class('hidden')
 
 # Connecting widgets
 factory.connect_widgets([(change_webui_widget, 'value')], update_change_webui)
