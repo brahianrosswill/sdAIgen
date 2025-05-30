@@ -53,7 +53,7 @@ webui_selection = {
     'A1111':   "--xformers --no-half-vae",
     'ComfyUI': "--dont-print-server --preview-method auto --use-pytorch-cross-attention",
     'Forge':   "--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory",
-    'Classic': "--xformers --cuda-stream --pin-shared-memory",
+    'Classic': "--persistent-patches --cuda-stream --pin-shared-memory",    # Remove: --xformers
     'ReForge': "--xformers --cuda-stream --pin-shared-memory",
     'SD-UX':   "--xformers --no-half-vae"
 }
