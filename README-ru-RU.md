@@ -16,6 +16,7 @@
     <a href="https://www.kaggle.com/code/anxetysolo/sdaigen-ru-ipynb">
         <img src=".Docs/SVG/ru/kaggle-ru.svg" width="800" height="160" alt="kaggle">
     </a>
+    <h6>Дополнительные сведения о виджетах см. в разделе <a href="https://github.com/anxety-solo/sdAIgen/wiki/Widgets-ru-RU">WiKi</a>.</h6>
 </div>
 
 ## 🌟 Особенности:

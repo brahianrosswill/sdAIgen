@@ -2,7 +2,7 @@
 <img width="1080px" height="auto" src="https://raw.githubusercontent.com/anxety-solo/sdAIgen/main/.Docs/Imgs/sample.png"/></br>
 <h1>~ ANXETY | Stable Diffusion WebUI | NoteBook V2 ~</h1>
 
-English | [Русский](README.ru-ru.md)
+English | [Русский](README-ru-RU.md)
 
 </div>
 
@@ -16,6 +16,7 @@ English | [Русский](README.ru-ru.md)
     <a href="https://www.kaggle.com/code/anxetysolo/sdaigen-en-ipynb">
         <img src=".Docs/SVG/en/kaggle-en.svg" width="800" height="160" alt="kaggle">
     </a>
+    <h6>For more information about widgets, see <a href="https://github.com/anxety-solo/sdAIgen/wiki/Widgets">WiKi</a>.</h6>
 </div>
 
 ## 🌟 Features:
