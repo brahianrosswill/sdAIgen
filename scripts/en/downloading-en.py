@@ -384,17 +384,17 @@ extension_repo = []
 PREFIX_MAP = {
     # prefix : (dir_path , short-tag)
     'model': (model_dir, '$ckpt'),
-    'vae': (vae_dir, None),
-    'lora': (lora_dir, None),
+    'vae': (vae_dir, '$vae'),
+    'lora': (lora_dir, '$lora'),
     'embed': (embed_dir, '$emb'),
     'extension': (extension_dir, '$ext'),
     'adetailer': (adetailer_dir, '$ad'),
     'control': (control_dir, '$cnet'),
     'upscale': (upscale_dir, '$ups'),
     # Other
-    'clip': (clip_dir, None),
-    'unet': (unet_dir, None),
-    'vision': (vision_dir, None),
+    'clip': (clip_dir, '$clip'),
+    'unet': (unet_dir, '$unet'),
+    'vision': (vision_dir, '$vis'),
     'encoder': (encoder_dir, '$enc'),
     'diffusion': (diffusion_dir, '$diff'),
     'config': (config_dir, '$cfg')

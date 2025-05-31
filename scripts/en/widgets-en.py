@@ -162,7 +162,7 @@ custom_download_header_popup = factory.create_html('''
 empowerment_widget = factory.create_checkbox('Empowerment', False, class_names=['empowerment'])
 empowerment_output_widget = factory.create_textarea(
 '', '', """Use special tags. Portable analog of "File (txt)"
-Tags: model (ckpt), vae, lora, embed (emb), extension (ext), adetailer (ad), control (cnet), upscale (ups), clip, unet, vision, encoder (enc), diffusion (diff), config (cfg)
+Tags: model (ckpt), vae, lora, embed (emb), extension (ext), adetailer (ad), control (cnet), upscale (ups), clip, unet, vision (vis), encoder (enc), diffusion (diff), config (cfg)
 Short tags: start with '$' without a space -> $ckpt
 ------ Example ------
 

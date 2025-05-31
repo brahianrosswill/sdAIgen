@@ -24,7 +24,6 @@ English | [Русский](README.ru-ru.md)
   - Preset custom: *Settings* + *Styles* + [*UI Theme*](https://github.com/anxety-solo/anxety-theme)
   - Download previews for *models, LoRa and embedding* (CivitAi) | ***There are limitations for Kaggle.***
   - Choosing WebUI between *A1111*, *ComfyUI*, *Forge*, *Classic (Forge)*, *ReForge*, *SD-UX.*
-  - [Rentry Page](https://rentry.co/faq-sdAIgen-en) → widget description.
 
 <details>
 <summary>📚 Installed Extensions</summary>
