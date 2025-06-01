@@ -12,6 +12,7 @@
     "img2img/Styles/value": [
         "ANXETY V2"
     ],
+    "customscript/sampler.py/img2img/Sampling method/value": "Euler a",
     "customscript/sampler.py/img2img/Schedule type/value": "Karras",
     "customscript/sampler.py/img2img/Sampling steps/value": 40,
     "img2img/Inpaint area/value": "Only masked",
