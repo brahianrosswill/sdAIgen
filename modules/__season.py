@@ -375,72 +375,69 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
     </script>
     """
 
-    # SUMMER_SCRIPT = f"""
-    # <script>
-    # (function() {{
-    #   const container = document.querySelector('.season-container');
-    #   const style = document.createElement('style');
-    #   style.innerHTML = `
-    #     .stick-particle {{
-    #       position: absolute;
-    #       width: 2px;
-    #       height: 15px;
-    #       background: {config['particle_color']};
-    #       transform-origin: center bottom;
-    #       opacity: 0;
-    #       pointer-events: none;
-    #     }}
-    #     @keyframes stick-fall {{
-    #       0% {{ opacity: 0; transform: translate(-50%, -50%) rotate(0) scale(0.5); }}
-    #       20% {{ opacity: 0.8; transform: translate(-50%, -50%) rotate(0deg) scale(1); }}
-    #       100% {{ opacity: 0; transform: translate(-50%, 150%) rotate(180deg) scale(0.5); }}
-    #     }}
-    #   `;
-    #   document.head.appendChild(style);
-
-    #   let activeParticles = 0;
-    #   const maxParticles = 25;
-
-    #   function createStick() {{
-    #     if (activeParticles >= maxParticles) return;
-        
-    #     const stick = document.createElement('div');
-    #     stick.className = 'stick-particle';
-    #     const startX = Math.random() * 100;
-    #     const duration = Math.random() * 4 + 3;
-    #     const rotation = (Math.random() - 0.5) * 180;
-        
-    #     stick.style.cssText = `
-    #       left: ${{startX}}%;
-    #       top: ${{Math.random() * 100}}%;
-    #       animation: stick-fall ${{duration}}s linear forwards;
-    #       transform: rotate(${{rotation}}deg);
-    #     `;
-        
-    #     activeParticles++;
-    #     stick.addEventListener('animationend', () => {{
-    #       stick.remove();
-    #       activeParticles--;
-    #     }});
-        
-    #     container.appendChild(stick);
-    #   }}
-      
-    #   const interval = setInterval(createStick, 100);
-      
-    #   // Cleanup when container is removed
-    #   const observer = new MutationObserver(() => {{
-    #     if (!document.contains(container)) {{
-    #       clearInterval(interval);
-    #       observer.disconnect();
-    #     }}
-    #   }});
-    #   observer.observe(document.body, {{ childList: true, subtree: true }});
-    # }})();
-    # </script>
-    # """
-
     SUMMER_SCRIPT = f"""
+    <script>
+    (function() {{
+      const container = document.querySelector('.season-container');
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .stick-particle {{
+          position: absolute;
+          width: 2px;
+          height: 15px;
+          background: {config['particle_color']};
+          transform-origin: center bottom;
+          opacity: 0;
+          pointer-events: none;
+        }}
+        @keyframes stick-fall {{
+          0% {{ opacity: 0; transform: translate(-50%, -50%) rotate(0) scale(0.5); }}
+          20% {{ opacity: 0.8; transform: translate(-50%, -50%) rotate(0deg) scale(1); }}
+          100% {{ opacity: 0; transform: translate(-50%, 150%) rotate(180deg) scale(0.5); }}
+        }}
+      `;
+      document.head.appendChild(style);
+
+      let activeParticles = 0;
+      const maxParticles = 25;
+
+      function createStick() {{
+        if (activeParticles >= maxParticles) return;
+        
+        const stick = document.createElement('div');
+        stick.className = 'stick-particle';
+        const startX = Math.random() * 100;
+        const duration = Math.random() * 4 + 3;
+        const rotation = (Math.random() - 0.5) * 180;
+        
+        stick.style.cssText = `
+          left: ${{startX}}%;
+          top: ${{Math.random() * 100}}%;
+          animation: stick-fall ${{duration}}s linear forwards;
+          transform: rotate(${{rotation}}deg);
+        `;
+        
+        activeParticles++;
+        stick.addEventListener('animationend', () => {{
+          stick.remove();
+          activeParticles--;
+        }});
+        
+        container.appendChild(stick);
+      }}
+      
+      const interval = setInterval(createStick, 100);
+      
+      // Cleanup when container is removed
+      const observer = new MutationObserver(() => {{
+        if (!document.contains(container)) {{
+          clearInterval(interval);
+          observer.disconnect();
+        }}
+      }});
+      observer.observe(document.body, {{ childList: true, subtree: true }});
+    }})();
+    </script>
     """
 
     AUTUMN_SCRIPT = f"""
