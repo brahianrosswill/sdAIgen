@@ -40,6 +40,18 @@ UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
 
+# Text Colors (\033)
+class COLORS:
+    R  =  "\033[31m"     # Red
+    G  =  "\033[32m"     # Green
+    Y  =  "\033[33m"     # Yellow
+    B  =  "\033[34m"     # Blue
+    lB =  "\033[36;1m"   # lightBlue 
+    X  =  "\033[0m"      # Reset
+
+COL = COLORS
+
+
 ## =================== LIBRARIES | VENV ==================
 
 def install_dependencies(commands):
@@ -87,11 +99,11 @@ def setup_venv(url):
 def install_packages(install_lib):
     """Install packages from the provided library dictionary."""
     for index, (package, install_cmd) in enumerate(install_lib.items(), start=1):
-        print(f"\r[{index}/{len(install_lib)}] \033[32m>>\033[0m Installing \033[33m{package}\033[0m..." + ' ' * 35, end='')
+        print(f"\r[{index}/{len(install_lib)}] {COL.G}>>{COL.X} Installing {COL.Y}{package}{COL.X}..." + ' ' * 35, end='')
         try:
             result = subprocess.run(install_cmd, shell=True, capture_output=True)
             if result.returncode != 0:
-                print(f"\n\033[31mError installing {package}\033[0m")
+                print(f"\n{COL.R}Error installing {package}{COL.X}")
         except Exception:
             pass
 
@@ -186,22 +198,22 @@ start_timer = js.read(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
 
 if not os.path.exists(WEBUI):
     start_install = time.time()
-    print(f"⌚ Unpacking Stable Diffusion... | WEBUI: \033[34m{UI}\033[0m", end='')
+    print(f"⌚ Unpacking Stable Diffusion... | WEBUI: {COL.B}{UI}{COL.X}", end='')
 
     ipyRun('run', f"{SCRIPTS}/UIs/{UI}.py")
     handle_setup_timer(WEBUI, start_timer)		# Setup timer (for timer-extensions)
 
     install_time = time.time() - start_install
     minutes, seconds = divmod(int(install_time), 60)
-    print(f"\r🚀 Unpacking \033[34m{UI}\033[0m is complete! {minutes:02}:{seconds:02} ⚡" + ' '*25)
+    print(f"\r🚀 Unpacking {COL.B}{UI}{COL.X} is complete! {minutes:02}:{seconds:02} ⚡" + ' '*25)
 
 else:
-    print(f"🔧 Current WebUI: \033[34m{UI}\033[0m")
+    print(f"🔧 Current WebUI: {COL.B}{UI}{COL.X}")
     print('🚀 Unpacking is complete. Pass. ⚡')
 
     timer_env = handle_setup_timer(WEBUI, start_timer)
     elapsed_time = str(timedelta(seconds=time.time() - timer_env)).split('.')[0]
-    print(f"⌚️ Session duration: \033[33m{elapsed_time}\033[0m")
+    print(f"⌚️ Session duration: {COL.Y}{elapsed_time}{COL.X}")
 
 
 ## Changes extensions and WebUi
@@ -249,7 +261,7 @@ if commit_hash:
         ipySys('git config --global user.name "Your Name"')
         ipySys('git reset --hard {commit_hash}')
         ipySys('git pull origin {commit_hash}')    # Get last changes in branch
-    print(f"\r🔄 Switch complete! Current commit: \033[34m{commit_hash}\033[0m")
+    print(f"\r🔄 Switch complete! Current commit: {COL.B}{commit_hash}{COL.X}")
 
 
 # === Google Drive Mounting | EXCLUSIVE for Colab ===
@@ -417,12 +429,13 @@ def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
 
     sep_line = '───' * 20
 
-    print(f"\n\033[32m{sep_line}\033[36;1m{info}\033[32m{sep_line}\033[0m")
-    print(f"\033[33m{'URL:':<12}\033[0m{url}")
-    print(f"\033[33m{'SAVE DIR:':<12}\033[34m{dst_dir}")
-    print(f"\033[33m{'FILE NAME:':<12}\033[34m{file_name}\033[0m")
+    print()
+    print(f"{COL.G}{sep_line}{COL.lB}{info}{COL.G}{sep_line}{COL.X}")
+    print(f"{COL.Y}{'URL:':<12}{COL.X}{url}")
+    print(f"{COL.Y}{'SAVE DIR:':<12}{COL.B}{dst_dir}")
+    print(f"{COL.Y}{'FILE NAME:':<12}{COL.B}{file_name}{COL.X}")
     if 'civitai' in url and image_url:
-        print(f"\033[32m{'[Preview]:':<12}\033[0m{image_name} → {image_url}")
+        print(f"{COL.G}{'[Preview]:':<12}{COL.X}{image_name} → {image_url}")
     print()
 
 ''' Main Download Code '''
@@ -641,9 +654,9 @@ prefixed_urls = [f"{p}:{u}" for p, u in zip(PREFIX_MAP, urls_sources) if u for u
 line += ', '.join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
 
 if detailed_download == 'on':
-    print('\n\n\033[33m# ====== Detailed Download ====== #\n\033[0m')
+    print(f"\n\n{COL.Y}# ====== Detailed Download ====== #\n{COL.X}")
     download(line)
-    print('\n\033[33m# =============================== #\n\033[0m')
+    print(f"\n{COL.Y}# =============================== #\n{COL.X}")
 else:
     with capture.capture_output():
         download(line)

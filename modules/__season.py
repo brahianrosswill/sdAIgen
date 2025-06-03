@@ -272,13 +272,13 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
 
       function createSnowflake() {{
         if (activeParticles >= maxParticles) return;
-        
+
         const snowflake = document.createElement('div');
         snowflake.className = 'snowflake';
         const size = Math.random() * 5 + 3;
         const x = Math.random() * 100;
         const duration = Math.random() * 3 + 2;
-        
+
         snowflake.style.cssText = `
           width: ${{size}}px;
           height: ${{size}}px;
@@ -286,18 +286,18 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
           top: ${{Math.random() * 100}}%;
           animation: snow-fall ${{duration}}s linear forwards;
         `;
-        
+
         activeParticles++;
         snowflake.addEventListener('animationend', () => {{
           snowflake.remove();
           activeParticles--;
         }});
-        
+
         container.appendChild(snowflake);
       }}
-      
+
       const interval = setInterval(createSnowflake, 50);
-      
+
       // Cleanup when container is removed
       const observer = new MutationObserver(() => {{
         if (!document.contains(container)) {{
@@ -340,29 +340,29 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
 
       function createPetal() {{
         if (activeParticles >= maxParticles) return;
-        
+
         const petal = document.createElement('div');
         petal.className = 'petal';
         const startX = Math.random() * 100;
         const duration = Math.random() * 3 + 3;
-        
+
         petal.style.cssText = `
           left: ${{startX}}%;
           top: ${{Math.random() * 100}}%;
           animation: spring-fall ${{duration}}s linear forwards;
         `;
-        
+
         activeParticles++;
         petal.addEventListener('animationend', () => {{
           petal.remove();
           activeParticles--;
         }});
-        
+
         container.appendChild(petal);
       }}
-      
+
       const interval = setInterval(createPetal, 250);
-      
+
       // Cleanup when container is removed
       const observer = new MutationObserver(() => {{
         if (!document.contains(container)) {{
@@ -403,31 +403,31 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
 
       function createStick() {{
         if (activeParticles >= maxParticles) return;
-        
+
         const stick = document.createElement('div');
         stick.className = 'stick-particle';
         const startX = Math.random() * 100;
         const duration = Math.random() * 4 + 3;
         const rotation = (Math.random() - 0.5) * 180;
-        
+
         stick.style.cssText = `
           left: ${{startX}}%;
           top: ${{Math.random() * 100}}%;
           animation: stick-fall ${{duration}}s linear forwards;
           transform: rotate(${{rotation}}deg);
         `;
-        
+
         activeParticles++;
         stick.addEventListener('animationend', () => {{
           stick.remove();
           activeParticles--;
         }});
-        
+
         container.appendChild(stick);
       }}
-      
+
       const interval = setInterval(createStick, 100);
-      
+
       // Cleanup when container is removed
       const observer = new MutationObserver(() => {{
         if (!document.contains(container)) {{
@@ -468,29 +468,29 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
 
       function createLeaf() {{
         if (activeParticles >= maxParticles) return;
-        
+
         const leaf = document.createElement('div');
         leaf.className = 'leaf';
         const startX = Math.random() * 100;
         const duration = Math.random() * 3 + 3;
-        
+
         leaf.style.cssText = `
           left: ${{startX}}%;
           top: ${{Math.random() * 100}}%;
           animation: autumn-fall ${{duration}}s linear forwards;
         `;
-        
+
         activeParticles++;
         leaf.addEventListener('animationend', () => {{
           leaf.remove();
           activeParticles--;
         }});
-        
+
         container.appendChild(leaf);
       }}
-      
+
       const interval = setInterval(createLeaf, 250);
-      
+
       // Cleanup when container is removed
       const observer = new MutationObserver(() => {{
         if (!document.contains(container)) {{
