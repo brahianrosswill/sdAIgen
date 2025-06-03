@@ -415,14 +415,14 @@ def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
     if not file_name and 'drive.google.com' in url:
       info = _center_text('[GDrive]')
 
-    sep_line = '---' * 20
+    sep_line = '───' * 20
 
     print(f"\n\033[32m{sep_line}\033[36;1m{info}\033[32m{sep_line}\033[0m")
-    print(f"\033[33mURL: \033[0m{url}")
-    print(f"\033[33mSAVE DIR: \033[34m{dst_dir}")
-    print(f"\033[33mFILE NAME: \033[34m{file_name}\033[0m")
+    print(f"\033[33m{'URL:':<12}\033[0m{url}")
+    print(f"\033[33m{'SAVE DIR:':<12}\033[34m{dst_dir}")
+    print(f"\033[33m{'FILE NAME:':<12}\033[34m{file_name}\033[0m")
     if 'civitai' in url and image_url:
-        print(f"\033[32m[Preview]:\033[0m {image_name} -> {image_url}")
+        print(f"\033[32m{'[Preview]:':<12}\033[0m{image_name} → {image_url}")
     print()
 
 ''' Main Download Code '''
