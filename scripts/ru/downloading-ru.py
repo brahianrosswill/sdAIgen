@@ -120,7 +120,7 @@ if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
         'ngrok': "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
     }
 
-    print('💿 Installing the libraries will take a bit of time.')
+    print('💿 Установка библиотек займет немного времени.')
     install_packages(install_lib)
     clear_output()
     js.update(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
@@ -564,7 +564,7 @@ def _parse_selection_numbers(num_str, max_num):
 
     return sorted(unique_numbers)
 
-def _get_selected_models(selection, num_selection, model_dict):
+def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, inpainting_model=False):
     selected = []
     if selection == "ALL":
         selected = sum(model_dict.values(), [])
@@ -577,11 +577,9 @@ def _get_selected_models(selection, num_selection, model_dict):
             if 1 <= num <= max_num:
                 name = list(model_dict.keys())[num - 1]
                 selected.extend(model_dict[name])
-    return selected
 
-def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url):
     unique_models = {}
-    for model in _get_selected_models(selection, num_selection, model_dict):
+    for model in selected:
         name = model.get('name') or os.path.basename(model['url'])
         if not inpainting_model and "inpainting" in name:
             continue
@@ -672,7 +670,7 @@ file_urls = [f"{f}.txt" if not f.endswith('.txt') else f for f in custom_file_ur
 
 # p -> prefix ; u -> url | Remember: don't touch the prefix!
 prefixed_urls = [f"{p}:{u}" for p, u in zip(PREFIX_MAP, urls_sources) if u for u in u.replace(',', '').split()]
-line += ', '.join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
+line += ', ' + ', '.join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
 
 if detailed_download == 'on':
     print(f"\n\n{COL.Y}# ====== Подробная Загрузка ====== #\n{COL.X}")
