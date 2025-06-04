@@ -35,9 +35,6 @@ div.compact {
   width: 220px;
   text-overflow: ellipsis;
 }
-.progressDiv {
-  top: -25px;
-}
 
 /* Fixing Sampling steps covered up on phone */
 @media screen and (min-width: 420px) {

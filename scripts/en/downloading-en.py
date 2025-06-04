@@ -421,8 +421,7 @@ def _center_text(text, terminal_width=45):
     return f"{' ' * padding}{text}{' ' * padding}"
 
 def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
-    """Formats and prints download details with colored text.""" 
-
+    """Formats and prints download details with colored text."""
     info = '[NONE]'
     if file_name:
         info = _center_text(f"[{file_name.rsplit('.', 1)[0]}]")
@@ -479,8 +478,7 @@ def _process_download_link(link):
     return None, link, None
 
 def download(line):
-    """Downloads files from comma-separated links, processes prefixes, and unpacks zips post-download."""  
-
+    """Downloads files from comma-separated links, processes prefixes, and unpacks zips post-download."""
     for link in filter(None, map(str.strip, line.split(','))):
         prefix, url, filename = _process_download_link(link)
 
@@ -510,8 +508,11 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
 
         model_type, file_name = data.model_type, data.model_name    # Type, name
         clean_url, url = data.clean_url, data.download_url          # Clean_URL, URL
-        if data.image_url and data.image_name:
-            m_download(f"{data.image_url} {dst_dir} {data.image_name}")
+        image_url, image_name = data.image_url, data.image_name     # Img_URL, Img_Name
+
+        # Download preview images
+        if image_url and image_name:
+            m_download(f"{image_url} {dst_dir} {image_name}")
 
     elif any(s in url for s in ('github', 'huggingface.co')):
         if file_name and '.' not in file_name:
@@ -525,34 +526,41 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
 
 ''' SubModels - Added URLs '''
 
+# Separation of merged numbers
 def _parse_selection_numbers(num_str, max_num):
-    """Parses a string of numbers (with commas/spaces) into unique, valid integers up to max_num."""  
-
+    """Split a string of numbers into unique integers, considering max_num as the upper limit."""
     num_str = num_str.replace(',', ' ').strip()
     unique_numbers = set()
+    max_length = len(str(max_num))
 
-    # Process complete space-separated numbers first
     for part in num_str.split():
-        if part.isdigit():
-            num = int(part)
-            if num <= max_num:
-                unique_numbers.add(num)
+        if not part.isdigit():
+            continue
 
-    # Scanning left-to-right, taking longest possible valid numbers
-    remaining_str = num_str.replace(' ', '')
-    i = 0
-    while i < len(remaining_str):
-        for length in [2, 1]:  # Check 2-digit then 1-digit numbers
-            if i + length <= len(remaining_str):
-                num_part = remaining_str[i:i+length]
-                if num_part.isdigit():
-                    num = int(num_part)
-                    if num <= max_num:
+        # Check if the entire part is a valid number
+        part_int = int(part)
+        if part_int <= max_num:
+            unique_numbers.add(part_int)
+            continue  # No need to split further
+
+        # Split the part into valid numbers starting from the longest possible
+        current_position = 0
+        part_len = len(part)
+        while current_position < part_len:
+            found = False
+            # Try lengths from max_length down to 1
+            for length in range(min(max_length, part_len - current_position), 0, -1):
+                substring = part[current_position:current_position + length]
+                if substring.isdigit():
+                    num = int(substring)
+                    if num <= max_num and num != 0:
                         unique_numbers.add(num)
-                        i += length  # Move forward by matched length
+                        current_position += length
+                        found = True
                         break
-        else:
-            i += 1  # No match, move to next character
+            if not found:
+                # Move to the next character if no valid number found
+                current_position += 1
 
     return sorted(unique_numbers)
 
@@ -596,8 +604,7 @@ line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir
 ''' File.txt - added urls '''
 
 def _process_lines(lines):
-    """Processes text lines, extracts valid URLs with tags/filenames, and ensures uniqueness."""  
-
+    """Processes text lines, extracts valid URLs with tags/filenames, and ensures uniqueness."""
     current_tag = None
     processed_entries = set()  # Store (tag, clean_url) to check uniqueness
     result_urls = []
@@ -636,8 +643,7 @@ def _process_lines(lines):
     return ', '.join(result_urls) if result_urls else ''
 
 def process_file_downloads(file_urls, additional_lines=None):
-    """Reads URLs from files/HTTP sources.""" 
-
+    """Reads URLs from files/HTTP sources."""
     lines = []
 
     if additional_lines:
