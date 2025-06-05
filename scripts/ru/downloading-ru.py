@@ -1,8 +1,8 @@
 # ~ download.py | by ANXETY ~
 
 from webui_utils import handle_setup_timer    # WEBUI
+from Manager import m_download, m_clone       # Every Download | Clone
 from CivitaiAPI import CivitAiAPI             # CivitAI API
-from Manager import m_download                # Every Download
 import json_utils as js                       # JSON
 
 from IPython.display import clear_output

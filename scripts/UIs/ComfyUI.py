@@ -1,7 +1,7 @@
 # ~ ComfyUI.py | by ANXETY ~
 
-from Manager import m_download, m_clone    # Every Download | Clone
-import json_utils as js                    # JSON
+from Manager import m_download   # Every Download
+import json_utils as js          # JSON
 
 from IPython.display import clear_output
 from IPython.utils import capture
@@ -19,8 +19,8 @@ ipySys = get_ipython().system
 UI = 'ComfyUI'
 
 HOME = Path.home()
-VENV = HOME / 'venv'
 WEBUI = HOME / UI
+VENV = HOME / 'venv'
 SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'
 
