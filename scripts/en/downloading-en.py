@@ -684,19 +684,13 @@ print('\r🏁 Download Complete!' + ' '*15)
 
 
 ## Install of Custom extensions
-def _clone_repository(repo, repo_name, extension_dir):
-    """Clones the repository to the specified directory."""
-    repo_name = repo_name or repo.split('/')[-1]
-    command = f"cd {extension_dir} && git clone --depth 1 --recursive {repo} {repo_name} && cd {repo_name} && git fetch"
-    ipySys(command)
-
 extension_type = 'nodes' if UI == 'ComfyUI' else 'extensions'
 
 if extension_repo:
     print(f"✨ Installing custom {extension_type}...", end='')
     with capture.capture_output():
-        for repo, repo_name in extension_repo:
-            _clone_repository(repo, repo_name, extension_dir)
+        for repo_url, repo_name in extension_repo:
+            m_clone(f"{repo_url} {extension_dir} {repo_name}")
     print(f"\r📦 Installed '{len(extension_repo)}' custom {extension_type}!")
 
 
