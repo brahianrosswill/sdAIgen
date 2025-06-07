@@ -7,6 +7,7 @@ from IPython.display import clear_output
 from IPython import get_ipython
 from datetime import timedelta
 from pathlib import Path
+import nest_asyncio
 import subprocess
 import requests
 import argparse
@@ -33,6 +34,9 @@ SETTINGS_PATH = SCR_PATH / 'settings.json'
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
+
+
+nest_asyncio.apply()  # Async support for Jupyter
 
 
 BIN = str(VENV / 'bin')
@@ -289,9 +293,6 @@ class TunnelManager:
         )
 
 ## ========================= Main ========================
-
-import nest_asyncio
-nest_asyncio.apply()
 
 if __name__ == '__main__':
     """Main execution flow"""
