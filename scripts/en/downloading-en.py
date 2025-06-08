@@ -46,7 +46,7 @@ class COLORS:
     G  =  "\033[32m"     # Green
     Y  =  "\033[33m"     # Yellow
     B  =  "\033[34m"     # Blue
-    lB =  "\033[36;1m"   # lightBlue
+    lB =  "\033[36;1m"   # lightBlue + BOLD
     X  =  "\033[0m"      # Reset
 
 COL = COLORS

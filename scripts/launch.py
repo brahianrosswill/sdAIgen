@@ -48,6 +48,18 @@ if PKG not in os.environ['PYTHONPATH']:
     os.environ['PYTHONPATH'] = PKG + ':' + os.environ['PYTHONPATH']
 
 
+# Text Colors (\033)
+class COLORS:
+    R  =  "\033[31m"     # Red
+    G  =  "\033[32m"     # Green
+    Y  =  "\033[33m"     # Yellow
+    B  =  "\033[34m"     # Blue
+    lB =  "\033[36m"     # lightBlue
+    X  =  "\033[0m"      # Reset
+
+COL = COLORS
+
+
 ## ================ loading settings V5 ==================
 
 def load_settings(path):
@@ -146,10 +158,10 @@ class TunnelManager:
 
     async def _print_status(self):
         """Async status printer"""
-        print('\033[33m>> Tunnels:\033[0m')
+        print(f"{COL.Y}>> Tunnels:{COL.X}")
         while True:
             service_name = await self.checking_queue.get()
-            print(f"- 🕒 Checking \033[36m{service_name}\033[0m...")
+            print(f"- 🕒 Checking {COL.lB}{service_name}{COL.X}...")
             self.checking_queue.task_done()
 
     async def _test_tunnel(self, name, config):
@@ -224,7 +236,7 @@ class TunnelManager:
             ('Localtunnel', {
                 'command': f"lt --port {self.tunnel_port}",
                 'pattern': re.compile(r'[\w-]+\.loca\.lt'),
-                'note': f"Password: \033[32m{self.public_ip}\033[0m"
+                'note': f"Password: {COL.G}{self.public_ip}{COL.X}"
             })
         ]
 
@@ -342,16 +354,16 @@ if __name__ == '__main__':
                 js.save(COMFYUI_SETTINGS_PATH, 'install_req', True)
                 clear_output(wait=True)
 
-        print(f"\033[34m>> Total Tunnels:\033[0m {total} | \033[32mSuccess:\033[0m {success} | \033[31mErrors:\033[0m {errors}\n")
+        print(f"{COL.B}>> Total Tunnels:{COL.X} {total} | {COL.G}Success:{COL.X} {success} | {COL.R}Errors:{COL.X} {errors}\n")
 
         # Display error details if any
         if args.log and errors > 0:
-            print('\033[31m>> Failed Tunnels:\033[0m')
+            print(f"{COL.R}>> Failed Tunnels:{COL.X}")
             for error in tunnel_mgr.error_reasons:
                 print(f"  - {error['name']}: {error['reason']}")
             print()
 
-        print(f"🔧 WebUI: \033[34m{UI}\033[0m")
+        print(f"🔧 WebUI: {COL.B}{UI}{COL.X}")
 
         try:
             ipySys(LAUNCHER)
@@ -368,6 +380,6 @@ if __name__ == '__main__':
         with open(f"{WEBUI}/static/timer.txt") as f:
             timer = float(f.read())
             duration = timedelta(seconds=time.time() - timer)
-            print(f"\n⌚️ Session duration: \033[33m{str(duration).split('.')[0]}\033[0m")
+            print(f"\n⌚️ Session duration: {COL.Y}{str(duration).split('.')[0]}{COL.X}")
     except FileNotFoundError:
         pass
