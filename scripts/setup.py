@@ -235,10 +235,10 @@ async def main_async(args=None):
     parser.add_argument('-s', '--skip-download', action="store_true", help="Skip downloading files")
     parser.add_argument('-l', "--log", action="store_true", help="Enable logging of download errors")
 
-    args, _ = parser.parse_known_args(args)   # GitHub: user/repo
+    args, _ = parser.parse_known_args(args)
 
     env = detect_environment()
-    user, repo = parse_fork_arg(args.fork)
+    user, repo = parse_fork_arg(args.fork)   # GitHub: user/repo
 
     # download scripts files
     if not args.skip_download:

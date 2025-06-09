@@ -26,11 +26,13 @@ osENV = os.environ
 CD = os.chdir
 ipySys = get_ipython().system
 
-# Constants
-HOME = osENV['home_path']
-VENV = osENV['venv_path']
-SCR_PATH = osENV['scr_path']
-SETTINGS_PATH = osENV['settings_path']
+# Constants (auto-convert env vars to Path)
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
+
+HOME = PATHS['home_path']
+VENV = PATHS['venv_path']
+SCR_PATH = PATHS['scr_path']
+SETTINGS_PATH = PATHS['settings_path']
 
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')

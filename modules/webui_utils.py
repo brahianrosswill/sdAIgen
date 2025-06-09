@@ -7,11 +7,19 @@ import json
 import os
 
 
+osENV = os.environ
+
+
 # ======================= CONSTANTS =======================
 
-HOME = Path.home()
-SCR_PATH = HOME / 'ANXETY'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
+# Constants (auto-convert env vars to Path)
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
+
+HOME = PATHS['home_path']
+VENV = PATHS['venv_path']
+SCR_PATH = PATHS['scr_path']
+SETTINGS_PATH = PATHS['settings_path']
+
 DEFAULT_UI = 'A1111'
 
 WEBUI_PATHS = {

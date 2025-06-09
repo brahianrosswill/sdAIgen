@@ -2,6 +2,7 @@ from IPython.display import display, HTML
 import datetime
 import argparse
 
+
 TRANSLATIONS = {
     'en': {
         'done_message': "Done! Now you can run the cells below. ☄️",
@@ -18,6 +19,7 @@ TRANSLATIONS = {
         'current_branch': "Текущая ветка:"
     }
 }
+
 
 def get_season():
     month = datetime.datetime.now().month

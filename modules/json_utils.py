@@ -6,6 +6,7 @@ import logging
 import json
 import os
 
+
 # ==================== Logger Configuration ====================
 
 logging.basicConfig(level=logging.WARNING)
@@ -29,6 +30,7 @@ handler.setFormatter(CustomFormatter())
 logger.addHandler(handler)
 logger.propagate = False
 
+
 # =============== Argument Validation Decorator ================
 
 def validate_args(min_args: int, max_args: int):
@@ -50,6 +52,7 @@ def validate_args(min_args: int, max_args: int):
             return func(*args)
         return wrapper
     return decorator
+
 
 # ===================== Core Functionality =====================
 
@@ -138,6 +141,7 @@ def _write_json(filepath: str | Path, data: dict):
             json.dump(data, f, indent=4, ensure_ascii=False)
     except Exception as e:
         logger.error(f"Write error ({filepath}): {str(e)}")
+
 
 # ======================= Main Functions =======================
 
