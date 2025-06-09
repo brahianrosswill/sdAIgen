@@ -12,18 +12,19 @@ import asyncio
 import os
 
 
+osENV = os.environ
 CD = os.chdir
 ipySys = get_ipython().system
 
 # Constants
 UI = 'Forge'
 
-HOME = Path.home()
-WEBUI = HOME / UI
-VENV = HOME / 'venv'
-SCR_PATH = HOME / 'ANXETY'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
+HOME = osENV['home_path']
+VENV = osENV['venv_path']
+SCR_PATH = osENV['scr_path']
+SETTINGS_PATH = osENV['settings_path']
 
+WEBUI = HOME / UI
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 
 REPO_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"

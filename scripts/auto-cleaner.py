@@ -12,10 +12,12 @@ import time
 import os
 
 
+osENV = os.environ
+
 # Constants
-HOME = Path.home()
-SCR_PATH = HOME / 'ANXETY'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
+HOME = osENV['home_path']
+SCR_PATH = osENV['scr_path']
+SETTINGS_PATH = osENV['settings_path']
 
 CSS = SCR_PATH / 'CSS'
 cleaner_css = CSS / 'auto-cleaner.css'

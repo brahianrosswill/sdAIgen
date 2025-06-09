@@ -23,16 +23,18 @@ import re
 import os
 
 
+osENV = os.environ
 CD = os.chdir
 ipySys = get_ipython().system
 ipyRun = get_ipython().run_line_magic
 
 # Constants
-HOME = Path.home()
-VENV = HOME / 'venv'
-SCR_PATH = Path(HOME / 'ANXETY')
+HOME = osENV['home_path']
+VENV = osENV['venv_path']
+SCR_PATH = osENV['scr_path']
+SETTINGS_PATH = osENV['settings_path']
+
 SCRIPTS = SCR_PATH / 'scripts'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
 
 LANG = js.read(SETTINGS_PATH, 'ENVIRONMENT.lang')
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')

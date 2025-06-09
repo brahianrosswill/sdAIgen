@@ -22,14 +22,15 @@ import os
 import re
 
 
+osENV = os.environ
 CD = os.chdir
 ipySys = get_ipython().system
 
 # Constants
-HOME = Path.home()
-VENV = HOME / 'venv'
-SCR_PATH = HOME / 'ANXETY'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
+HOME = osENV['home_path']
+VENV = osENV['venv_path']
+SCR_PATH = osENV['scr_path']
+SETTINGS_PATH = osENV['settings_path']
 
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
@@ -42,10 +43,10 @@ nest_asyncio.apply()  # Async support for Jupyter
 BIN = str(VENV / 'bin')
 PKG = str(VENV / 'lib/python3.10/site-packages')
 
-if BIN not in os.environ['PATH']:
-    os.environ['PATH'] = BIN + ':' + os.environ['PATH']
-if PKG not in os.environ['PYTHONPATH']:
-    os.environ['PYTHONPATH'] = PKG + ':' + os.environ['PYTHONPATH']
+if BIN not in osENV['PATH']:
+    osENV['PATH'] = BIN + ':' + osENV['PATH']
+if PKG not in osENV['PYTHONPATH']:
+    osENV['PYTHONPATH'] = PKG + ':' + osENV['PYTHONPATH']
 
 
 # Text Colors (\033)
@@ -311,7 +312,7 @@ if __name__ == '__main__':
     args = parse_arguments()
     print('Please Wait...\n')
 
-    os.environ['PYTHONWARNINGS'] = 'ignore'
+    osENV['PYTHONWARNINGS'] = 'ignore'
 
     # Initialize tunnel manager and services
     tunnel_port = 8188 if UI == 'ComfyUI' else 7860
