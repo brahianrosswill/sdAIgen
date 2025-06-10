@@ -117,7 +117,7 @@ def _update_config_paths():
 def get_launch_command():
     """Construct launch command based on configuration"""
     base_args = commandline_arguments
-    password = 'ha4ez7147b5vdlu5u8f8flrllgn61kpbgbh6emil'
+    password = 'emoy4cnkm6imbysp84zmfiz1opahooblh7j34sgh'
 
     common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
     if ENV_NAME == 'Kaggle':
