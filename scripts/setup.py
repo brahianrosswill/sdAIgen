@@ -65,18 +65,6 @@ FILE_STRUCTURE = {
 
 # =================== UTILITY FUNCTIONS ====================
 
-def load_json(filepath) -> dict:
-    """Load JSON from file."""
-    try:
-        return json.loads(filepath.read_text()) if filepath.exists() else {}
-    except (json.JSONDecodeError, OSError):
-        return {}
-
-def save_json(data: dict, filepath: Path) -> None:
-    """Save data to JSON file."""
-    filepath.parent.mkdir(parents=True, exist_ok=True)
-    filepath.write_text(json.dumps(data, indent=4))
-
 def _install_deps() -> bool:
     """Check if all required dependencies are installed (aria2 and gdown)."""
     try:
@@ -88,8 +76,29 @@ def _install_deps() -> bool:
 
 def _get_start_timer() -> int:
     """Get start timer from settings or return current time minus 5 seconds."""
-    settings = load_json(SETTINGS_PATH)
-    return settings.get("ENVIRONMENT", {}).get("start_timer", int(time.time() - 5))
+    try:
+        if SETTINGS_PATH.exists():
+            settings = json.loads(SETTINGS_PATH.read_text())
+            return settings.get("ENVIRONMENT", {}).get("start_timer", int(time.time() - 5))
+    except (json.JSONDecodeError, OSError):
+        pass
+    return int(time.time() - 5)
+
+def save_env_to_json(data: dict, filepath: Path) -> None:
+    """Save environment data to JSON file, merging with existing content."""
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+
+    # Load existing data if file exists
+    existing_data = {}
+    if filepath.exists():
+        try:
+            existing_data = json.loads(filepath.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    # Merge new data with existing
+    merged_data = {**existing_data, **data}
+    filepath.write_text(json.dumps(merged_data, indent=4))
 
 
 # =================== MODULE MANAGEMENT ====================
@@ -246,7 +255,7 @@ async def main_async(args=None):
 
     setup_module_folder()
     env_data = create_environment_data(env, args.lang, user, repo, args.branch)
-    save_json(env_data, SETTINGS_PATH)
+    save_env_to_json(env_data, SETTINGS_PATH)
 
     # Display info after setup
     from _season import display_info

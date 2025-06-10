@@ -584,7 +584,7 @@ def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, in
 
     unique_models = {}
     for model in selected:
-        name = model.get('name') or os.path.basename(model['url'])
+        name = model.get('name') or os.path.basename(model['url'])    # ToolTip: `name` is an optional parameter
         if not inpainting_model and "inpainting" in name:
             continue
         unique_models[name] = {
@@ -593,10 +593,10 @@ def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, in
             'name': name
         }
 
-    return base_url + ', '.join(
-        f"{m['url']} {m['dst_dir']} {m['name']}"
-        for m in unique_models.values()
-    )
+    for model in unique_models.values():
+        base_url += f"{model['url']} {model['dst_dir']} {model['name']}, "
+
+    return base_url
 
 line = ""
 line = handle_submodels(model, model_num, model_list, model_dir, line)
@@ -674,7 +674,7 @@ file_urls = [f"{f}.txt" if not f.endswith('.txt') else f for f in custom_file_ur
 
 # p -> prefix ; u -> url | Remember: don't touch the prefix!
 prefixed_urls = [f"{p}:{u}" for p, u in zip(PREFIX_MAP, urls_sources) if u for u in u.replace(',', '').split()]
-line += ', ' + ', '.join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
+line += ', '.join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
 
 if detailed_download == 'on':
     print(f"\n\n{COL.Y}# ====== Подробная Загрузка ====== #\n{COL.X}")
