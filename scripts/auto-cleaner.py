@@ -25,7 +25,7 @@ CSS = SCR_PATH / 'CSS'
 cleaner_css = CSS / 'auto-cleaner.css'
 
 
-## ================ loading settings V5 ==================
+# =================== loading settings V5 ==================
 
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -43,7 +43,8 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-## ================= AutoCleaner function ================
+
+# ================== AutoCleaner function ==================
 
 def _update_memory_info():
     disk_space = psutil.disk_usage(os.getcwd())
@@ -103,7 +104,8 @@ def execute_button_press(button):
 def hide_button_press(button):
     factory.close(container, class_names=['hide'], delay=0.5)
 
-## ================= AutoCleaner Widgets =================
+
+# =================== AutoCleaner Widgets ==================
 
 # Initialize the WidgetFactory
 factory = WidgetFactory()

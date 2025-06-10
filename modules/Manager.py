@@ -28,7 +28,7 @@ CAI_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.civitai_token') or '65b66176dcf284b2
 HF_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.huggingface_token') or ''
 
 
-## =================== Helper Function ===================
+# ===================== Helper Function ====================
 
 # Logging function
 def log_message(message, log=False):
@@ -74,7 +74,8 @@ def is_github_url(url):
     parsed = urlparse(url)
     return parsed.netloc in ('github.com', 'www.github.com')
 
-## ====================== Download =======================
+
+# ======================== Download ========================
 
 # Download function
 @handle_errors
@@ -270,7 +271,8 @@ def clean_url(url):
 
     return url
 
-## ======================== Clone ========================
+
+# ========================== Clone =========================
 
 def m_clone(input_source, recursive=True, depth=1, log=False):
     """Main function to clone repositories"""

@@ -1,3 +1,8 @@
+"""
+This is a modified `main.py` script from the `gradio-tunneling` library.
+The script was rewritten specifically for sdAIgen (to get the tunneling URL)
+"""
+
 from typing import List, Optional, Tuple
 from pathlib import Path
 import subprocess

@@ -56,7 +56,7 @@ class COLORS:
 COL = COLORS
 
 
-## =================== LIBRARIES | VENV ==================
+# ==================== LIBRARIES | VENV ====================
 
 def install_dependencies(commands):
     """Run a list of installation commands."""
@@ -165,7 +165,8 @@ if venv_needs_reinstall:
 #     setup_venv()
 #     clear_output()
 
-## ================ loading settings V5 ==================
+
+# =================== loading settings V5 ==================
 
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -183,7 +184,8 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-## ======================== WEBUI ========================
+
+# ========================== WEBUI =========================
 
 if UI in ['A1111', 'SD-UX'] and not os.path.exists('/root/.cache/huggingface/hub/models--Bingsu--adetailer'):
     print('🚚 Unpacking ADetailer model cache...')
@@ -386,6 +388,8 @@ def handle_gdrive(mount_flag, log=False):
 
 handle_gdrive(mountGDrive)
 
+
+# ======================= DOWNLOADING ======================
 
 # Get XL or 1.5 models list
 ## model_list | vae_list | controlnet_list

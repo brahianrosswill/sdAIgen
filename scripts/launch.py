@@ -63,7 +63,7 @@ class COLORS:
 COL = COLORS
 
 
-## ================ loading settings V5 ==================
+# =================== loading settings V5 ==================
 
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -81,7 +81,8 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-## ====================== Helpers ========================
+
+# ==================== Helper Functions ====================
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -131,7 +132,8 @@ def get_launch_command():
     else:
         return f"python3 launch.py {base_args}{common_args}"
 
-## ===================== Tunneling =======================
+
+# ======================== Tunneling =======================
 
 class TunnelManager:
     """Class for managing tunnel services"""
@@ -307,7 +309,8 @@ class TunnelManager:
             len(self.error_reasons)
         )
 
-## ========================= Main ========================
+
+# ========================== Main ==========================
 
 if __name__ == '__main__':
     """Main execution flow"""

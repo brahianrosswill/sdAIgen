@@ -10,7 +10,7 @@ import os
 osENV = os.environ
 
 
-# ======================= CONSTANTS =======================
+# ======================== CONSTANTS =======================
 
 # Constants (auto-convert env vars to Path)
 PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
@@ -38,7 +38,7 @@ WEBUI_PATHS = {
 }
 
 
-# ==================== WEBUI HANDLERS ====================
+# ===================== WEBUI HANDLERS =====================
 
 def update_current_webui(current_value: str) -> None:
     """Update the current WebUI value and save settings."""
