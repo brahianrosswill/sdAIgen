@@ -88,10 +88,6 @@
         "denoising_strength",
         "seed"
     ],
-    "state_extensions": [
-        "control-net",
-        "adetailer"
-    ],
     "state_ui": [
         "Reset Button",
         "Import Button",
