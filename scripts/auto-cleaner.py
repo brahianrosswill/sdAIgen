@@ -12,16 +12,20 @@ import time
 import os
 
 
-# Constants
-HOME = Path.home()
-SCR_PATH = HOME / 'ANXETY'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
+osENV = os.environ
+
+# Constants (auto-convert env vars to Path)
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
+
+HOME = PATHS['home_path']
+SCR_PATH = PATHS['scr_path']
+SETTINGS_PATH = PATHS['settings_path']
 
 CSS = SCR_PATH / 'CSS'
 cleaner_css = CSS / 'auto-cleaner.css'
 
 
-## ================ loading settings V5 ==================
+# =================== loading settings V5 ==================
 
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -39,7 +43,8 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-## ================= AutoCleaner function ================
+
+# ================== AutoCleaner function ==================
 
 def _update_memory_info():
     disk_space = psutil.disk_usage(os.getcwd())
@@ -99,7 +104,8 @@ def execute_button_press(button):
 def hide_button_press(button):
     factory.close(container, class_names=['hide'], delay=0.5)
 
-## ================= AutoCleaner Widgets =================
+
+# =================== AutoCleaner Widgets ==================
 
 # Initialize the WidgetFactory
 factory = WidgetFactory()

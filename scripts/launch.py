@@ -7,6 +7,7 @@ from IPython.display import clear_output
 from IPython import get_ipython
 from datetime import timedelta
 from pathlib import Path
+import nest_asyncio
 import subprocess
 import requests
 import argparse
@@ -21,30 +22,48 @@ import os
 import re
 
 
+osENV = os.environ
 CD = os.chdir
 ipySys = get_ipython().system
 
-# Constants
-HOME = Path.home()
-VENV = HOME / 'venv'
-SCR_PATH = HOME / 'ANXETY'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
+# Constants (auto-convert env vars to Path)
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
+
+HOME = PATHS['home_path']
+VENV = PATHS['venv_path']
+SCR_PATH = PATHS['scr_path']
+SETTINGS_PATH = PATHS['settings_path']
 
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
 
+nest_asyncio.apply()  # Async support for Jupyter
+
+
 BIN = str(VENV / 'bin')
 PKG = str(VENV / 'lib/python3.10/site-packages')
 
-if BIN not in os.environ['PATH']:
-    os.environ['PATH'] = BIN + ':' + os.environ['PATH']
-if PKG not in os.environ['PYTHONPATH']:
-    os.environ['PYTHONPATH'] = PKG + ':' + os.environ['PYTHONPATH']
+if BIN not in osENV['PATH']:
+    osENV['PATH'] = BIN + ':' + osENV['PATH']
+if PKG not in osENV['PYTHONPATH']:
+    osENV['PYTHONPATH'] = PKG + ':' + osENV['PYTHONPATH']
 
 
-## ================ loading settings V5 ==================
+# Text Colors (\033)
+class COLORS:
+    R  =  "\033[31m"     # Red
+    G  =  "\033[32m"     # Green
+    Y  =  "\033[33m"     # Yellow
+    B  =  "\033[34m"     # Blue
+    lB =  "\033[36m"     # lightBlue
+    X  =  "\033[0m"      # Reset
+
+COL = COLORS
+
+
+# =================== loading settings V5 ==================
 
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -62,7 +81,8 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-## ====================== Helpers ========================
+
+# ==================== Helper Functions ====================
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -97,7 +117,7 @@ def _update_config_paths():
 def get_launch_command():
     """Construct launch command based on configuration"""
     base_args = commandline_arguments
-    password = 'ha4ez7147b5vdlu5u8f8flrllgn61kpbgbh6emil'
+    password = 'emoy4cnkm6imbysp84zmfiz1opahooblh7j34sgh'
 
     common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
     if ENV_NAME == 'Kaggle':
@@ -112,7 +132,8 @@ def get_launch_command():
     else:
         return f"python3 launch.py {base_args}{common_args}"
 
-## ===================== Tunneling =======================
+
+# ======================== Tunneling =======================
 
 class TunnelManager:
     """Class for managing tunnel services"""
@@ -142,10 +163,10 @@ class TunnelManager:
 
     async def _print_status(self):
         """Async status printer"""
-        print('\033[33m>> Tunnels:\033[0m')
+        print(f"{COL.Y}>> Tunnels:{COL.X}")
         while True:
             service_name = await self.checking_queue.get()
-            print(f"- 🕒 Checking \033[36m{service_name}\033[0m...")
+            print(f"- 🕒 Checking {COL.lB}{service_name}{COL.X}...")
             self.checking_queue.task_done()
 
     async def _test_tunnel(self, name, config):
@@ -220,7 +241,7 @@ class TunnelManager:
             ('Localtunnel', {
                 'command': f"lt --port {self.tunnel_port}",
                 'pattern': re.compile(r'[\w-]+\.loca\.lt'),
-                'note': f"Password: \033[32m{self.public_ip}\033[0m"
+                'note': f"Password: {COL.G}{self.public_ip}{COL.X}"
             })
         ]
 
@@ -288,17 +309,15 @@ class TunnelManager:
             len(self.error_reasons)
         )
 
-## ========================= Main ========================
 
-import nest_asyncio
-nest_asyncio.apply()
+# ========================== Main ==========================
 
 if __name__ == '__main__':
     """Main execution flow"""
     args = parse_arguments()
     print('Please Wait...\n')
 
-    os.environ['PYTHONWARNINGS'] = 'ignore'
+    osENV['PYTHONWARNINGS'] = 'ignore'
 
     # Initialize tunnel manager and services
     tunnel_port = 8188 if UI == 'ComfyUI' else 7860
@@ -341,16 +360,16 @@ if __name__ == '__main__':
                 js.save(COMFYUI_SETTINGS_PATH, 'install_req', True)
                 clear_output(wait=True)
 
-        print(f"\033[34m>> Total Tunnels:\033[0m {total} | \033[32mSuccess:\033[0m {success} | \033[31mErrors:\033[0m {errors}\n")
+        print(f"{COL.B}>> Total Tunnels:{COL.X} {total} | {COL.G}Success:{COL.X} {success} | {COL.R}Errors:{COL.X} {errors}\n")
 
         # Display error details if any
         if args.log and errors > 0:
-            print('\033[31m>> Failed Tunnels:\033[0m')
+            print(f"{COL.R}>> Failed Tunnels:{COL.X}")
             for error in tunnel_mgr.error_reasons:
                 print(f"  - {error['name']}: {error['reason']}")
             print()
 
-        print(f"🔧 WebUI: \033[34m{UI}\033[0m")
+        print(f"🔧 WebUI: {COL.B}{UI}{COL.X}")
 
         try:
             ipySys(LAUNCHER)
@@ -367,6 +386,6 @@ if __name__ == '__main__':
         with open(f"{WEBUI}/static/timer.txt") as f:
             timer = float(f.read())
             duration = timedelta(seconds=time.time() - timer)
-            print(f"\n⌚️ Session duration: \033[33m{str(duration).split('.')[0]}\033[0m")
+            print(f"\n⌚️ Session duration: {COL.Y}{str(duration).split('.')[0]}{COL.X}")
     except FileNotFoundError:
         pass

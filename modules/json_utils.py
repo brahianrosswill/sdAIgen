@@ -6,7 +6,8 @@ import logging
 import json
 import os
 
-# ==================== Logger Configuration ====================
+
+# ================== Logger Configuration ==================
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -29,7 +30,8 @@ handler.setFormatter(CustomFormatter())
 logger.addHandler(handler)
 logger.propagate = False
 
-# ==================== Argument Validation Decorator ====================
+
+# ============= Argument Validation Decorator ==============
 
 def validate_args(min_args: int, max_args: int):
     """Decorator to validate number of arguments in variadic functions
@@ -51,7 +53,8 @@ def validate_args(min_args: int, max_args: int):
         return wrapper
     return decorator
 
-# ==================== Core Functionality ====================
+
+# =================== Core Functionality ===================
 
 def parse_key(key: str) -> list[str]:
     """
@@ -139,7 +142,8 @@ def _write_json(filepath: str | Path, data: dict):
     except Exception as e:
         logger.error(f"Write error ({filepath}): {str(e)}")
 
-# ==================== Main Functions ====================
+
+# ===================== Main Functions =====================
 
 @validate_args(1, 3)
 def read(*args) -> any:

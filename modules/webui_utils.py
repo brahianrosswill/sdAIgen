@@ -1,15 +1,26 @@
-""" WebUI Utils Module | by ANXETY """
+""" WebUI Utilities Module | by ANXETY """
 
-import json_utils as js    # JSON
+import json_utils as js
 
 from pathlib import Path
+import json
 import os
 
 
-# Constants
-HOME = Path.home()
-SCR_PATH = HOME / 'ANXETY'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
+osENV = os.environ
+
+
+# ======================== CONSTANTS =======================
+
+# Constants (auto-convert env vars to Path)
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
+
+HOME = PATHS['home_path']
+VENV = PATHS['venv_path']
+SCR_PATH = PATHS['scr_path']
+SETTINGS_PATH = PATHS['settings_path']
+
+DEFAULT_UI = 'A1111'
 
 WEBUI_PATHS = {
     'A1111': (
@@ -26,10 +37,10 @@ WEBUI_PATHS = {
     )
 }
 
-DEFAULT_UI = 'A1111'
 
+# ===================== WEBUI HANDLERS =====================
 
-def update_current_webui(current_value):
+def update_current_webui(current_value: str) -> None:
     """Update the current WebUI value and save settings."""
     current_stored = js.read(SETTINGS_PATH, 'WEBUI.current')
     latest_value = js.read(SETTINGS_PATH, 'WEBUI.latest', None)
@@ -41,8 +52,9 @@ def update_current_webui(current_value):
     js.save(SETTINGS_PATH, 'WEBUI.webui_path', str(HOME / current_value))
     _set_webui_paths(current_value)
 
-def _set_webui_paths(ui):
-    """Configure paths for specified UI, fallback to A1111 for unknown UIs"""
+
+def _set_webui_paths(ui: str) -> None:
+    """Configure paths for specified UI, fallback to A1111 for unknown UIs."""
     selected_ui = ui if ui in WEBUI_PATHS else DEFAULT_UI
     webui_root = HOME / ui
     models_root = webui_root / 'models'
@@ -68,7 +80,7 @@ def _set_webui_paths(ui):
         'upscale_dir': str(models_root / upscale),
         'output_dir': str(webui_root / output),
         'config_dir': str(config_root),
-        # other dirs
+        # Additional directories
         'adetailer_dir': str(models_root / ('ultralytics' if is_comfy else 'adetailer')),
         'clip_dir': str(models_root / ('clip' if is_comfy else 'text_encoder')),
         'unet_dir': str(models_root / ('unet' if is_comfy else 'text_encoder')),
@@ -79,7 +91,8 @@ def _set_webui_paths(ui):
 
     js.update(SETTINGS_PATH, 'WEBUI', path_config)
 
-def handle_setup_timer(webui_path, timer_webui):
+
+def handle_setup_timer(webui_path: str, timer_webui: float) -> float:
     """Manage timer persistence for WebUI instances."""
     timer_file = Path(webui_path) / 'static' / 'timer.txt'
     timer_file.parent.mkdir(parents=True, exist_ok=True)

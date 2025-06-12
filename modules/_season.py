@@ -1,6 +1,9 @@
+""" Season Info Module | by ANXETY """
+
 from IPython.display import display, HTML
 import datetime
 import argparse
+
 
 TRANSLATIONS = {
     'en': {
@@ -18,6 +21,7 @@ TRANSLATIONS = {
         'current_branch': "Текущая ветка:"
     }
 }
+
 
 def get_season():
     month = datetime.datetime.now().month
@@ -512,6 +516,7 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
         display(HTML(SUMMER_SCRIPT))
     elif season == 'autumn':
         display(HTML(AUTUMN_SCRIPT))
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

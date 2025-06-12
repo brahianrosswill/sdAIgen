@@ -7,6 +7,7 @@ from pathlib import Path
 import requests
 import os
 
+
 class CivitAiLogger:
     """Provides colored logging functionality for API events"""
 
@@ -22,6 +23,7 @@ class CivitAiLogger:
     def info(message: str):
         print(f"\033[34m[API Info]:\033[0m {message}")
 
+
 @dataclass
 class ModelData:
     """Container for validated model metadata"""
@@ -34,6 +36,7 @@ class ModelData:
     image_url: Optional[str] = None
     image_name: Optional[str] = None
     is_early_access: bool = False
+
 
 class CivitAiAPI:
     """

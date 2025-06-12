@@ -39,7 +39,7 @@ English | [Русский](README-ru-RU.md)
 | [Aspect-Ratio-Helper](https://github.com/thomasasfk/sd-webui-aspect-ratio-helper) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [CivitAi-Browser-plus](https://github.com/anxety-solo/sd-civitai-browser-plus) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [ControlNet](https://github.com/Mikubill/sd-webui-controlnet) | ✔️ | 🔄 | 🔄 | 🔄 | ✔️ |
-| [Encrypt-Image](https://github.com/gutris1/sd-encrypt-image) | ✔️<sup>†</sup> | ✔️<sup>†</sup> | ✔️<sup>†</sup> | ✔️<sup>†</sup> | ✔️<sup>†</sup> |
+| [Encrypt-Image](https://github.com/anxety-solo/sd-encrypt-image) | ✔️<sup>†</sup> | ✔️<sup>†</sup> | ✔️<sup>†</sup> | ✔️<sup>†</sup> | ✔️<sup>†</sup> |
 | [Image-Info](https://github.com/gutris1/sd-image-info) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [Image-Viewer](https://github.com/gutris1/sd-image-viewer) | ✔️ | ✔️ | ❌ | ✔️ | ✔️ |
 | [Infinite-Image-Browsing](https://github.com/zanllp/sd-webui-infinite-image-browsing) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |

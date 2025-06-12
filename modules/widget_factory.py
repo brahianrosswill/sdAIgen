@@ -4,6 +4,7 @@ from IPython.display import display, HTML
 import ipywidgets as widgets
 import time
 
+
 class WidgetFactory:
     # INIT
     def __init__(self):

@@ -9,10 +9,14 @@ from pathlib import Path
 import os
 
 
-# Constants
-HOME = Path.home()
-SCR_PATH = Path(HOME / 'ANXETY')
-SETTINGS_PATH = SCR_PATH / 'settings.json'
+osENV = os.environ
+
+# Constants (auto-convert env vars to Path)
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
+
+HOME = PATHS['home_path']
+SCR_PATH = PATHS['scr_path']
+SETTINGS_PATH = PATHS['settings_path']
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 
 SCRIPTS = SCR_PATH / 'scripts'
@@ -23,7 +27,7 @@ widgets_css = CSS / 'main-widgets.css'
 widgets_js = JS / 'main-widgets.js'
 
 
-## ======================= WIDGETS =======================
+# ========================= WIDGETS ========================
 
 def create_expandable_button(text, url):
     return factory.create_html(f'''
@@ -186,7 +190,7 @@ custom_file_urls_widget = factory.create_text('Файл (txt):')
 save_button = factory.create_button('Сохранить', class_names=['button', 'button_save'])
 
 
-## ============ MODULE | GDrive Toggle Button ============
+# ============== MODULE | GDrive Toggle Button =============
 """Create Google Drive toggle button for Colab only."""
 from pathlib import Path
 
@@ -215,7 +219,7 @@ else:
     GDrive_button.layout.display = 'none'   # Hide GD-btn if ENV is not Colab
 
 
-## ================== DISPLAY / SETTINGS =================
+# =================== DISPLAY / SETTINGS ===================
 
 factory.load_css(widgets_css)   # load CSS (widgets)
 factory.load_js(widgets_js)     # load JS (widgets)
@@ -250,7 +254,8 @@ WIDGET_LIST = factory.create_vbox([model_box, vae_box, additional_box, custom_do
                                   class_names=['mainContainer'])
 factory.display(WIDGET_LIST)
 
-## ================== CALLBACK FUNCTION ==================
+
+# ==================== CALLBACK FUNCTION ===================
 
 # Initialize visibility | hidden
 check_custom_nodes_deps_widget.layout.display = 'none'
@@ -326,7 +331,8 @@ factory.connect_widgets([(change_webui_widget, 'value')], update_change_webui)
 factory.connect_widgets([(XL_models_widget, 'value')], update_XL_options)
 factory.connect_widgets([(empowerment_widget, 'value')], update_empowerment)
 
-## ============== Load / Save - Settings V4 ==============
+
+# ================ Load / Save - Settings V4 ===============
 
 SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',

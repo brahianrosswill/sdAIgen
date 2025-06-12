@@ -14,18 +14,21 @@ import os
 import re
 
 
+osENV = os.environ
 CD = os.chdir
 
-# Constants
-HOME = Path.home()
-SCR_PATH = HOME / 'ANXETY'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
+# Constants (auto-convert env vars to Path)
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
+
+HOME = PATHS['home_path']
+SCR_PATH = PATHS['scr_path']
+SETTINGS_PATH = PATHS['settings_path']
 
 CAI_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.civitai_token') or '65b66176dcf284b266579de57fbdc024'
 HF_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.huggingface_token') or ''
 
 
-## ====================== Download =======================
+# ===================== Helper Function ====================
 
 # Logging function
 def log_message(message, log=False):
@@ -41,6 +44,38 @@ def handle_errors(func):
             log_message(f"> \033[31m[Error]:\033[0m {e}", kwargs.get('log', False))
             return None
     return wrapper
+
+def _handle_path_and_filename(parts, url, is_git=False):
+    """Extract path and filename from parts."""
+    path, filename = None, None
+
+    if len(parts) >= 3:
+        path = Path(parts[1]).expanduser()
+        filename = parts[2]
+    elif len(parts) == 2:
+        arg = parts[1]
+        if '/' in arg or arg.startswith('~'):
+            path = Path(arg).expanduser()
+        else:
+            filename = arg
+
+    if not is_git and 'drive.google.com' not in url:
+        if filename and not Path(filename).suffix:
+            url_ext = Path(urlparse(url).path).suffix
+            if url_ext:
+                filename += url_ext
+            else:
+                filename = None
+
+    return path, filename
+
+def is_github_url(url):
+    """Check if the URL is a valid GitHub URL"""
+    parsed = urlparse(url)
+    return parsed.netloc in ('github.com', 'www.github.com')
+
+
+# ======================== Download ========================
 
 # Download function
 @handle_errors
@@ -71,7 +106,7 @@ def process_download(line, log, unzip):
     if not url:
         return
 
-    path, filename = handle_path_and_filename(parts, url)
+    path, filename = _handle_path_and_filename(parts, url)
     current_dir = Path.cwd()
 
     try:
@@ -84,28 +119,6 @@ def process_download(line, log, unzip):
             unzip_file(filename, log)
     finally:
         CD(current_dir)
-
-def handle_path_and_filename(parts, url):
-    """Extract path and filename from parts."""
-    if len(parts) >= 3:
-        path = Path(parts[1]).expanduser()
-        filename = parts[2]
-    elif len(parts) >= 2:
-        path = Path(parts[1]).expanduser() if '/' in parts[1] or '~/' in parts[1] else None
-        filename = None if path else parts[1]
-    else:
-        path, filename = None, None
-
-    if 'drive.google.com' not in url:
-        if filename and not Path(filename).suffix:
-            url = parts[0]
-            url_extension = Path(urlparse(url).path).suffix
-            if url_extension:
-                filename += url_extension
-            else:
-                filename = None
-
-    return path, filename
 
 @handle_errors
 def download_file(url, filename, log):
@@ -258,64 +271,74 @@ def clean_url(url):
 
     return url
 
-## ======================== Clone ========================
 
-def m_clone(input_source, log=False):
+# ========================== Clone =========================
+
+def m_clone(input_source, recursive=True, depth=1, log=False):
     """Main function to clone repositories"""
-    commands = process_input_source(input_source, log)
+    sources = [link.strip() for link in input_source.split(',') if link.strip()]
 
-    if not commands:
+    if not sources:
         log_message('>> No valid repositories to clone', log)
         return
 
-    for command in commands:
-        execute_command(command, log=log)
-
-def process_input_source(input_source, log=False):
-    input_path = Path(input_source).expanduser()
-    commands = []
-
-    def build_command(line):
-        line = line.strip()
-        if not line:
-            return None
-
-        # Extract base command and URL
-        parts = shlex.split(line)
-        if len(parts) >= 2 and parts[0] == 'git' and parts[1] == 'clone':
-            base_command = parts
-            url = next((p for p in parts[2:] if re.match(r'https?://', p)), None)
+    for source in sources:
+        if source.endswith('.txt') and Path(source).expanduser().is_file():
+            with open(Path(source).expanduser(), 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        process_clone(line.strip(), recursive, depth, log)
         else:
-            url = line
-            base_command = ['git', 'clone', url]
+            process_clone(source, recursive, depth, log)
 
-        if not url:
-            log_message(f">> Skipping invalid command: {line}", log)
-            return None
+def process_clone(input_source, recursive, depth, log=False):
+    parts = shlex.split(input_source)
+    if not parts:
+        log_message(">> \033[31m[Error]: Empty command\033[0m", log)
+        return
 
-        # Add shallow clone parameters
-        if '--depth' not in base_command:
-            base_command += ['--depth', '1']
+    url = parts[0].replace('\\', '')
+    if not url:
+        log_message(f">> \033[31m[Error]:\033[0m Empty URL in command: {input_source}", log)
+        return
 
-        return ' '.join(base_command)
+    # Check if URL is a GitHub URL
+    if not is_github_url(url):
+        log_message(f">>  \033[33m[Warning]:\033[0m Not a GitHub URL - {url}", log)
+        return
 
-    # Process different input types
-    if input_source.endswith('.txt') and input_path.is_file():
-        with open(input_path, 'r') as f:
-            for line in f:
-                if cmd := build_command(line):
-                    commands.append(cmd)
-    else:
-        sources = [input_source] if isinstance(input_source, str) else input_source
-        for source in sources:
-            if cmd := build_command(source):
-                commands.append(cmd)
+    path, repo_name = _handle_path_and_filename(parts, url, is_git=True)
 
-    return commands
+    current_dir = Path.cwd()
+    try:
+        if path:
+            path.mkdir(parents=True, exist_ok=True)
+            CD(path)
 
+        # Build a clone command
+        command = build_git_command(url, repo_name, recursive, depth)
+        execute_git_command(command, log)
+    finally:
+        CD(current_dir)
+
+def build_git_command(url, repo_name, recursive, depth):
+    """Build git clone command"""
+    cmd = ['git', 'clone']
+
+    if depth > 0:
+        cmd.extend(['--depth', str(depth)])
+    if recursive:
+        cmd.append('--recursive')
+
+    cmd.append(url)
+    if repo_name:
+        cmd.append(repo_name)
+
+    return ' '.join(cmd)
 
 @handle_errors
-def execute_command(command, log=False):
+def execute_git_command(command, log=False):
     repo_url = re.search(r'https?://\S+', command).group()
     process = subprocess.Popen(
         shlex.split(command),
@@ -324,7 +347,7 @@ def execute_command(command, log=False):
         text=True
     )
 
-    repo_name = None
+    repo_name = False
     while True:
         output = process.stdout.readline()
         if not output and process.poll() is not None:
@@ -338,7 +361,7 @@ def execute_command(command, log=False):
         if 'Cloning into' in output:
             repo_path = re.search(r"'(.+?)'", output).group(1)
             repo_name = '/'.join(repo_path.split('/')[-3:])
-            log_message(f">> Cloning: {repo_name} -> {repo_url}", log)
+            log_message(f">> Cloning: \033[32m{repo_name}\033[0m -> {repo_url}", log)
 
         # Handle error messages
         if 'fatal' in output.lower():

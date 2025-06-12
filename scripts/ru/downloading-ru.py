@@ -1,8 +1,8 @@
 # ~ download.py | by ANXETY ~
 
 from webui_utils import handle_setup_timer    # WEBUI
+from Manager import m_download, m_clone       # Every Download | Clone
 from CivitaiAPI import CivitAiAPI             # CivitAI API
-from Manager import m_download                # Every Download
 import json_utils as js                       # JSON
 
 from IPython.display import clear_output
@@ -23,16 +23,20 @@ import re
 import os
 
 
+osENV = os.environ
 CD = os.chdir
 ipySys = get_ipython().system
 ipyRun = get_ipython().run_line_magic
 
-# Constants
-HOME = Path.home()
-VENV = HOME / 'venv'
-SCR_PATH = Path(HOME / 'ANXETY')
+# Constants (auto-convert env vars to Path)
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
+
+HOME = PATHS['home_path']
+VENV = PATHS['venv_path']
+SCR_PATH = PATHS['scr_path']
+SETTINGS_PATH = PATHS['settings_path']
+
 SCRIPTS = SCR_PATH / 'scripts'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
 
 LANG = js.read(SETTINGS_PATH, 'ENVIRONMENT.lang')
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
@@ -46,13 +50,13 @@ class COLORS:
     G  =  "\033[32m"     # Green
     Y  =  "\033[33m"     # Yellow
     B  =  "\033[34m"     # Blue
-    lB =  "\033[36;1m"   # lightBlue
+    lB =  "\033[36;1m"   # lightBlue + BOLD
     X  =  "\033[0m"      # Reset
 
 COL = COLORS
 
 
-## =================== LIBRARIES | VENV ==================
+# ==================== LIBRARIES | VENV ====================
 
 def install_dependencies(commands):
     """Run a list of installation commands."""
@@ -161,7 +165,8 @@ if venv_needs_reinstall:
 #     setup_venv()
 #     clear_output()
 
-## ================ loading settings V5 ==================
+
+# =================== loading settings V5 ==================
 
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -179,7 +184,8 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-## ======================== WEBUI ========================
+
+# ========================== WEBUI =========================
 
 if UI in ['A1111', 'SD-UX'] and not os.path.exists('/root/.cache/huggingface/hub/models--Bingsu--adetailer'):
     print('🚚 Распаковка кэша моделей ADetailer...')
@@ -383,6 +389,8 @@ def handle_gdrive(mount_flag, log=False):
 handle_gdrive(mountGDrive)
 
 
+# ======================= DOWNLOADING ======================
+
 # Get XL or 1.5 models list
 ## model_list | vae_list | controlnet_list
 model_files = '_xl-models-data.py' if XL_models else '_models-data.py'
@@ -580,7 +588,7 @@ def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, in
 
     unique_models = {}
     for model in selected:
-        name = model.get('name') or os.path.basename(model['url'])
+        name = model.get('name') or os.path.basename(model['url'])    # ToolTip: `name` is an optional parameter
         if not inpainting_model and "inpainting" in name:
             continue
         unique_models[name] = {
@@ -589,10 +597,10 @@ def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, in
             'name': name
         }
 
-    return base_url + ', '.join(
-        f"{m['url']} {m['dst_dir']} {m['name']}"
-        for m in unique_models.values()
-    )
+    for model in unique_models.values():
+        base_url += f"{model['url']} {model['dst_dir']} {model['name']}, "
+
+    return base_url
 
 line = ""
 line = handle_submodels(model, model_num, model_list, model_dir, line)
@@ -670,7 +678,7 @@ file_urls = [f"{f}.txt" if not f.endswith('.txt') else f for f in custom_file_ur
 
 # p -> prefix ; u -> url | Remember: don't touch the prefix!
 prefixed_urls = [f"{p}:{u}" for p, u in zip(PREFIX_MAP, urls_sources) if u for u in u.replace(',', '').split()]
-line += ', ' + ', '.join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
+line += ', '.join(prefixed_urls + [process_file_downloads(file_urls, empowerment_output)])
 
 if detailed_download == 'on':
     print(f"\n\n{COL.Y}# ====== Подробная Загрузка ====== #\n{COL.X}")
@@ -684,19 +692,13 @@ print('\r🏁 Скачивание Завершено!' + ' '*15)
 
 
 ## Install of Custom extensions
-def _clone_repository(repo, repo_name, extension_dir):
-    """Clones the repository to the specified directory."""
-    repo_name = repo_name or repo.split('/')[-1]
-    command = f"cd {extension_dir} && git clone --depth 1 --recursive {repo} {repo_name} && cd {repo_name} && git fetch"
-    ipySys(command)
-
 extension_type = 'нодов' if UI == 'ComfyUI' else 'расширений'
 
 if extension_repo:
     print(f"✨ Установка кастомных {extension_type}...", end='')
     with capture.capture_output():
-        for repo, repo_name in extension_repo:
-            _clone_repository(repo, repo_name, extension_dir)
+        for repo_url, repo_name in extension_repo:
+            m_clone(f"{repo_url} {extension_dir} {repo_name}")
     print(f"\r📦 Установлено '{len(extension_repo)}' кастомных {extension_type}!")
 
 

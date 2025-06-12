@@ -1,189 +1,230 @@
 # ~ setup.py | by ANXETY ~
 
 from IPython.display import display, HTML, clear_output
-from urllib.parse import urljoin
+from typing import Dict, List, Tuple, Optional, Union
 from pathlib import Path
 from tqdm import tqdm
 import nest_asyncio
 import importlib
 import argparse
-import asyncio
 import aiohttp
+import asyncio
 import time
 import json
 import sys
 import os
 
 
-# Constants
-HOME = Path.home()
-SCR_PATH = HOME / 'ANXETY'
-SETTINGS_PATH = SCR_PATH / 'settings.json'
-
 nest_asyncio.apply()  # Async support for Jupyter
 
 
-# ===================== UTILITIES (JSON/FILE OPERATIONS) =====================
+# ======================== CONSTANTS =======================
+HOME = Path.home()
+SCR_PATH = HOME / 'ANXETY'
+SETTINGS_PATH = SCR_PATH / 'settings.json'
+VENV_PATH = HOME / 'venv'
+MODULES_FOLDER = SCR_PATH / "modules"
 
-def key_exists(filepath, key=None, value=None):
-    """Check key/value in JSON file."""
-    if not filepath.exists():
-        return False
+# Add paths to the environment
+os.environ.update({
+    'home_path': str(HOME),
+    'scr_path': str(SCR_PATH),
+    'venv_path': str(VENV_PATH),
+    'settings_path': str(SETTINGS_PATH)
+})
+
+# GitHub configuration
+DEFAULT_USER = 'anxety-solo'
+DEFAULT_REPO = 'sdAIgen'
+DEFAULT_BRANCH = 'main'
+DEFAULT_LANG = 'en'
+BASE_GITHUB_URL = "https://raw.githubusercontent.com"
+
+# Environment detection
+SUPPORTED_ENVS = {
+    'COLAB_GPU': 'Google Colab',
+    'KAGGLE_URL_BASE': 'Kaggle'
+}
+
+# File structure configuration
+FILE_STRUCTURE = {
+    'CSS': ['main-widgets.css', 'download-result.css', 'auto-cleaner.css'],
+    'JS': ['main-widgets.js'],
+    'modules': [
+        'json_utils.py', 'webui_utils.py', 'widget_factory.py',
+        'CivitaiAPI.py', 'Manager.py', 'TunnelHub.py', '_season.py'
+    ],
+    'scripts': {
+        'UIs': ['A1111.py', 'ComfyUI.py', 'Forge.py', 'Classic.py', 'ReForge.py', 'SD-UX.py'],
+        '{lang}': ['widgets-{lang}.py', 'downloading-{lang}.py'],
+        '': [
+            'launch.py', 'download-result.py', 'auto-cleaner.py',
+            '_models-data.py', '_xl-models-data.py'
+        ]
+    }
+}
+
+
+# =================== UTILITY FUNCTIONS ====================
+
+def _install_deps() -> bool:
+    """Check if all required dependencies are installed (aria2 and gdown)."""
     try:
-        with open(filepath, 'r') as f:
-            data = json.load(f)
-    except json.JSONDecodeError:
+        from shutil import which
+        required_tools = ['aria2c', 'gdown']
+        return all(which(tool) is not None for tool in required_tools)
+    except ImportError:
         return False
 
-    if key:
-        keys = key.split('.')
-        for k in keys:
-            if isinstance(data, dict) and k in data:
-                data = data[k]
-            else:
-                return False
-        return (data == value) if value else True
-    return False
-
-def save_environment_to_json(SETTINGS_PATH, data):
-    """Save environment data to a JSON file."""
-    existing_data = {}
-
-    if SETTINGS_PATH.exists():
-        with open(SETTINGS_PATH, 'r') as json_file:
-            existing_data = json.load(json_file)
-
-    existing_data.update(data)
-
-    with open(SETTINGS_PATH, 'w') as json_file:
-        json.dump(existing_data, json_file, indent=4)
-
-def get_start_timer():
-    """Get the start timer from settings or default to current time minus 5 seconds."""
-    if SETTINGS_PATH.exists():
-        with open(SETTINGS_PATH, 'r') as f:
-            settings = json.load(f)
-            return settings.get('ENVIRONMENT', {}).get('start_timer', int(time.time() - 5))
+def _get_start_timer() -> int:
+    """Get start timer from settings or return current time minus 5 seconds."""
+    try:
+        if SETTINGS_PATH.exists():
+            settings = json.loads(SETTINGS_PATH.read_text())
+            return settings.get("ENVIRONMENT", {}).get("start_timer", int(time.time() - 5))
+    except (json.JSONDecodeError, OSError):
+        pass
     return int(time.time() - 5)
 
+def save_env_to_json(data: dict, filepath: Path) -> None:
+    """Save environment data to JSON file, merging with existing content."""
+    filepath.parent.mkdir(parents=True, exist_ok=True)
 
-## ======================= MODULES =======================
+    # Load existing data if file exists
+    existing_data = {}
+    if filepath.exists():
+        try:
+            existing_data = json.loads(filepath.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
 
-def clear_module_cache(modules_folder):
-    """Clear the module cache for modules in the specified folder."""
-    for module_name in list(sys.modules.keys()):
-        module = sys.modules[module_name]
-        if hasattr(module, '__file__') and module.__file__ and module.__file__.startswith(str(modules_folder)):
-            del sys.modules[module_name]
+    # Merge new data with existing
+    merged_data = {**existing_data, **data}
+    filepath.write_text(json.dumps(merged_data, indent=4))
+
+
+# =================== MODULE MANAGEMENT ====================
+
+def _clear_module_cache(modules_folder = None):
+    """Clear module cache for modules in specified folder or default modules folder."""
+    target_folder = Path(modules_folder) if modules_folder else MODULES_FOLDER
+    target_folder = target_folder.resolve()   # Full absolute path
+
+    for module_name, module in list(sys.modules.items()):
+        if hasattr(module, "__file__") and module.__file__:
+            module_path = Path(module.__file__).resolve()
+            try:
+                if target_folder in module_path.parents:
+                    del sys.modules[module_name]
+            except (ValueError, RuntimeError):
+                continue
+
     importlib.invalidate_caches()
 
-def setup_module_folder(scr_folder):
-    """Set up the module folder by clearing the cache and adding it to sys.path."""
-    clear_module_cache(scr_folder)
-    modules_folder = scr_folder / 'modules'
-    modules_folder.mkdir(parents=True, exist_ok=True)
-    if str(modules_folder) not in sys.path:
-        sys.path.append(str(modules_folder))
+def setup_module_folder(modules_folder = None):
+    """Set up module folder by clearing cache and adding to sys.path."""
+    target_folder = Path(modules_folder) if modules_folder else MODULES_FOLDER
+    target_folder.mkdir(parents=True, exist_ok=True)
+
+    _clear_module_cache(target_folder)
+
+    folder_str = str(target_folder)
+    if folder_str not in sys.path:
+        sys.path.insert(0, folder_str)
 
 
-# ===================== ENVIRONMENT SETUP =====================
+# =================== ENVIRONMENT SETUP ====================
 
 def detect_environment():
     """Detect runtime environment."""
-    envs = {'COLAB_GPU': 'Google Colab', 'KAGGLE_URL_BASE': 'Kaggle'}
-    for var, name in envs.items():
+    for var, name in SUPPORTED_ENVS.items():
         if var in os.environ:
             return name
-    raise EnvironmentError(f"Unsupported environment. Supported: {', '.join(envs.values())}")
+    raise EnvironmentError(f"Unsupported environment. Supported: {', '.join(SUPPORTED_ENVS.values())}")
 
-def get_fork_info(fork_arg):
+def parse_fork_arg(fork_arg):
     """Parse fork argument into user/repo."""
     if not fork_arg:
-        return 'anxety-solo', 'sdAIgen'
-    parts = fork_arg.split('/', 1)
-    return parts[0], (parts[1] if len(parts) > 1 else 'sdAIgen')
+        return DEFAULT_USER, DEFAULT_REPO
+    parts = fork_arg.split("/", 1)
+    return parts[0], (parts[1] if len(parts) > 1 else DEFAULT_REPO)
 
-def create_environment_data(env, scr_folder, lang, fork_user, fork_repo, branch):
-    """Create a dictionary with environment data."""
-    install_deps = key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True)
-    start_timer = get_start_timer()
+def create_environment_data(env, lang, fork_user, fork_repo, branch):
+    """Create environment data dictionary."""
+    install_deps = _install_deps()
+    start_timer = _get_start_timer()
 
     return {
-        'ENVIRONMENT': {
-            'lang': lang,
-            'fork': f"{fork_user}/{fork_repo}",
-            'branch': branch,
-            'env_name': env,
-            'install_deps': install_deps,
-            'home_path': str(scr_folder.parent),
-            'venv_path': str(scr_folder.parent / 'venv'),
-            'scr_path': str(scr_folder),
-            'start_timer': start_timer,
-            'public_ip': ''
+        "ENVIRONMENT": {
+            "env_name": env,
+            "install_deps": install_deps,
+            "fork": f"{fork_user}/{fork_repo}",
+            "branch": branch,
+            "lang": lang,
+            "home_path": os.environ['home_path'],
+            "scr_path": os.environ['scr_path'],
+            "venv_path": os.environ['venv_path'],
+            "settings_path": os.environ['settings_path'],
+            "start_timer": start_timer,
+            "public_ip": ""
         }
     }
 
 
 # ===================== DOWNLOAD LOGIC =====================
 
-def generate_file_list(structure, base_url, base_path):
-    """Generate flat list of (url, path) from nested structure"""
-    def walk(struct, path_parts):
+def _format_lang_path(path: str, lang: str) -> str:
+    """Format path with language placeholder."""
+    return path.format(lang=lang) if '{lang}' in path else path
+
+def generate_file_list(structure: Dict, base_url: str, lang: str) -> List[Tuple[str, Path]]:
+    """Generate flat list of (url, path) from nested structure."""
+    def walk(struct: Dict, path_parts: List[str]) -> List[Tuple[str, Path]]:
         items = []
         for key, value in struct.items():
-            current_path = [*path_parts, key] if key else path_parts
+            # Handle language-specific paths
+            current_key = _format_lang_path(key, lang)
+            current_path = [*path_parts, current_key] if current_key else path_parts
+
             if isinstance(value, dict):
                 items.extend(walk(value, current_path))
             else:
-                url_path = '/'.join(current_path)
+                url_path = "/".join(current_path)
                 for file in value:
-                    url = f"{base_url}/{url_path}/{file}" if url_path else f"{base_url}/{file}"
-                    file_path = base_path / '/'.join(current_path) / file
+                    # Handle language-specific files
+                    formatted_file = _format_lang_path(file, lang)
+                    url = f"{base_url}/{url_path}/{formatted_file}" if url_path else f"{base_url}/{formatted_file}"
+                    file_path = SCR_PATH / "/".join(current_path) / formatted_file
                     items.append((url, file_path))
         return items
 
     return walk(structure, [])
 
-async def download_file(session, url, path):
-    """Download and save single file with error handling"""
+async def download_file(session: aiohttp.ClientSession, url: str, path: Path) -> Tuple[bool, str, Path, Optional[str]]:
+    """Download and save single file with error handling."""
     try:
         async with session.get(url) as resp:
             resp.raise_for_status()
-            content = await resp.read()
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(content)
+            path.write_bytes(await resp.read())
             return (True, url, path, None)
     except aiohttp.ClientResponseError as e:
         return (False, url, path, f"HTTP error {e.status}: {e.message}")
     except Exception as e:
         return (False, url, path, f"Error: {str(e)}")
 
-async def download_files_async(scr_path, lang, fork_user, fork_repo, branch, log_errors):
-    """Main download executor with error logging"""
-    files_structure = {
-        'CSS': ['main-widgets.css', 'download-result.css', 'auto-cleaner.css'],
-        'JS': ['main-widgets.js'],
-        'modules': ['json_utils.py', 'webui_utils.py', 'widget_factory.py',
-                   'TunnelHub.py', 'CivitaiAPI.py', 'Manager.py', '__season.py'],
-        'scripts': {
-            'UIs': ['A1111.py', 'ComfyUI.py', 'Forge.py', 'Classic.py', 'ReForge.py', 'SD-UX.py'],
-            lang: [f"widgets-{lang}.py", f"downloading-{lang}.py"],
-            '': ['launch.py', 'auto-cleaner.py', 'download-result.py',
-                '_models-data.py', '_xl-models-data.py']
-        }
-    }
-
-    base_url = f"https://raw.githubusercontent.com/{fork_user}/{fork_repo}/{branch}"
-    file_list = generate_file_list(files_structure, base_url, scr_path)
+async def download_files_async(lang, fork_user, fork_repo, branch, log_errors):
+    """Main download executor with error logging."""
+    base_url = f"{BASE_GITHUB_URL}/{fork_user}/{fork_repo}/{branch}"
+    file_list = generate_file_list(FILE_STRUCTURE, base_url, lang)
 
     async with aiohttp.ClientSession() as session:
         tasks = [download_file(session, url, path) for url, path in file_list]
-
         errors = []
-        futures = asyncio.as_completed(tasks)
-        for future in tqdm(futures, total=len(tasks), desc="Downloading files", unit="file"):
-            result = await future
-            success, url, path, error = result
+
+        for future in tqdm(asyncio.as_completed(tasks), total=len(tasks),
+                          desc="Downloading files", unit="file"):
+            success, url, path, error = await future
             if not success:
                 errors.append((url, path, error))
 
@@ -192,45 +233,41 @@ async def download_files_async(scr_path, lang, fork_user, fork_repo, branch, log
         if log_errors and errors:
             print("\nErrors occurred during download:")
             for url, path, error in errors:
-                print(f"URL: {url}")
-                print(f"Path: {path}")
-                print(f"Error: {error}\n")
-
+                print(f"URL: {url}\nPath: {path}\nError: {error}\n")
 
 # ===================== MAIN EXECUTION =====================
 
 async def main_async(args=None):
     """Entry point."""
     parser = argparse.ArgumentParser(description='ANXETY Download Manager')
-    parser.add_argument('-l', '--lang', type=str, default='en', help='Language to be used (default: en)')
-    parser.add_argument('-b', '--branch', type=str, default='main', help='Branch to download files from (default: main)')
-    parser.add_argument('-f', '--fork', type=str, default=None, help='Specify project fork (user or user/repo)')
-    parser.add_argument('-s', '--skip-download', action='store_true', help='Skip downloading files and just update the directory and modules')
-    parser.add_argument('-L', '--log', action='store_true', help='Enable logging of download errors')
+    parser.add_argument('--lang', default=DEFAULT_LANG, help=f"Language to be used (default: {DEFAULT_LANG})")
+    parser.add_argument('--branch', default=DEFAULT_BRANCH, help=f"Branch to download files from (default: {DEFAULT_BRANCH})")
+    parser.add_argument('--fork', default=None, help="Specify project fork (user or user/repo)")
+    parser.add_argument('-s', '--skip-download', action="store_true", help="Skip downloading files")
+    parser.add_argument('-l', "--log", action="store_true", help="Enable logging of download errors")
 
     args, _ = parser.parse_known_args(args)
 
     env = detect_environment()
-    user, repo = get_fork_info(args.fork)   # gitLogin , gitRepoName
+    user, repo = parse_fork_arg(args.fork)   # GitHub: user/repo
 
+    # download scripts files
     if not args.skip_download:
-        await download_files_async(SCR_PATH, args.lang, user, repo, args.branch, args.log)    # download scripts files
+        await download_files_async(args.lang, user, repo, args.branch, args.log)
 
-    setup_module_folder(SCR_PATH)   # setup main dir -> modules
+    setup_module_folder()
+    env_data = create_environment_data(env, args.lang, user, repo, args.branch)
+    save_env_to_json(env_data, SETTINGS_PATH)
 
-    env_data = create_environment_data(env, SCR_PATH, args.lang, user, repo, args.branch)
-    save_environment_to_json(SETTINGS_PATH, env_data)
-
-    # display info text | MODULES
-    from __season import display_info
-
+    # Display info after setup
+    from _season import display_info
     display_info(
         env=env,
-        scr_folder=str(SCR_PATH),
+        scr_folder=os.environ['scr_path'],
         branch=args.branch,
         lang=args.lang,
         fork=args.fork
     )
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main_async())

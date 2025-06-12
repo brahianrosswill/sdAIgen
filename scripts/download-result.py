@@ -11,10 +11,14 @@ import re
 import os
 
 
-# Constants
-HOME = Path.home()
-SCR_PATH = Path(HOME / 'ANXETY')
-SETTINGS_PATH = SCR_PATH / 'settings.json'
+osENV = os.environ
+
+# Constants (auto-convert env vars to Path)
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
+
+HOME = PATHS['home_path']
+SCR_PATH = PATHS['scr_path']
+SETTINGS_PATH = PATHS['settings_path']
 
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 
@@ -22,7 +26,7 @@ CSS = SCR_PATH / 'CSS'
 widgets_css = CSS / 'download-result.css'
 
 
-## ================= loading settings V5 =================
+# =================== loading settings V5 ==================
 
 def load_settings(path):
     """Load settings from a JSON file."""
@@ -40,7 +44,8 @@ def load_settings(path):
 settings = load_settings(SETTINGS_PATH)
 locals().update(settings)
 
-## ======================= WIDGETS =======================
+
+# ========================= WIDGETS ========================
 
 HR = widgets.HTML('<hr class="divider-line">')
 HEADER_DL = 'DOWNLOAD RESULTS'
