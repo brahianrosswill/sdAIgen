@@ -109,7 +109,7 @@ async def download_configuration():
         # 'https://github.com/picobyte/stable-diffusion-webui-wd14-tagger wd14-tagger'
     ]
     if ENV_NAME == 'Kaggle':
-        extensions_list.append('https://github.com/gutris1/sd-encrypt-image Encrypt-Image')
+        extensions_list.append('https://github.com/anxety-solo/sd-encrypt-image Encrypt-Image')
 
     EXTS.mkdir(parents=True, exist_ok=True)
     CD(EXTS)
