@@ -50,6 +50,7 @@
     "grid_text_active_color": "#ffffff",
     "grid_background_color": "#0b0b0b",
     "show_progress_grid": true,
+    "show_progress_type": "TAESD",
     "show_progress_every_n_steps": 2,
     "live_previews_image_format": "webp",
     "live_preview_content": "Prompt",
