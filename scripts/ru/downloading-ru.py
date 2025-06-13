@@ -150,8 +150,8 @@ if venv_needs_reinstall:
         venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31112-venv-torch251-cu121-C-Classic.tar.lz4"
         py_version = '(3.11.12)'
     else:
-        venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31017-venv-torch251-cu121-C-fca.tar.lz4"
-        py_version = '(3.10.17)'
+        venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31015-venv-torch251-cu121-C-fca.tar.lz4"
+        py_version = '(3.10.15)'
 
     print(f"♻️ Установка VENV {py_version}, это займет некоторое время...")
     setup_venv(venv_url)
