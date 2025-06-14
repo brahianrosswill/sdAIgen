@@ -86,7 +86,7 @@ async def download_configuration():
     extensions_list = [
         ## ANXETY Edits
         'https://github.com/anxety-solo/webui_timer timer',
-        'https://github.com/anxety-solo/anxety-theme-ux',
+        'https://github.com/anxety-solo/anxety-theme',
         'https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus',
 
         ## Gutris1
@@ -96,12 +96,13 @@ async def download_configuration():
 
         ## OTHER | ON
         'https://github.com/Bing-su/adetailer',
+        'https://github.com/Haoming02/sd-forge-couple SD-Couple',
+        'https://github.com/hako-mikan/sd-webui-regional-prompter Regional-Prompter',
 
-        ## OTHER | OFF
+        ## OTHER | OFF | Archived
         # 'https://github.com/thomasasfk/sd-webui-aspect-ratio-helper Aspect-Ratio-Helper',
         # 'https://github.com/Mikubill/sd-webui-controlnet ControlNet',
         # 'https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing',
-        # 'https://github.com/hako-mikan/sd-webui-regional-prompter Regional-Prompter',
         # 'https://github.com/ilian6806/stable-diffusion-webui-state State',
         # 'https://github.com/hako-mikan/sd-webui-supermerger Supermerger',
         # 'https://github.com/DominikDoom/a1111-sd-webui-tagcomplete TagComplete',
