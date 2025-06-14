@@ -43,8 +43,8 @@
 | [Image-Info](https://github.com/gutris1/sd-image-info) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [Image-Viewer](https://github.com/gutris1/sd-image-viewer) | ✔️ | ✔️ | ❌ | ✔️ | ✔️ |
 | [Infinite-Image-Browsing](https://github.com/zanllp/sd-webui-infinite-image-browsing) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| [Regional-Prompter](https://github.com/hako-mikan/sd-webui-regional-prompter) | ✔️ | ❌ | ❌ | ✔️ | ✔️ |
-| [SD-Couple](https://github.com/Haoming02/sd-forge-couple) | ❌ | ✔️ | ✔️ | ❌ | ❌ |
+| [Regional-Prompter](https://github.com/hako-mikan/sd-webui-regional-prompter) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| [SD-Couple](https://github.com/Haoming02/sd-forge-couple) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [SD-Hub](https://github.com/gutris1/sd-hub) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [State](https://github.com/ilian6806/stable-diffusion-webui-state) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [SuperMerger](https://github.com/hako-mikan/sd-webui-supermerger) | ✔️ | ✔️ | ❌ | ✔️ | ✔️ |
