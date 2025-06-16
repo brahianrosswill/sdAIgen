@@ -55,6 +55,8 @@
     ],
     "extra_networks_default_multiplier": 0.7,
     "samples_filename_pattern": "M=[model_name]_S=[seed]_D=[date]",
+    "grid_save": true,
+    "grid_format": "png",
     "grid_extended_filename": true,
     "grid_text_active_color": "#ffffff",
     "grid_background_color": "#0b0b0b",
