@@ -43,7 +43,8 @@ nest_asyncio.apply()  # Async support for Jupyter
 
 
 BIN = str(VENV / 'bin')
-PKG = str(VENV / 'lib/python3.10/site-packages')
+PYTHON_VERSION = '3.11' if UI == 'Classic' else '3.10'
+PKG = str(VENV / f'lib/python{PYTHON_VERSION}/site-packages')
 
 if BIN not in osENV['PATH']:
     osENV['PATH'] = BIN + ':' + osENV['PATH']
@@ -241,7 +242,7 @@ class TunnelManager:
             ('Localtunnel', {
                 'command': f"lt --port {self.tunnel_port}",
                 'pattern': re.compile(r'[\w-]+\.loca\.lt'),
-                'note': f"Password: {COL.G}{self.public_ip}{COL.X}"
+                'note': f"| Password: {COL.G}{self.public_ip}{COL.X}"
             })
         ]
 
