@@ -120,7 +120,7 @@ def get_launch_command():
     base_args = commandline_arguments
     password = 'emoy4cnkm6imbysp84zmfiz1opahooblh7j34sgh'
 
-    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
+    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark --share'
     if ENV_NAME == 'Kaggle':
         common_args += f" --encrypt-pass={password}"
 
