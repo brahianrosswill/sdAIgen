@@ -43,12 +43,14 @@ nest_asyncio.apply()  # Async support for Jupyter
 
 
 BIN = str(VENV / 'bin')
-PKG = str(VENV / 'lib/python3.10/site-packages')
+PYTHON_VERSION = '3.11' if UI == 'Classic' else '3.10'
+PKG = str(VENV / f'lib/python{PYTHON_VERSION}/site-packages')
 
-if BIN not in osENV['PATH']:
-    osENV['PATH'] = BIN + ':' + osENV['PATH']
-if PKG not in osENV['PYTHONPATH']:
-    osENV['PYTHONPATH'] = PKG + ':' + osENV['PYTHONPATH']
+osENV.update({
+    'PATH': f"{BIN}:{osENV['PATH']}" if BIN not in osENV['PATH'] else osENV['PATH'],
+    'PYTHONPATH': f"{PKG}:{osENV['PYTHONPATH']}" if PKG not in osENV['PYTHONPATH'] else osENV['PYTHONPATH']
+})
+sys.path.insert(0, PKG)
 
 
 # Text Colors (\033)
@@ -119,7 +121,7 @@ def get_launch_command():
     base_args = commandline_arguments
     password = 'emoy4cnkm6imbysp84zmfiz1opahooblh7j34sgh'
 
-    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
+    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark --share'
     if ENV_NAME == 'Kaggle':
         common_args += f" --encrypt-pass={password}"
 
@@ -241,7 +243,7 @@ class TunnelManager:
             ('Localtunnel', {
                 'command': f"lt --port {self.tunnel_port}",
                 'pattern': re.compile(r'[\w-]+\.loca\.lt'),
-                'note': f"Password: {COL.G}{self.public_ip}{COL.X}"
+                'note': f"| Password: {COL.G}{self.public_ip}{COL.X}"
             })
         ]
 
