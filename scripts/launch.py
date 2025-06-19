@@ -46,10 +46,11 @@ BIN = str(VENV / 'bin')
 PYTHON_VERSION = '3.11' if UI == 'Classic' else '3.10'
 PKG = str(VENV / f'lib/python{PYTHON_VERSION}/site-packages')
 
-if BIN not in osENV['PATH']:
-    osENV['PATH'] = BIN + ':' + osENV['PATH']
-if PKG not in osENV['PYTHONPATH']:
-    osENV['PYTHONPATH'] = PKG + ':' + osENV['PYTHONPATH']
+osENV.update({
+    'PATH': f"{BIN}:{osENV['PATH']}" if BIN not in osENV['PATH'] else osENV['PATH'],
+    'PYTHONPATH': f"{PKG}:{osENV['PYTHONPATH']}" if PKG not in osENV['PYTHONPATH'] else osENV['PYTHONPATH']
+})
+sys.path.insert(0, PKG)
 
 
 # Text Colors (\033)

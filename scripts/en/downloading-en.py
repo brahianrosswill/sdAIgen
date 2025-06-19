@@ -69,20 +69,18 @@ def install_dependencies(commands):
 def setup_venv(url):
     """Customize the virtual environment using the specified URL."""
     CD(HOME)
-    # url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31017-venv-torch251-cu121-C-fca.tar.lz4"
     fn = Path(url).name
 
     m_download(f"{url} {HOME} {fn}")
 
     # Install dependencies based on environment
-    install_commands = []
+    install_commands = ['sudo apt-get -y install lz4 pv']
     if ENV_NAME == 'Kaggle':
         install_commands.extend([
             'pip install ipywidgets jupyterlab_widgets --upgrade',
             'rm -f /usr/lib/python3.10/sitecustomize.py'
         ])
 
-    install_commands.append('sudo apt-get -y install lz4 pv')
     install_dependencies(install_commands)
 
     # Unpack and clean
@@ -90,15 +88,15 @@ def setup_venv(url):
     Path(fn).unlink()
 
     BIN = str(VENV / 'bin')
-    PKG = str(VENV / 'lib/python3.10/site-packages')
+    PYTHON_VERSION = '3.11' if UI == 'Classic' else '3.10'
+    PKG = str(VENV / f'lib/{PYTHON_VERSION }/site-packages')
 
-    os.environ['PYTHONWARNINGS'] = 'ignore'
-
+    osENV.update({
+        'PYTHONWARNINGS': 'ignore',
+        'PATH': f"{BIN}:{osENV['PATH']}" if BIN not in osENV['PATH'] else osENV['PATH'],
+        'PYTHONPATH': f"{PKG}:{osENV['PYTHONPATH']}" if PKG not in osENV['PYTHONPATH'] else osENV['PYTHONPATH']
+    })
     sys.path.insert(0, PKG)
-    if BIN not in os.environ['PATH']:
-        os.environ['PATH'] = BIN + ':' + os.environ['PATH']
-    if PKG not in os.environ['PYTHONPATH']:
-        os.environ['PYTHONPATH'] = PKG + ':' + os.environ['PYTHONPATH']
 
 def install_packages(install_lib):
     """Install packages from the provided library dictionary."""
@@ -146,12 +144,12 @@ if venv_needs_reinstall:
         shutil.rmtree(VENV)
         clear_output()
 
-    if current_ui == 'Classic':
-        venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31112-venv-torch251-cu121-C-Classic.tar.lz4"
-        py_version = '(3.11.12)'
-    else:
-        venv_url = "https://huggingface.co/NagisaNao/ANXETY/resolve/main/python31015-venv-torch251-cu121-C-fca.tar.lz4"
-        py_version = '(3.10.15)'
+    HF_VENV_URL = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main'
+    venv_config = {
+        'Classic': (f"{HF_VENV_URL}/python31112-venv-torch251-cu121-C-Classic.tar.lz4", '(3.11.12)'),
+        'default': (f"{HF_VENV_URL}/python31015-venv-torch251-cu121-C-fca.tar.lz4", '(3.10.15)')
+    }
+    venv_url, py_version = venv_config.get(current_ui, venv_config['default'])
 
     print(f"♻️ Installing VENV {py_version}, this will take some time...")
     setup_venv(venv_url)
@@ -159,11 +157,6 @@ if venv_needs_reinstall:
 
     # Update latest UI version...
     js.update(SETTINGS_PATH, 'WEBUI.latest', current_ui)
-
-# if not os.path.exists(VENV):
-#     print('♻️ Installing VENV, this will take some time...')
-#     setup_venv()
-#     clear_output()
 
 
 # =================== loading settings V5 ==================
@@ -514,7 +507,7 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
         if not (data := api.validate_download(url, file_name)):
             return
 
-        model_type, file_name = data.model_type, data.model_name    # Type, name
+        model_type, file_name = data.model_type, data.model_name    # Type, Name
         clean_url, url = data.clean_url, data.download_url          # Clean_URL, URL
         image_url, image_name = data.image_url, data.image_name     # Img_URL, Img_Name
 
