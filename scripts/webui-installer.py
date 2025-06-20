@@ -9,6 +9,7 @@ from IPython import get_ipython
 from pathlib import Path
 import subprocess
 import asyncio
+import aiohttp
 import os
 
 
@@ -25,7 +26,7 @@ SCR_PATH = PATHS['scr_path']
 SETTINGS_PATH = PATHS['settings_path']
 
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
-WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
+WEBUI = HOME / UI
 EXTS = Path(js.read(SETTINGS_PATH, 'WEBUI.extension_dir'))
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 FORK_REPO = js.read(SETTINGS_PATH, 'ENVIRONMENT.fork')
@@ -39,10 +40,11 @@ CD(HOME)
 
 # ==================== WEBUI OPERATIONS ====================
 
-async def _download_file(url, directory, filename):
+async def _download_file(url, directory=WEBUI, filename=None):
+    """Download single file."""
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
-    file_path = directory / filename
+    file_path = directory / (filename or Path(url).name)
 
     if file_path.exists():
         file_path.unlink()
@@ -54,29 +56,19 @@ async def _download_file(url, directory, filename):
     )
     await process.communicate()
 
-async def download_files(file_list):
-    tasks = []
-    for file_info in file_list:
-        parts = file_info.split(',')
-        url = parts[0].strip()
-        directory = Path(parts[1].strip()) if len(parts) > 1 else WEBUI
-        filename = parts[2].strip() if len(parts) > 2 else Path(url).name
-        tasks.append(_download_file(url, directory, filename))
-    await asyncio.gather(*tasks)
-
 async def get_extensions_list():
+    """Fetch list of extensions from config file."""
     ext_file_url = f"{CONFIG_URL}/{UI}/_extensions.txt"
-
     extensions = []
+
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(ext_file_url) as response:
                 if response.status == 200:
-                    text = await response.text()
-                    for line in text.splitlines():
-                        line = line.strip()
-                        if line and not line.startswith('#'):  # Skip empty lines and comments
-                            extensions.append(line)
+                    extensions = [
+                        line.strip() for line in (await response.text()).splitlines()
+                        if line.strip() and not line.startswith('#')  # Skip empty lines and comments
+                    ]
     except Exception as e:
         print(f"Error fetching extensions list: {e}")
 
@@ -86,65 +78,74 @@ async def get_extensions_list():
 
     return extensions
 
+
+# ================= CONFIGURATION HANDLING =================
+
+CONFIG_MAP = {
+    'A1111': [
+        f"{CONFIG_URL}/{UI}/config.json",
+        f"{CONFIG_URL}/{UI}/ui-config.json",
+        f"{CONFIG_URL}/styles.csv",
+        f"{CONFIG_URL}/user.css",
+        f"{CONFIG_URL}/card-no-preview.png, {WEBUI}/html",
+        f"{CONFIG_URL}/notification.mp3",
+        f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py"
+    ],
+    'Classic': [
+        f"{CONFIG_URL}/{UI}/config.json",
+        f"{CONFIG_URL}/{UI}/ui-config.json",
+        f"{CONFIG_URL}/styles.csv",
+        f"{CONFIG_URL}/user.css",
+        f"{CONFIG_URL}/notification.mp3",
+        f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.11/site-packages/gradio_tunneling, main.py"
+    ],
+    'ComfyUI': [
+        f"{CONFIG_URL}/{UI}/install-deps.py",
+        f"{CONFIG_URL}/{UI}/comfy.settings.json, {WEBUI}/user/default",
+        f"{CONFIG_URL}/{UI}/Comfy-Manager/config.ini, {WEBUI}/user/default/ComfyUI-Manager",
+        f"{CONFIG_URL}/{UI}/workflows/anxety-workflow.json, {WEBUI}/user/default/workflows",
+        f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py"
+    ]
+}
+
 async def download_configuration():
-    # UI-specific configurations
-    config_map = {
-        'A1111': [
-            f"{CONFIG_URL}/{UI}/config.json",
-            f"{CONFIG_URL}/{UI}/ui-config.json",
-            f"{CONFIG_URL}/styles.csv",
-            f"{CONFIG_URL}/user.css",
-            f"{CONFIG_URL}/card-no-preview.png, {WEBUI}/html",
-            f"{CONFIG_URL}/notification.mp3",
-            f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py"
-        ],
-        'Classic': [
-            f"{CONFIG_URL}/{UI}/config.json",
-            f"{CONFIG_URL}/{UI}/ui-config.json",
-            f"{CONFIG_URL}/styles.csv",
-            f"{CONFIG_URL}/user.css",
-            f"{CONFIG_URL}/notification.mp3",
-            f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.11/site-packages/gradio_tunneling, main.py"
-        ],
-        'ComfyUI': [
-            f"{CONFIG_URL}/{UI}/install-deps.py",
-            f"{CONFIG_URL}/{UI}/comfy.settings.json, {WEBUI}/user/default",
-            f"{CONFIG_URL}/{UI}/Comfy-Manager/config.ini, {WEBUI}/user/default/ComfyUI-Manager",
-            f"{CONFIG_URL}/{UI}/workflows/anxety-workflow.json, {WEBUI}/user/default/workflows",
-            f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py"
-        ]
-    }
+    """Download all configuration files for current UI"""
+    configs = CONFIG_MAP.get(UI, CONFIG_MAP['A1111'])
+    await asyncio.gather(*[_download_file(*config.split(',')) for config in configs])
 
-    # Default config for Forge/ReForge/SD-UX
-    configs = config_map.get(UI, config_map['A1111'])
-    await download_files(configs)
 
-    # Get and install extensions
-    extensions_list = await get_extensions_list()
+# ================= EXTENSIONS INSTALLATION ================
+
+async def install_extensions():
+    """Install all required extensions."""
+    extensions = await get_extensions_list()
     EXTS.mkdir(parents=True, exist_ok=True)
     CD(EXTS)
 
-    tasks = []
-    for command in extensions_list:
-        tasks.append(asyncio.create_subprocess_shell(
-            f"git clone --depth 1 {command}",
+    tasks = [
+        asyncio.create_subprocess_shell(
+            f"git clone --depth 1 {ext}",
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
-        ))
-
+        ) for ext in extensions
+    ]
     await asyncio.gather(*tasks)
 
+
+# =================== WEBUI SETUP & FIXES ==================
+
 def unpack_webui():
+    """Download and extract WebUI archive."""
     zip_path = HOME / f"{UI}.zip"
     m_download(f"{REPO_URL} {HOME} {UI}.zip")
-    ipySys(f"unzip -q -o {zip_path} -d {WEBUI}")
-    ipySys(f"rm -rf {zip_path}")
+    ipySys(f"unzip -q -o {zip_path} -d {WEBUI} && rm -rf {zip_path}")
 
-def fixes_modules():
+def apply_classic_fixes():
+    """Apply specific fixes for Classic UI."""
     if UI != 'Classic':
         return
 
-    cmd_args_path = WEBUI / "modules/cmd_args.py"
+    cmd_args_path = WEBUI / 'modules/cmd_args.py'
     if not cmd_args_path.exists():
         return
 
@@ -152,15 +153,18 @@ def fixes_modules():
     with cmd_args_path.open('r+', encoding='utf-8') as f:
         if marker in f.read():
             return
-
         f.write(f"\n\n{marker}\n")
         f.write('parser.add_argument("--hypernetwork-dir", type=normalized_filepath, '
                'default=os.path.join(models_path, \'hypernetworks\'), help="hypernetwork directory")')
 
-
 # ======================== MAIN CODE =======================
+
+async def main():
+    unpack_webui()
+    await download_configuration()
+    await install_extensions()
+    apply_classic_fixes()
+
 if __name__ == '__main__':
     with capture.capture_output():
-        unpack_webui()
-        asyncio.run(download_configuration())
-        fixes_modules()
+        asyncio.run(main())

@@ -4,7 +4,7 @@ https://github.com/anxety-solo/anxety-theme
 https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus
 
 ## Gutris1
-# https://github.com/gutris1/sd-image-viewer Image-Viewer
+https://github.com/gutris1/sd-image-viewer Image-Viewer
 https://github.com/gutris1/sd-image-info Image-Info
 https://github.com/gutris1/sd-hub SD-Hub
 
