@@ -81,6 +81,7 @@ async def get_extensions_list():
 
 # ================= CONFIGURATION HANDLING =================
 
+# For Forge/ReForge/SD-UX - default is used: A1111
 CONFIG_MAP = {
     'A1111': [
         f"{CONFIG_URL}/{UI}/config.json",
@@ -91,6 +92,13 @@ CONFIG_MAP = {
         f"{CONFIG_URL}/notification.mp3",
         f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py"
     ],
+    'ComfyUI': [
+        f"{CONFIG_URL}/{UI}/install-deps.py",
+        f"{CONFIG_URL}/{UI}/comfy.settings.json, {WEBUI}/user/default",
+        f"{CONFIG_URL}/{UI}/Comfy-Manager/config.ini, {WEBUI}/user/default/ComfyUI-Manager",
+        f"{CONFIG_URL}/{UI}/workflows/anxety-workflow.json, {WEBUI}/user/default/workflows",
+        f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py"
+    ],
     'Classic': [
         f"{CONFIG_URL}/{UI}/config.json",
         f"{CONFIG_URL}/{UI}/ui-config.json",
@@ -98,21 +106,16 @@ CONFIG_MAP = {
         f"{CONFIG_URL}/user.css",
         f"{CONFIG_URL}/notification.mp3",
         f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.11/site-packages/gradio_tunneling, main.py"
-    ],
-    'ComfyUI': [
-        f"{CONFIG_URL}/{UI}/install-deps.py",
-        f"{CONFIG_URL}/{UI}/comfy.settings.json, {WEBUI}/user/default",
-        f"{CONFIG_URL}/{UI}/Comfy-Manager/config.ini, {WEBUI}/user/default/ComfyUI-Manager",
-        f"{CONFIG_URL}/{UI}/workflows/anxety-workflow.json, {WEBUI}/user/default/workflows",
-        f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py"
     ]
 }
 
 async def download_configuration():
     """Download all configuration files for current UI"""
     configs = CONFIG_MAP.get(UI, CONFIG_MAP['A1111'])
-    await asyncio.gather(*[_download_file(*config.split(',')) for config in configs])
-
+    await asyncio.gather(*[
+        _download_file(*map(str.strip, config.split(','))) 
+        for config in configs 
+    ])
 
 # ================= EXTENSIONS INSTALLATION ================
 
@@ -156,6 +159,7 @@ def apply_classic_fixes():
         f.write(f"\n\n{marker}\n")
         f.write('parser.add_argument("--hypernetwork-dir", type=normalized_filepath, '
                'default=os.path.join(models_path, \'hypernetworks\'), help="hypernetwork directory")')
+
 
 # ======================== MAIN CODE =======================
 
