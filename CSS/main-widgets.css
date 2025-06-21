@@ -14,6 +14,7 @@
     /* Container */
     --aw-container-bg: #232323;
     --aw-container-border: 2px solid rgba(0, 0, 0, 0.4);
+    --aw-conteiner-gap: 5px;
 
     /* Inputs */
     --aw-input-bg: #1c1c1c;
@@ -187,16 +188,17 @@ a {
 }
 
 
-/* Container style */
+/* Containers style */
 
 .mainContainer * { overflow: visible !important; } /* Fix For Containers Shadow */
 .mainContainer {
-    padding: 5px;
-    gap: 5px;
+    padding: var(--aw-conteiner-gap);
+    gap: var(--aw-conteiner-gap);
 }
-.widgetContainer {
-    min-width: 1080px;
-    gap: 5px;
+.widgetContainer { gap: var(--aw-conteiner-gap); }
+.widgetContainer > .model-vae {
+    gap: var(--aw-conteiner-gap);
+    align-items: stretch;
 }
 
 .container {

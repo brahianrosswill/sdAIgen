@@ -72,7 +72,7 @@ model_header = factory.create_header('Model Selection')
 model_options = read_model_data(f"{SCRIPTS}/_models-data.py", 'model')
 model_widget = factory.create_dropdown(model_options, 'Model:', '4. Counterfeit [Anime] [V3] + INP')
 model_num_widget = factory.create_text('Model Number:', '', 'Enter model numbers for download.')
-inpainting_model_widget = factory.create_checkbox('Inpainting Models', False, class_names=['inpaint'], layout={'width': '25%'})
+inpainting_model_widget = factory.create_checkbox('Inpainting Models', False, class_names=['inpaint'], layout={'width': '250px'})
 XL_models_widget = factory.create_checkbox('SDXL', False, class_names=['sdxl'])
 
 switch_model_widget = factory.create_hbox([inpainting_model_widget, XL_models_widget])
@@ -242,11 +242,18 @@ additional_box = factory.create_vbox(additional_widgets, class_names=['container
 custom_download_box = factory.create_vbox(custom_download_widgets, class_names=['container', 'container_cdl'])
 
 # Create Containers
-widgetContainer = factory.create_vbox(
-    [model_box, additional_box, custom_download_box, save_button],
-    class_names=['widgetContainer']
+CONTAINERS_WIDTH = '1080px'
+model_vae_box = factory.create_hbox(
+    [model_box, vae_box],
+    class_names=['widgetContainer', 'model-vae'],
+    layout={'width': '100%'}
 )
 
+widgetContainer = factory.create_vbox(
+    [model_vae_box, additional_box, custom_download_box, save_button],
+    class_names=['widgetContainer'],
+    layout={'min_width': CONTAINERS_WIDTH, 'max_width': CONTAINERS_WIDTH}
+)
 sideContainer = factory.create_vbox(
     [GDrive_button],
     class_names=['sideContainer'],
@@ -255,7 +262,6 @@ sideContainer = factory.create_vbox(
         'justify_content': 'flex-start'
     }
 )
-
 mainContainer = factory.create_hbox(
     [widgetContainer, sideContainer],
     class_names=['mainContainer'],
@@ -349,11 +355,9 @@ def save_settings():
     """Save widget values to settings."""
     widgets_values = {key: globals()[f"{key}_widget"].value for key in SETTINGS_KEYS}
     js.save(SETTINGS_PATH, 'WIDGETS', widgets_values)
+    js.save(SETTINGS_PATH, 'mountGDrive', True if GDrive_button.toggle else False)  # Save Status GDrive-btn
 
-    # Save Status GDrive-btn
-    js.save(SETTINGS_PATH, 'mountGDrive', True if GDrive_button.toggle else False)
-
-    update_current_webui(change_webui_widget.value)  # Update Selected WebUI in setting.json
+    update_current_webui(change_webui_widget.value)  # Update Selected WebUI in settings.json
 
 def load_settings():
     """Load widget values from settings."""
