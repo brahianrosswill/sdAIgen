@@ -189,9 +189,7 @@ a {
 
 /* Container style */
 
-.mainContainer * { /* Fix For Containers Shadow */
-    overflow: visible !important;
-}
+.mainContainer * { overflow: visible !important; } /* Fix For Containers Shadow */
 .mainContainer {
     padding: 5px;
     gap: 5px;

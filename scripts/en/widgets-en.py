@@ -53,7 +53,7 @@ def read_model_data(file_path, data_type):
     names = list(local_vars[key].keys())
     return prefixes + names
 
-webui_selection = {
+WEBUI_SELECTION = {
     'A1111':   "--xformers --no-half-vae",
     'ComfyUI': "--dont-print-server",
     'Forge':   "--xformers --cuda-stream --pin-shared-memory",              # Remove: --disable-xformers --opt-sdp-attention
@@ -90,7 +90,7 @@ additional_header = factory.create_header('Additionally')
 latest_webui_widget = factory.create_checkbox('Update WebUI', True)
 latest_extensions_widget = factory.create_checkbox('Update Extensions', True)
 check_custom_nodes_deps_widget = factory.create_checkbox('Check Custom-Nodes Dependencies', True)
-change_webui_widget = factory.create_dropdown(list(webui_selection.keys()), 'WebUI:', 'A1111', layout={'width': 'auto'})
+change_webui_widget = factory.create_dropdown(list(WEBUI_SELECTION.keys()), 'WebUI:', 'A1111', layout={'width': 'auto'})
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Detailed Download:', 'off', layout={'width': 'auto'})
 choose_changes_widget = factory.create_hbox(
     [
@@ -124,7 +124,7 @@ zrok_token_widget = factory.create_text('Zrok Token:')
 zrok_button = create_expandable_button('Register Zrok Token', 'https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU')
 zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 
-commandline_arguments_widget = factory.create_text('Arguments:', webui_selection['A1111'])
+commandline_arguments_widget = factory.create_text('Arguments:', WEBUI_SELECTION['A1111'])
 
 accent_colors_options = ['anxety', 'blue', 'green', 'peach', 'pink', 'red', 'yellow']
 theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Theme Accent:', 'anxety',
@@ -189,35 +189,29 @@ custom_file_urls_widget = factory.create_text('File (txt):')
 """Create button widgets."""
 save_button = factory.create_button('Save', class_names=['button', 'button_save'])
 
-
 # ============== MODULE | GDrive Toggle Button =============
 """Create Google Drive toggle button for Colab only."""
-from pathlib import Path
-
 TOOLTIPS = ("Unmount Google Drive storage", "Mount Google Drive storage")
 BTN_STYLE = {'width': '48px', 'height': '48px'}
 
-GD_status = js.read(SETTINGS_PATH, 'mountGDrive') or False
+GD_status = js.read(SETTINGS_PATH, 'mountGDrive', False)
 GDrive_button = factory.create_button('', layout=BTN_STYLE, class_names=['gdrive-btn'])
+GDrive_button.tooltip = TOOLTIPS[not GD_status]  # Invert index
+GDrive_button.toggle = GD_status
 
-# Init
-GDrive_button.tooltip = TOOLTIPS[0] if GD_status else TOOLTIPS[1]
-
-if ENV_NAME == 'Google Colab':
-    GDrive_button.toggle = GD_status
-    if GDrive_button.toggle:
+if ENV_NAME != 'Google Colab':
+    GDrive_button.layout.display = 'none'  # Hide button if not Colab
+else:
+    if GD_status:
         GDrive_button.add_class('active')
 
     def handle_toggle(btn):
         """Toggle Google Drive button state"""
         btn.toggle = not btn.toggle
-        btn.tooltip = TOOLTIPS[0] if btn.toggle else TOOLTIPS[1]
-        btn.add_class('active') if btn.toggle else btn.remove_class('active')
+        btn.tooltip = TOOLTIPS[not btn.toggle]
+        btn.toggle and btn.add_class('active') or btn.remove_class('active')
 
     GDrive_button.on_click(handle_toggle)
-else:
-    GDrive_button.layout.display = 'none'   # Hide GD-btn if ENV is not Colab
-
 
 # =================== DISPLAY / SETTINGS ===================
 
@@ -270,6 +264,7 @@ mainContainer = factory.create_hbox(
 
 factory.display(mainContainer)
 
+
 # ==================== CALLBACK FUNCTION ===================
 
 # Initialize visibility | hidden
@@ -279,42 +274,32 @@ empowerment_output_widget.add_class('hidden')
 
 # Callback functions for XL options
 def update_XL_options(change, widget):
-    selected = change['new']
-
-    default_model_values = {
-        True: ('4. WAI-illustrious [Anime] [V14] [XL]', '1. sdxl.vae', 'none'),           # XL models
+    is_xl = change['new']
+    defaults = {
+        True: ('4. WAI-illustrious [Anime] [V14] [XL]', '1. sdxl.vae', 'none'),    # XL models
         False: ('4. Counterfeit [Anime] [V3] + INP', '3. Blessed2.vae', 'none')    # SD 1.5 models
     }
 
-    # Get data - MODELs | VAEs | CNETs
-    data_file = '_xl-models-data.py' if selected else '_models-data.py'
+    data_file = '_xl-models-data.py' if is_xl else '_models-data.py'
     model_widget.options = read_model_data(f"{SCRIPTS}/{data_file}", 'model')
     vae_widget.options = read_model_data(f"{SCRIPTS}/{data_file}", 'vae')
     controlnet_widget.options = read_model_data(f"{SCRIPTS}/{data_file}", 'cnet')
 
     # Set default values from the dictionary
-    model_widget.value, vae_widget.value, controlnet_widget.value = default_model_values[selected]
+    model_widget.value, vae_widget.value, controlnet_widget.value = defaults[is_xl]
 
 # Callback functions for updating widgets
 def update_change_webui(change, widget):
-    selected_webui = change['new']
-    commandline_arguments = webui_selection.get(selected_webui, '')
-    commandline_arguments_widget.value = commandline_arguments
+    webui = change['new']
+    commandline_arguments_widget.value = WEBUI_SELECTION.get(webui, '')
 
-    if selected_webui == 'ComfyUI':
-        latest_extensions_widget.layout.display = 'none'
-        latest_extensions_widget.value = False
-        check_custom_nodes_deps_widget.layout.display = ''
-        theme_accent_widget.layout.display = 'none'
-        theme_accent_widget.value = 'anxety'
-        Extensions_url_widget.description = 'Custom Nodes:'
-    else:
-        latest_extensions_widget.layout.display = ''
-        latest_extensions_widget.value = True
-        check_custom_nodes_deps_widget.layout.display = 'none'
-        theme_accent_widget.layout.display = ''
-        theme_accent_widget.value = 'anxety'
-        Extensions_url_widget.description = 'Extensions:'
+    is_comfy = webui == 'ComfyUI'
+
+    latest_extensions_widget.layout.display = 'none' if is_comfy else ''
+    latest_extensions_widget.value = not is_comfy
+    check_custom_nodes_deps_widget.layout.display = '' if is_comfy else 'none'
+    theme_accent_widget.layout.display = 'none' if is_comfy else ''
+    Extensions_url_widget.description = 'Custom Nodes:' if is_comfy else 'Extensions:'
 
 # Callback functions for Empowerment
 def update_empowerment(change, widget):
@@ -379,7 +364,7 @@ def load_settings():
                 globals()[f"{key}_widget"].value = widget_data.get(key, '')
 
     # Load Status GDrive-btn
-    GD_status = js.read(SETTINGS_PATH, 'mountGDrive') or False
+    GD_status = js.read(SETTINGS_PATH, 'mountGDrive', False)
     GDrive_button.toggle = (GD_status == True)
     if GDrive_button.toggle:
         GDrive_button.add_class('active')
@@ -389,7 +374,6 @@ def load_settings():
 def save_data(button):
     """Handle save button click."""
     save_settings()
-    # factory.close(list(WIDGET_LIST.children), class_names=['hide'], delay=0.8)
     all_widgets = [model_box, vae_box, additional_box, custom_download_box, save_button, GDrive_button]
     factory.close(all_widgets, class_names=['hide'], delay=0.8)
 
