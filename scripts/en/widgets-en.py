@@ -250,7 +250,7 @@ vae_box = factory.create_vbox(vae_widgets, class_names=['container'])
 additional_box = factory.create_vbox(additional_widgets, class_names=['container'])
 custom_download_box = factory.create_vbox(custom_download_widgets, class_names=['container', 'container_cdl'])
 
-WIDGET_LIST = factory.create_vbox([model_box, vae_box, additional_box, custom_download_box, save_button],
+WIDGET_LIST = factory.create_vbox([model_box, additional_box, custom_download_box, save_button],
                                   class_names=['mainContainer'])
 factory.display(WIDGET_LIST)
 
@@ -267,7 +267,7 @@ def update_XL_options(change, widget):
     selected = change['new']
 
     default_model_values = {
-        True: ('4. WAI-illustrious [Anime] [V14] [XL]', 'none', 'none'),           # XL models
+        True: ('4. WAI-illustrious [Anime] [V14] [XL]', '1. sdxl.vae', 'none'),           # XL models
         False: ('4. Counterfeit [Anime] [V3] + INP', '3. Blessed2.vae', 'none')    # SD 1.5 models
     }
 

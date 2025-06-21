@@ -113,8 +113,8 @@ async def download_configuration():
     """Download all configuration files for current UI"""
     configs = CONFIG_MAP.get(UI, CONFIG_MAP['A1111'])
     await asyncio.gather(*[
-        _download_file(*map(str.strip, config.split(','))) 
-        for config in configs 
+        _download_file(*map(str.strip, config.split(',')))
+        for config in configs
     ])
 
 # ================= EXTENSIONS INSTALLATION ================
