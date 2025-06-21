@@ -250,10 +250,28 @@ vae_box = factory.create_vbox(vae_widgets, class_names=['container'])
 additional_box = factory.create_vbox(additional_widgets, class_names=['container'])
 custom_download_box = factory.create_vbox(custom_download_widgets, class_names=['container', 'container_cdl'])
 
-WIDGET_LIST = factory.create_vbox([model_box, additional_box, custom_download_box, save_button],
-                                  class_names=['mainContainer'])
-factory.display(WIDGET_LIST)
+# Create Containers
+widgetContainer = factory.create_vbox(
+    [model_box, additional_box, custom_download_box, save_button],
+    class_names=['widgetContainer']
+)
 
+sideContainer = factory.create_vbox(
+    [GDrive_button],
+    class_names=['sideContainer'],
+    layout={
+        'height': '100%',
+        'justify_content': 'flex-start'
+    }
+)
+
+mainContainer = factory.create_hbox(
+    [widgetContainer, sideContainer],
+    class_names=['mainContainer'],
+    layout={'align_items': 'flex-start'}
+)
+
+factory.display(mainContainer)
 
 # ==================== CALLBACK FUNCTION ===================
 
@@ -375,7 +393,7 @@ def save_data(button):
     """Handle save button click."""
     save_settings()
     # factory.close(list(WIDGET_LIST.children), class_names=['hide'], delay=0.8)
-    all_widgets = [model_content, vae_box, additional_box, custom_download_box, save_button, GDrive_button]
+    all_widgets = [model_box, vae_box, additional_box, custom_download_box, save_button, GDrive_button]
     factory.close(all_widgets, class_names=['hide'], delay=0.8)
 
 load_settings()

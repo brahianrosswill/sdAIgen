@@ -196,16 +196,20 @@ a {
     padding: 5px;
     gap: 5px;
 }
+.widgetContainer {
+    min-width: 1080px;
+    gap: 5px;
+}
 
 .container {
     position: relative;
-    width: 1080px;
     padding: 10px 15px;
     background-color: var(--aw-container-bg);
     border: var(--aw-container-border);
     border-radius: 16px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.35), inset 0 0 10px rgba(0, 0, 0, 0.3);
     overflow: hidden !important;
+    flex-grow: 1;
 }
 .container::after {
     content: "ANXETY";
@@ -233,7 +237,6 @@ a {
     min-width: 48px;
     min-height: 48px;
     margin: 0 !important;
-    margin-left: 15px !important; /* SPACE */
     padding: 0 !important;
     background-size: 70%;
     background-position: center;
