@@ -1,6 +1,5 @@
 # ~ webui-installer.py | by ANXETY ~
 
-from Manager import m_download   # Every Download
 import json_utils as js          # JSON
 
 from IPython.display import clear_output
@@ -10,6 +9,7 @@ from pathlib import Path
 import subprocess
 import asyncio
 import aiohttp
+import zipfile
 import os
 
 
@@ -27,12 +27,14 @@ SETTINGS_PATH = PATHS['settings_path']
 
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = HOME / UI
-EXTS = Path(js.read(SETTINGS_PATH, 'WEBUI.extension_dir'))
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 FORK_REPO = js.read(SETTINGS_PATH, 'ENVIRONMENT.fork')
 BRANCH = js.read(SETTINGS_PATH, 'ENVIRONMENT.branch')
 
-REPO_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"
+EMBED = Path(js.read(SETTINGS_PATH, 'WEBUI.embed_dir'))
+UPSC = Path(js.read(SETTINGS_PATH, 'WEBUI.upscale_dir'))
+EXTS = Path(js.read(SETTINGS_PATH, 'WEBUI.extension_dir'))
+
 CONFIG_URL = f"https://raw.githubusercontent.com/{FORK_REPO}/{BRANCH}/__configs__"
 
 CD(HOME)
@@ -55,6 +57,18 @@ async def _download_file(url, directory=WEBUI, filename=None):
         stderr=subprocess.DEVNULL
     )
     await process.communicate()
+
+async def download_and_extract_archive(url, extract_to):
+    """Download and extract zip archive, then delete it."""
+    archive_path = WEBUI / Path(url).name
+
+    await _download_file(url, WEBUI)
+
+    # Extract archive
+    with zipfile.ZipFile(archive_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_to)
+
+    archive_path.unlink()
 
 async def get_extensions_list():
     """Fetch list of extensions from config file."""
@@ -113,8 +127,8 @@ async def download_configuration():
     """Download all configuration files for current UI"""
     configs = CONFIG_MAP.get(UI, CONFIG_MAP['A1111'])
     await asyncio.gather(*[
-        _download_file(*map(str.strip, config.split(','))) 
-        for config in configs 
+        _download_file(*map(str.strip, config.split(',')))
+        for config in configs
     ])
 
 # ================= EXTENSIONS INSTALLATION ================
@@ -137,11 +151,27 @@ async def install_extensions():
 
 # =================== WEBUI SETUP & FIXES ==================
 
-def unpack_webui():
-    """Download and extract WebUI archive."""
-    zip_path = HOME / f"{UI}.zip"
-    m_download(f"{REPO_URL} {HOME} {UI}.zip")
-    ipySys(f"unzip -q -o {zip_path} -d {WEBUI} && rm -rf {zip_path}")
+REPO_MAP = {
+    'A1111':   'https://github.com/AUTOMATIC1111/stable-diffusion-webui',
+    'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
+    'Forge':   'https://github.com/lllyasviel/stable-diffusion-webui-forge',
+    'Classic': 'https://github.com/Haoming02/sd-webui-forge-classic',
+    'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge',
+    'SD-UX':   'https://github.com/anapnoe/stable-diffusion-webui-ux'
+}
+
+def clone_webui():
+    """Clone WebUI repository instead of downloading archive."""
+    repo_url = REPO_MAP.get(UI)
+
+    process = subprocess.run(
+        f"git clone --depth 1 {repo_url} {WEBUI}",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+    if process.returncode != 0:
+        raise RuntimeError(f"Failed to clone {UI} repository")
 
 def apply_classic_fixes():
     """Apply specific fixes for Classic UI."""
@@ -163,10 +193,28 @@ def apply_classic_fixes():
 
 # ======================== MAIN CODE =======================
 
+async def download_and_process_archives():
+    """Download and process required archives."""
+    archives = [
+        ("https://huggingface.co/NagisaNao/ANXETY/resolve/main/embeds.zip", EMBED),
+        ("https://huggingface.co/NagisaNao/ANXETY/resolve/main/upscalers.zip", UPSC)
+    ]
+
+    # Create target directories if they don't exist
+    for _, extract_dir in archives:
+        extract_dir.mkdir(parents=True, exist_ok=True)
+
+    # Download and extract archives
+    await asyncio.gather(*[
+        download_and_extract_archive(url, extract_dir)
+        for url, extract_dir in archives
+    ])
+
 async def main():
-    unpack_webui()
+    clone_webui()
     await download_configuration()
     await install_extensions()
+    await download_and_process_archives()
     apply_classic_fixes()
 
 if __name__ == '__main__':

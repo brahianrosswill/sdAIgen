@@ -73,9 +73,6 @@ model_options = read_model_data(f"{SCRIPTS}/_models-data.py", 'model')
 model_widget = factory.create_dropdown(model_options, 'Model:', '4. Counterfeit [Anime] [V3] + INP')
 model_num_widget = factory.create_text('Model Number:', '', 'Enter model numbers for download.')
 inpainting_model_widget = factory.create_checkbox('Inpainting Models', False, class_names=['inpaint'], layout={'width': '25%'})
-XL_models_widget = factory.create_checkbox('SDXL', False, class_names=['sdxl'])
-
-switch_model_widget = factory.create_hbox([inpainting_model_widget, XL_models_widget])
 
 # --- VAE ---
 """Create VAE selection widgets."""
@@ -87,15 +84,17 @@ vae_num_widget = factory.create_text('Vae Number:', '', 'Enter vae numbers for d
 # --- ADDITIONAL ---
 """Create additional configuration widgets."""
 additional_header = factory.create_header('Additionally')
-latest_webui_widget = factory.create_checkbox('Update WebUI', True)
-latest_extensions_widget = factory.create_checkbox('Update Extensions', True)
+XL_models_widget = factory.create_checkbox('SDXL', False, class_names=['sdxl'])
+accent_colors_options = ['anxety', 'blue', 'green', 'peach', 'pink', 'red', 'yellow']
+theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Theme Accent:', 'anxety',
+                                              layout={'width': 'auto', 'margin': '0 0 0 8px'})    # margin-left
 check_custom_nodes_deps_widget = factory.create_checkbox('Check Custom-Nodes Dependencies', True)
 change_webui_widget = factory.create_dropdown(list(webui_selection.keys()), 'WebUI:', 'A1111', layout={'width': 'auto'})
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Detailed Download:', 'off', layout={'width': 'auto'})
 choose_changes_widget = factory.create_hbox(
     [
-        latest_webui_widget,
-        latest_extensions_widget,
+        XL_models_widget,
+        theme_accent_widget,
         check_custom_nodes_deps_widget,   # Only ComfyUI
         change_webui_widget,
         detailed_download_widget
@@ -126,12 +125,6 @@ zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
 
 commandline_arguments_widget = factory.create_text('Arguments:', webui_selection['A1111'])
 
-accent_colors_options = ['anxety', 'blue', 'green', 'peach', 'pink', 'red', 'yellow']
-theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Theme Accent:', 'anxety',
-                                              layout={'width': 'auto', 'margin': '0 0 0 8px'})    # margin-left
-
-additional_footer = factory.create_hbox([commandline_arguments_widget, theme_accent_widget])
-
 additional_widget_list = [
     additional_header,
     choose_changes_widget,
@@ -140,8 +133,7 @@ additional_widget_list = [
     commit_hash_widget,
     civitai_widget, huggingface_widget, zrok_widget, ngrok_widget,
     HR,
-    # commandline_arguments_widget,
-    additional_footer
+    commandline_arguments_widget
 ]
 
 # --- CUSTOM DOWNLOAD ---
@@ -225,7 +217,7 @@ factory.load_css(widgets_css)   # load CSS (widgets)
 factory.load_js(widgets_js)     # load JS (widgets)
 
 # Display sections
-model_widgets = [model_header, model_widget, model_num_widget, switch_model_widget]
+model_widgets = [model_header, model_widget, model_num_widget, inpainting_model_widget]
 vae_widgets = [vae_header, vae_widget, vae_num_widget]
 additional_widgets = additional_widget_list
 custom_download_widgets = [
@@ -287,18 +279,14 @@ def update_change_webui(change, widget):
     commandline_arguments_widget.value = commandline_arguments
 
     if selected_webui == 'ComfyUI':
-        latest_extensions_widget.layout.display = 'none'
-        latest_extensions_widget.value = False
-        check_custom_nodes_deps_widget.layout.display = ''
         theme_accent_widget.layout.display = 'none'
         theme_accent_widget.value = 'anxety'
+        check_custom_nodes_deps_widget.layout.display = ''
         Extensions_url_widget.description = 'Custom Nodes:'
     else:
-        latest_extensions_widget.layout.display = ''
-        latest_extensions_widget.value = True
-        check_custom_nodes_deps_widget.layout.display = 'none'
         theme_accent_widget.layout.display = ''
         theme_accent_widget.value = 'anxety'
+        check_custom_nodes_deps_widget.layout.display = 'none'
         Extensions_url_widget.description = 'Extensions:'
 
 # Callback functions for Empowerment
@@ -336,9 +324,9 @@ factory.connect_widgets([(empowerment_widget, 'value')], update_empowerment)
 
 SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',
-      'latest_webui', 'latest_extensions', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
+      'theme_accent', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
       'controlnet', 'controlnet_num', 'commit_hash',
-      'civitai_token', 'huggingface_token', 'zrok_token', 'ngrok_token', 'commandline_arguments', 'theme_accent',
+      'civitai_token', 'huggingface_token', 'zrok_token', 'ngrok_token', 'commandline_arguments',
       # CustomDL
       'empowerment', 'empowerment_output',
       'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'ADetailer_url',
