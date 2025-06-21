@@ -55,10 +55,9 @@ FILE_STRUCTURE = {
         'CivitaiAPI.py', 'Manager.py', 'TunnelHub.py', '_season.py'
     ],
     'scripts': {
-        'UIs': ['A1111.py', 'ComfyUI.py', 'Forge.py', 'Classic.py', 'ReForge.py', 'SD-UX.py'],
         '{lang}': ['widgets-{lang}.py', 'downloading-{lang}.py'],
         '': [
-            'launch.py', 'download-result.py', 'auto-cleaner.py',
+            'webui-installer.py', 'launch.py', 'download-result.py', 'auto-cleaner.py',
             '_models-data.py', '_xl-models-data.py'
         ]
     }

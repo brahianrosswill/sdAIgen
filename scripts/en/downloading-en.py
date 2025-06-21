@@ -186,7 +186,7 @@ if UI in ['A1111', 'SD-UX'] and not os.path.exists('/root/.cache/huggingface/hub
     name_zip = 'hf_cache_adetailer'
     chache_url = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main/hf_chache_adetailer.zip'
 
-    zip_path = f"{HOME}/{name_zip}.zip"
+    zip_path = HOME / f"{name_zip}.zip"
     m_download(f"{chache_url} {HOME} {name_zip}")
     ipySys(f"unzip -q -o {zip_path} -d /")
     ipySys(f"rm -rf {zip_path}")
@@ -199,7 +199,7 @@ if not os.path.exists(WEBUI):
     start_install = time.time()
     print(f"⌚ Unpacking Stable Diffusion... | WEBUI: {COL.B}{UI}{COL.X}", end='')
 
-    ipyRun('run', f"{SCRIPTS}/UIs/{UI}.py")
+    ipyRun('run', f"{SCRIPTS}/webui-installer.py")
     handle_setup_timer(WEBUI, start_timer)		# Setup timer (for timer-extensions)
 
     install_time = time.time() - start_install
