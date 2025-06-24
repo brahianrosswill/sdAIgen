@@ -92,7 +92,7 @@ latest_extensions_widget = factory.create_checkbox('Обновить Расши�
 check_custom_nodes_deps_widget = factory.create_checkbox('Чекать зависимости Custom-Nodes', True)
 change_webui_widget = factory.create_dropdown(list(WEBUI_SELECTION.keys()), 'WebUI:', 'A1111', layout={'width': 'auto'})
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Подробная Загрузка:', 'off', layout={'width': 'auto'})
-choose_changes_widget = factory.create_hbox(
+choose_changes_box = factory.create_hbox(
     [
         latest_webui_widget,
         latest_extensions_widget,
@@ -110,19 +110,19 @@ commit_hash_widget = factory.create_text('Commit Hash:', '', 'Переключе
 
 civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Введите свой API-токен CivitAi.')
 civitai_button = create_expandable_button('Получить CivitAI Токен', 'https://civitai.com/user/account')
-civitai_widget = factory.create_hbox([civitai_token_widget, civitai_button])
+civitai_box = factory.create_hbox([civitai_token_widget, civitai_button])
 
 huggingface_token_widget = factory.create_text('HuggingFace Token:')
 huggingface_button = create_expandable_button('Получить HuggingFace Токен', 'https://huggingface.co/settings/tokens')
-huggingface_widget = factory.create_hbox([huggingface_token_widget, huggingface_button])
+huggingface_box = factory.create_hbox([huggingface_token_widget, huggingface_button])
 
 ngrok_token_widget = factory.create_text('Ngrok Token:')
 ngrok_button = create_expandable_button('Получить Ngrok Токен', 'https://dashboard.ngrok.com/get-started/your-authtoken')
-ngrok_widget = factory.create_hbox([ngrok_token_widget, ngrok_button])
+ngrok_box = factory.create_hbox([ngrok_token_widget, ngrok_button])
 
 zrok_token_widget = factory.create_text('Zrok Token:')
 zrok_button = create_expandable_button('Зарегать Zrok Токен', 'https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU')
-zrok_widget = factory.create_hbox([zrok_token_widget, zrok_button])
+zrok_box = factory.create_hbox([zrok_token_widget, zrok_button])
 
 commandline_arguments_widget = factory.create_text('Аргументы:', WEBUI_SELECTION['A1111'])
 
@@ -130,28 +130,28 @@ accent_colors_options = ['anxety', 'blue', 'green', 'peach', 'pink', 'red', 'yel
 theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Акцент Темы:', 'anxety',
                                               layout={'width': 'auto', 'margin': '0 0 0 8px'})    # margin-left
 
-additional_footer = factory.create_hbox([commandline_arguments_widget, theme_accent_widget])
+additional_footer_box = factory.create_hbox([commandline_arguments_widget, theme_accent_widget])
 
 additional_widget_list = [
     additional_header,
-    choose_changes_widget,
+    choose_changes_box,
     HR,
     controlnet_widget, controlnet_num_widget,
     commit_hash_widget,
-    civitai_widget, huggingface_widget, zrok_widget, ngrok_widget,
+    civitai_box, huggingface_box, zrok_box, ngrok_box,
     HR,
     # commandline_arguments_widget,
-    additional_footer
+    additional_footer_box
 ]
 
 # --- CUSTOM DOWNLOAD ---
 """Create Custom-Download Selection widgets."""
 custom_download_header_popup = factory.create_html('''
 <div class="header" style="cursor: pointer;" onclick="toggleContainer()">Кастомная Загрузка</div>
-<div class="info" id="info_dl">INFO</div>
+<div class="info">INFO</div>
 <div class="popup">
     Разделите несколько URL-адресов запятой/пробелом.
-    Для <span class="file_name">пользовательского имени</span> файла/расширения укажите его через <span class="braces">[]</span> после URL без пробелов.
+    Для <span class="file_name">пользовательского имени</span> файла/расширения укажите его через <span class="braces">[ ]</span> после URL без пробелов.
     <span class="required">Для файлов обязательно укажите</span> - <span class="extension">Расширение Файла.</span>
     <div class="sample">
         <span class="sample_label">Пример для Файла:</span>
@@ -246,7 +246,7 @@ CONTAINERS_WIDTH = '1080px'
 model_vae_box = factory.create_hbox(
     [model_box, vae_box],
     class_names=['widgetContainer', 'model-vae'],
-    layout={'width': '100%'}
+    # layout={'width': '100%'}
 )
 
 widgetContainer = factory.create_vbox(
@@ -256,11 +256,7 @@ widgetContainer = factory.create_vbox(
 )
 sideContainer = factory.create_vbox(
     [GDrive_button],
-    class_names=['sideContainer'],
-    layout={
-        'height': '100%',
-        'justify_content': 'flex-start'
-    }
+    class_names=['sideContainer']
 )
 mainContainer = factory.create_hbox(
     [widgetContainer, sideContainer],
