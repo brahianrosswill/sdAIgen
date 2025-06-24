@@ -92,6 +92,9 @@ a {
     margin: 0;
 }
 
+/* Remove Shit-margin for Boxes */
+.widget-inline-hbox { margin: 2px 0; } /* 2px - default ipywidgets margin */
+
 /* Fix Vertical Centering */
 .widget-hbox,
 .jupyter-widgets label {
@@ -107,7 +110,7 @@ a {
 }
 
 
-/* Special Styles (ScrollBars) */
+/* Special Styles */
 
 ::selection {
     background: #3d4142;
@@ -383,6 +386,7 @@ a {
 .popup {
     position: absolute;
     top: 120px;
+    margin: 0;
     padding: 12px;
     color: var(--aw-popup-color);
     font-size: 16px;

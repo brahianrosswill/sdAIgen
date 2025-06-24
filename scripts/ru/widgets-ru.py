@@ -279,7 +279,7 @@ empowerment_output_widget.add_class('empowerment-output')
 empowerment_output_widget.add_class('hidden')
 
 # Callback functions for XL options
-dedef update_XL_options(change, widget):
+def update_XL_options(change, widget):
     is_xl = change['new']
     defaults = {
         True: ('4. WAI-illustrious [Anime] [V14] [XL]', '1. sdxl.vae', 'none'),    # XL models

@@ -180,18 +180,21 @@ locals().update(settings)
 
 # ========================== WEBUI =========================
 
-if UI in ['A1111', 'SD-UX'] and not os.path.exists('/root/.cache/huggingface/hub/models--Bingsu--adetailer'):
-    print('🚚 Распаковка кэша моделей ADetailer...')
+if UI in ['A1111', 'SD-UX']:
+    cache_path = '/root/.cache/huggingface/hub/models--Bingsu--adetailer'
+    if not os.path.exists(cache_path):
+        print('🚚 Распаковка кэша моделей ADetailer...')
 
-    name_zip = 'hf_cache_adetailer'
-    chache_url = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main/hf_chache_adetailer.zip'
+        name_zip = 'hf_cache_adetailer'
+        chache_url = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main/hf_cache_adetailer.zip'
 
-    zip_path = HOME / f"{name_zip}.zip"
-    m_download(f"{chache_url} {HOME} {name_zip}")
-    ipySys(f"unzip -q -o {zip_path} -d /")
-    ipySys(f"rm -rf {zip_path}")
+        zip_path = HOME / f"{name_zip}.zip"
+        parent_cache_dir = os.path.dirname(cache_path)
+        os.makedirs(parent_cache_dir, exist_ok=True)
 
-    clear_output()
+        m_download(f"{chache_url} {HOME} {name_zip}")
+        ipySys(f"unzip -q -o {zip_path} -d {parent_cache_dir} && rm -rf {zip_path}")
+        clear_output()
 
 start_timer = js.read(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
 
