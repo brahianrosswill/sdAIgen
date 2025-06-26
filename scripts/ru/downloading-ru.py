@@ -211,7 +211,6 @@ if not os.path.exists(WEBUI):
 
 else:
     print(f"🔧 Текущий WebUI: {COL.B}{UI}{COL.X}")
-    # print('🚀 Распаковка завершена. Пропуск. ⚡')
 
     timer_env = handle_setup_timer(WEBUI, start_timer)
     elapsed_time = str(timedelta(seconds=time.time() - timer_env)).split('.')[0]

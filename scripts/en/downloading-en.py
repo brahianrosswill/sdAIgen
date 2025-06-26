@@ -207,11 +207,10 @@ if not os.path.exists(WEBUI):
 
     install_time = time.time() - start_install
     minutes, seconds = divmod(int(install_time), 60)
-    print(f"\r🚀 Unpacking {COL.B}{UI}{COL.X} is complete! {minutes:02}:{seconds:02} ⚡" + ' '*25)
+    print(f"\r🚀 Unpacking {COL.B}{UI}{COL.X} complete! {minutes:02}:{seconds:02} ⚡" + ' '*25)
 
 else:
     print(f"🔧 Current WebUI: {COL.B}{UI}{COL.X}")
-    # print('🚀 Unpacking is complete. Pass. ⚡')
 
     timer_env = handle_setup_timer(WEBUI, start_timer)
     elapsed_time = str(timedelta(seconds=time.time() - timer_env)).split('.')[0]
