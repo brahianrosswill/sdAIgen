@@ -150,7 +150,7 @@ custom_download_header_popup = factory.create_html('''
 <div class="header" style="cursor: pointer;" onclick="toggleContainer()">Кастомная Загрузка</div>
 <div class="info">INFO</div>
 <div class="popup">
-    Разделите несколько URL-адресов запятой/пробелом.
+    Разделяйте несколько URL запятой/пробелом.
     Для <span class="file_name">пользовательского имени</span> файла/расширения укажите его через <span class="braces">[ ]</span> после URL без пробелов.
     <span class="required">Для файлов обязательно укажите</span> - <span class="extension">Расширение Файла.</span>
     <div class="sample">

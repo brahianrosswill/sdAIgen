@@ -229,8 +229,6 @@ if latest_webui or latest_extensions:
         ## Update Webui
         if latest_webui:
             CD(WEBUI)
-            # ipySys('git restore .')
-            # ipySys('git pull -X theirs --rebase --autostash')
 
             ipySys('git stash push --include-untracked')
             ipySys('git pull --rebase')
@@ -238,7 +236,6 @@ if latest_webui or latest_extensions:
 
         ## Update extensions
         if latest_extensions:
-            # ipySys('{\'for dir in \' + WEBUI + \'/extensions/*/; do cd \\'$dir\\' && git reset --hard && git pull; done\'}')
             for entry in os.listdir(f"{WEBUI}/extensions"):
                 dir_path = f"{WEBUI}/extensions/{entry}"
                 if os.path.isdir(dir_path):
@@ -246,12 +243,6 @@ if latest_webui or latest_extensions:
                     subprocess.run(['git', 'pull'], cwd=dir_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     print(f"\r✨ Обновление {action} Завершено!")
-
-
-# === FIXING EXTENSIONS ===
-with capture.capture_output():
-    # --- Umi-Wildcard ---
-    ipySys("sed -i '521s/open=\\(False\\|True\\)/open=False/' {WEBUI}/extensions/Umi-AI-Wildcards/scripts/wildcard_recursive.py")    # Closed accordion by default
 
 
 ## Version switching
