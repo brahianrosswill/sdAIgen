@@ -180,13 +180,34 @@ locals().update(settings)
 
 # ========================== WEBUI =========================
 
+start_timer = js.read(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
+
+if not os.path.exists(WEBUI):
+    start_install = time.time()
+    print(f"⌚ Установка Stable Diffusion... | WEBUI: {COL.B}{UI}{COL.X}", end='')
+
+    ipyRun('run', f"{SCRIPTS}/webui-installer.py")
+    handle_setup_timer(WEBUI, start_timer)		# Setup timer (for timer-extensions)
+
+    install_time = time.time() - start_install
+    minutes, seconds = divmod(int(install_time), 60)
+    print(f"\r🚀 Установка {COL.B}{UI}{COL.X} Завершена! {minutes:02}:{seconds:02} ⚡" + ' '*25)
+
+else:
+    print(f"🔧 Текущий WebUI: {COL.B}{UI}{COL.X}")
+
+    timer_env = handle_setup_timer(WEBUI, start_timer)
+    elapsed_time = str(timedelta(seconds=time.time() - timer_env)).split('.')[0]
+    print(f"⌚️ Продолжительность сеанса: {COL.Y}{elapsed_time}{COL.X}")
+
+# Unpack ADetailers Cache
 if UI in ['A1111', 'SD-UX']:
     cache_path = '/root/.cache/huggingface/hub/models--Bingsu--adetailer'
-elif UI != 'ComfyUI':
-    cache_path = f"{WEBUI}/models/diffusers"
+else:
+    cache_path = f"{WEBUI}/models/diffusers/models--Bingsu--adetailer"
 
-if not os.path.exists(cache_path):
-    print('🚚 Распаковка кэша моделей ADetailer...')
+if UI != 'ComfyUI' and not os.path.exists(cache_path):
+    print('🚚 Распаковка кэша моделей ADetailer...', end='')
 
     name_zip = 'hf_cache_adetailer'
     chache_url = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main/hf_cache_adetailer.zip'
@@ -197,28 +218,7 @@ if not os.path.exists(cache_path):
 
     m_download(f"{chache_url} {HOME} {name_zip}")
     ipySys(f"unzip -q -o {zip_path} -d {parent_cache_dir} && rm -rf {zip_path}")
-    clear_output()
-
-start_timer = js.read(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
-
-if not os.path.exists(WEBUI):
-    start_install = time.time()
-    print(f"⌚ Распаковка Stable Diffusion... | WEBUI: {COL.B}{UI}{COL.X}", end='')
-
-    ipyRun('run', f"{SCRIPTS}/webui-installer.py")
-    handle_setup_timer(WEBUI, start_timer)		# Setup timer (for timer-extensions)
-
-    install_time = time.time() - start_install
-    minutes, seconds = divmod(int(install_time), 60)
-    print(f"\r🚀 Распаковка {COL.B}{UI}{COL.X} Завершена! {minutes:02}:{seconds:02} ⚡" + ' '*25)
-
-else:
-    print(f"🔧 Текущий WebUI: {COL.B}{UI}{COL.X}")
-    # print('🚀 Распаковка завершена. Пропуск. ⚡')
-
-    timer_env = handle_setup_timer(WEBUI, start_timer)
-    elapsed_time = str(timedelta(seconds=time.time() - timer_env)).split('.')[0]
-    print(f"⌚️ Продолжительность сеанса: {COL.Y}{elapsed_time}{COL.X}")
+    print('\r🚚 Распаковка ADetailer model завершена.')
 
 
 ## Version switching

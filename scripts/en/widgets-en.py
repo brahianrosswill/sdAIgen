@@ -88,7 +88,7 @@ vae_num_widget = factory.create_text('Vae Number:', '', 'Enter vae numbers for d
 """Create additional configuration widgets."""
 additional_header = factory.create_header('Additionally')
 accent_colors_options = ['anxety', 'blue', 'green', 'peach', 'pink', 'red', 'yellow']
-theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Theme Accent:', 'anxety')
+theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Theme Accent:', 'anxety', layout={'width': 'auto'})
 check_custom_nodes_deps_widget = factory.create_checkbox('Check Custom-Nodes Dependencies', True)
 change_webui_widget = factory.create_dropdown(list(WEBUI_SELECTION.keys()), 'WebUI:', 'A1111', layout={'width': 'auto'})
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Detailed Download:', 'off', layout={'width': 'auto'})
