@@ -182,19 +182,22 @@ locals().update(settings)
 
 if UI in ['A1111', 'SD-UX']:
     cache_path = '/root/.cache/huggingface/hub/models--Bingsu--adetailer'
-    if not os.path.exists(cache_path):
-        print('🚚 Распаковка кэша моделей ADetailer...')
+elif UI != 'ComfyUI':
+    cache_path = f"{WEBUI}/models/diffusers"
 
-        name_zip = 'hf_cache_adetailer'
-        chache_url = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main/hf_cache_adetailer.zip'
+if not os.path.exists(cache_path):
+    print('🚚 Распаковка кэша моделей ADetailer...')
 
-        zip_path = HOME / f"{name_zip}.zip"
-        parent_cache_dir = os.path.dirname(cache_path)
-        os.makedirs(parent_cache_dir, exist_ok=True)
+    name_zip = 'hf_cache_adetailer'
+    chache_url = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main/hf_cache_adetailer.zip'
 
-        m_download(f"{chache_url} {HOME} {name_zip}")
-        ipySys(f"unzip -q -o {zip_path} -d {parent_cache_dir} && rm -rf {zip_path}")
-        clear_output()
+    zip_path = HOME / f"{name_zip}.zip"
+    parent_cache_dir = os.path.dirname(cache_path)
+    os.makedirs(parent_cache_dir, exist_ok=True)
+
+    m_download(f"{chache_url} {HOME} {name_zip}")
+    ipySys(f"unzip -q -o {zip_path} -d {parent_cache_dir} && rm -rf {zip_path}")
+    clear_output()
 
 start_timer = js.read(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
 
@@ -216,33 +219,6 @@ else:
     timer_env = handle_setup_timer(WEBUI, start_timer)
     elapsed_time = str(timedelta(seconds=time.time() - timer_env)).split('.')[0]
     print(f"⌚️ Продолжительность сеанса: {COL.Y}{elapsed_time}{COL.X}")
-
-
-## Changes extensions and WebUi
-if latest_webui or latest_extensions:
-    action = 'WebUI и Расширений' if latest_webui and latest_extensions else ('WebUI' if latest_webui else 'Расширений')
-    print(f"⌚️ Обновление {action}...", end='')
-    with capture.capture_output():
-        ipySys('git config --global user.email "you@example.com"')
-        ipySys('git config --global user.name "Your Name"')
-
-        ## Update Webui
-        if latest_webui:
-            CD(WEBUI)
-
-            ipySys('git stash push --include-untracked')
-            ipySys('git pull --rebase')
-            ipySys('git stash pop')
-
-        ## Update extensions
-        if latest_extensions:
-            for entry in os.listdir(f"{WEBUI}/extensions"):
-                dir_path = f"{WEBUI}/extensions/{entry}"
-                if os.path.isdir(dir_path):
-                    subprocess.run(['git', 'reset', '--hard'], cwd=dir_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                    subprocess.run(['git', 'pull'], cwd=dir_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    print(f"\r✨ Обновление {action} Завершено!")
 
 
 ## Version switching

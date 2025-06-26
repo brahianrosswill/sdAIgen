@@ -87,15 +87,14 @@ vae_num_widget = factory.create_text('Vae Number:', '', 'Enter vae numbers for d
 # --- ADDITIONAL ---
 """Create additional configuration widgets."""
 additional_header = factory.create_header('Additionally')
-latest_webui_widget = factory.create_checkbox('Update WebUI', True)
-latest_extensions_widget = factory.create_checkbox('Update Extensions', True)
+accent_colors_options = ['anxety', 'blue', 'green', 'peach', 'pink', 'red', 'yellow']
+theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Theme Accent:', 'anxety')
 check_custom_nodes_deps_widget = factory.create_checkbox('Check Custom-Nodes Dependencies', True)
 change_webui_widget = factory.create_dropdown(list(WEBUI_SELECTION.keys()), 'WebUI:', 'A1111', layout={'width': 'auto'})
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Detailed Download:', 'off', layout={'width': 'auto'})
 choose_changes_box = factory.create_hbox(
     [
-        latest_webui_widget,
-        latest_extensions_widget,
+        theme_accent_widget,
         check_custom_nodes_deps_widget,   # Only ComfyUI
         change_webui_widget,
         detailed_download_widget
@@ -126,12 +125,6 @@ zrok_box = factory.create_hbox([zrok_token_widget, zrok_button])
 
 commandline_arguments_widget = factory.create_text('Arguments:', WEBUI_SELECTION['A1111'])
 
-accent_colors_options = ['anxety', 'blue', 'green', 'peach', 'pink', 'red', 'yellow']
-theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Theme Accent:', 'anxety',
-                                              layout={'width': 'auto', 'margin': '0 0 0 8px'})    # margin-left
-
-additional_footer_box = factory.create_hbox([commandline_arguments_widget, theme_accent_widget])
-
 additional_widget_list = [
     additional_header,
     choose_changes_box,
@@ -140,8 +133,7 @@ additional_widget_list = [
     commit_hash_widget,
     civitai_box, huggingface_box, zrok_box, ngrok_box,
     HR,
-    # commandline_arguments_widget,
-    additional_footer_box
+    commandline_arguments_widget
 ]
 
 # --- CUSTOM DOWNLOAD ---
@@ -297,8 +289,7 @@ def update_change_webui(change, widget):
 
     is_comfy = webui == 'ComfyUI'
 
-    latest_extensions_widget.layout.display = 'none' if is_comfy else ''
-    latest_extensions_widget.value = not is_comfy
+    theme_accent_widget.layout.display = 'none' if is_comfy else ''
     check_custom_nodes_deps_widget.layout.display = '' if is_comfy else 'none'
     theme_accent_widget.layout.display = 'none' if is_comfy else ''
     Extensions_url_widget.description = 'Custom Nodes:' if is_comfy else 'Extensions:'
@@ -338,9 +329,9 @@ factory.connect_widgets([(empowerment_widget, 'value')], update_empowerment)
 
 SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',
-      'latest_webui', 'latest_extensions', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
+      'theme_accent', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
       'controlnet', 'controlnet_num', 'commit_hash',
-      'civitai_token', 'huggingface_token', 'zrok_token', 'ngrok_token', 'commandline_arguments', 'theme_accent',
+      'civitai_token', 'huggingface_token', 'zrok_token', 'ngrok_token', 'commandline_arguments',
       # CustomDL
       'empowerment', 'empowerment_output',
       'Model_url', 'Vae_url', 'LoRA_url', 'Embedding_url', 'Extensions_url', 'ADetailer_url',
