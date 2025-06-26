@@ -19,7 +19,7 @@ model_list = {
 
 vae_list = {
     "1. sdxl.vae": [
-        {'url': "https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors", 'name': "sdxl.vae.safetensors"}
+        {'url': "https://civitai.com/api/download/models/333245", 'name': "sdxl.vae.safetensors"}
     ]
 }
 

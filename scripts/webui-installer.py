@@ -9,7 +9,6 @@ from pathlib import Path
 import subprocess
 import asyncio
 import aiohttp
-import zipfile
 import os
 
 
@@ -57,18 +56,6 @@ async def _download_file(url, directory=WEBUI, filename=None):
         stderr=subprocess.DEVNULL
     )
     await process.communicate()
-
-async def download_and_extract_archive(url, extract_to):
-    """Download and extract zip archive, then delete it."""
-    archive_path = WEBUI / Path(url).name
-
-    await _download_file(url, WEBUI)
-
-    # Extract archive
-    with zipfile.ZipFile(archive_path, 'r') as zip_ref:
-        zip_ref.extractall(extract_to)
-
-    archive_path.unlink()
 
 async def get_extensions_list():
     """Fetch list of extensions from config file."""
@@ -193,20 +180,26 @@ def apply_classic_fixes():
 
 # ======================== MAIN CODE =======================
 
-async def download_and_process_archives():
+async def process_archives():
     """Download and process required archives."""
     archives = [
         ("https://huggingface.co/NagisaNao/ANXETY/resolve/main/embeds.zip", EMBED),
         ("https://huggingface.co/NagisaNao/ANXETY/resolve/main/upscalers.zip", UPSC)
     ]
 
-    # Create target directories if they don't exist
-    for _, extract_dir in archives:
-        extract_dir.mkdir(parents=True, exist_ok=True)
+    async def download_and_extract(url, extract_to):
+        """Nested function to download and extract a single archive."""
+        archive_path = WEBUI / Path(url).name
+        extract_to = Path(extract_to)
 
-    # Download and extract archives
+        extract_to.mkdir(parents=True, exist_ok=True)
+
+        # Download & unzip
+        await _download_file(url, WEBUI)
+        ipySys(f"unzip -q -o {archive_path} -d {extract_to} && rm -f {archive_path}")
+
     await asyncio.gather(*[
-        download_and_extract_archive(url, extract_dir)
+        download_and_extract(url, extract_dir)
         for url, extract_dir in archives
     ])
 
@@ -214,7 +207,7 @@ async def main():
     clone_webui()
     await download_configuration()
     await install_extensions()
-    await download_and_process_archives()
+    await process_archives()
     apply_classic_fixes()
 
 if __name__ == '__main__':
