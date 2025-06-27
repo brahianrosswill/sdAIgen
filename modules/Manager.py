@@ -31,9 +31,23 @@ HF_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.huggingface_token') or ''
 # ===================== Helper Function ====================
 
 # Logging function
-def log_message(message, log=False):
-    if log:
-        print(f"{message}")
+def log_message(message, log=False, status=''):
+    if not log:
+        return
+
+    status_colors = {
+        'error':    '\033[31m[ERROR]:\033[0m',
+        'warning':  '\033[33m[WARNING]:\033[0m',
+        'success':  '\033[32m[SUCCESS]:\033[0m',
+        'info':     '\033[34m[INFO]:\033[0m'
+    }
+
+    prefix = status_colors.get(status.lower(), status_colors['info'])
+
+    if status:
+        print(f">> {prefix} {message}")
+    else:
+        print(message)
 
 # Error handling decorator
 def handle_errors(func):
@@ -41,7 +55,7 @@ def handle_errors(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            log_message(f"> \033[31m[Error]:\033[0m {e}", kwargs.get('log', False))
+            log_message(f"{e}", 'error', kwargs.get('log', False))
             return None
     return wrapper
 
@@ -58,6 +72,13 @@ def _handle_path_and_filename(parts, url, is_git=False):
             path = Path(arg).expanduser()
         else:
             filename = arg
+
+    if not filename:
+        url_path = urlparse(url).path
+        if url_path:
+            url_filename = Path(url_path).name
+            if url_filename:
+                filename = url_filename
 
     if not is_git and 'drive.google.com' not in url:
         if filename and not Path(filename).suffix:
@@ -79,12 +100,16 @@ def is_github_url(url):
 
 # Download function
 @handle_errors
-def m_download(line, log=False, unzip=False):
+def m_download(line=None, log=False, unzip=False):
     """Download files from a comma-separated list of URLs or file paths."""
+    if line is None:
+        log_message('Missing URL argument, nothing to download', log, 'error')
+        return
+
     links = [link.strip() for link in line.split(',') if link.strip()]
 
     if not links:
-        log_message('> Missing URL, downloading nothing', log)
+        log_message('Missing URL, downloading nothing', log, 'info')
         return
 
     for link in links:
@@ -115,7 +140,8 @@ def process_download(line, log, unzip):
             CD(path)
 
         download_file(url, filename, log)
-        if unzip and filename and filename.endswith('.zip'):
+
+        if unzip and filename and filename.lower().endswith('.zip'):
             unzip_file(filename, log)
     finally:
         CD(current_dir)
@@ -171,10 +197,15 @@ def get_file_name(url):
 
 @handle_errors
 def unzip_file(zip_filepath, log):
-    """Extract the ZIP file."""
+    """Extract the ZIP file to a directory named after the archive."""
+    zip_path = Path(zip_filepath)
+    extract_dir = zip_path.parent / zip_path.stem
+
     with zipfile.ZipFile(zip_filepath, 'r') as zip_ref:
-        zip_ref.extractall(Path(zip_filepath).parent)
-    log_message(f">> Successfully unpacked: {zip_filepath}", log)
+        zip_ref.extractall(extract_dir)
+
+    zip_path.unlink()
+    log_message(f"\n>> Successfully unpacked {zip_filepath} to {extract_dir}", log)
 
 @handle_errors
 def monitor_aria2_download(command, log):
@@ -274,12 +305,16 @@ def clean_url(url):
 
 # ========================== Clone =========================
 
-def m_clone(input_source, recursive=True, depth=1, log=False):
+def m_clone(input_source=None, recursive=True, depth=1, log=False):
     """Main function to clone repositories"""
+    if input_source is None:
+        log_message('Missing repository source argument, nothing to clone', log, 'error')
+        return
+
     sources = [link.strip() for link in input_source.split(',') if link.strip()]
 
     if not sources:
-        log_message('>> No valid repositories to clone', log)
+        log_message('No valid repositories to clone', log, 'info')
         return
 
     for source in sources:
@@ -295,17 +330,17 @@ def m_clone(input_source, recursive=True, depth=1, log=False):
 def process_clone(input_source, recursive, depth, log=False):
     parts = shlex.split(input_source)
     if not parts:
-        log_message(">> \033[31m[Error]: Empty command\033[0m", log)
+        log_message("Empty command", log, 'error')
         return
 
     url = parts[0].replace('\\', '')
     if not url:
-        log_message(f">> \033[31m[Error]:\033[0m Empty URL in command: {input_source}", log)
+        log_message(f"Empty URL in command: {input_source}", log, 'error')
         return
 
     # Check if URL is a GitHub URL
     if not is_github_url(url):
-        log_message(f">>  \033[33m[Warning]:\033[0m Not a GitHub URL - {url}", log)
+        log_message(f"Not a GitHub URL - {url}", log, 'Warning')
         return
 
     path, repo_name = _handle_path_and_filename(parts, url, is_git=True)
@@ -365,4 +400,4 @@ def execute_git_command(command, log=False):
 
         # Handle error messages
         if 'fatal' in output.lower():
-            log_message(f">> \033[31m[Error]:\033[0m {output}", log)
+            log_message(output, log, 'error')

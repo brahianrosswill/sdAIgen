@@ -377,6 +377,14 @@ handle_gdrive(mountGDrive)
 
 # ======================= DOWNLOADING ======================
 
+def handle_errors(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f">>An error occurred in {func.__name__}: {str(e)}")
+    return wrapper
+
 # Get XL or 1.5 models list
 ## model_list | vae_list | controlnet_list
 model_files = '_xl-models-data.py' if XL_models else '_models-data.py'
@@ -452,16 +460,9 @@ def _extract_filename(url):
         return None
     return Path(urlparse(url).path).name
 
-def _unpack_zips():
-    """Recursively extract and delete all .zip files in PREFIX_MAP directories."""
-    for dir_path, _ in PREFIX_MAP.values():
-        for zip_file in Path(dir_path).rglob('*.zip'):
-            with zipfile.ZipFile(zip_file, 'r') as zf:
-                zf.extractall(zip_file.with_suffix(''))
-            zip_file.unlink()
-
 # Download Core
 
+@handle_errors
 def _process_download_link(link):
     """Processes a download link, splitting prefix, URL, and filename."""
     link = _clean_url(link)
@@ -471,6 +472,7 @@ def _process_download_link(link):
             return prefix, re.sub(r'\[.*?\]', '', path), _extract_filename(path)
     return None, link, None
 
+@handle_errors
 def download(line):
     """Downloads files from comma-separated links, processes prefixes, and unpacks zips post-download."""
     for link in filter(None, map(str.strip, line.split(','))):
@@ -489,8 +491,7 @@ def download(line):
             url, dst_dir, file_name = url.split()
             manual_download(url, dst_dir, file_name)
 
-    _unpack_zips()
-
+@handle_errors
 def manual_download(url, dst_dir, file_name=None, prefix=None):
     clean_url = url
     image_url, image_name = None, None
@@ -515,8 +516,8 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     # Formatted info output
     format_output(clean_url, dst_dir, file_name, image_url, image_name)
 
-    # Downloading
-    m_download(f"{url} {dst_dir} {file_name or ''}", log=True)
+    # Downloading Files | With Logs and Auto Unpacking ZIP Archives
+    m_download(f"{url} {dst_dir} {file_name or ''}", log=True, unzip=True)
 
 ''' SubModels - Added URLs '''
 
@@ -560,10 +561,19 @@ def _parse_selection_numbers(num_str, max_num):
 
 def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, inpainting_model=False):
     selected = []
-    if selection == "ALL":
-        selected = sum(model_dict.values(), [])
-    elif selection in model_dict:
-        selected.extend(model_dict[selection])
+
+    if selection.lower() != 'none':
+        if selection == 'ALL':
+            selected = sum(model_dict.values(), [])
+        elif selection in model_dict:
+            selected.extend(model_dict[selection])
+
+        if num_selection:
+            max_num = len(model_dict)
+            for num in _parse_selection_numbers(num_selection, max_num):
+                if 1 <= num <= max_num:
+                    name = list(model_dict.keys())[num - 1]
+                    selected.extend(model_dict[name])
 
     if num_selection:
         max_num = len(model_dict)
