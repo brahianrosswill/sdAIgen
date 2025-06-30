@@ -131,6 +131,16 @@ def process_download(line, log, unzip):
     if not url:
         return
 
+    # Validate URL format
+    try:
+        parsed = urlparse(url)
+        if not all([parsed.scheme, parsed.netloc]):
+            log_message(f'Invalid URL format: {url}', log, 'warning')
+            return
+    except Exception as e:
+        log_message(f'URL validation failed for {url}: {str(e)}', log, 'warning')
+        return
+
     path, filename = _handle_path_and_filename(parts, url)
     current_dir = Path.cwd()
 
