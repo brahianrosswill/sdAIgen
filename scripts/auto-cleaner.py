@@ -57,14 +57,14 @@ def _update_memory_info():
     '''
 
 def clean_directory(directory, directory_type):
-    trash_extensions = {'.txt', '.aria2', '.ipynb_checkpoints'}
+    trash_extensions = {'.txt', '.aria2', '.ipynb_checkpoints', '.mp4'}
     image_extensions = {'.png', '.jpg', '.jpeg', '.gif'}
     deleted_files = 0
 
     for root, _, files in os.walk(directory):
         for file in files:
             file_path = os.path.join(root, file)
-            if directory_type == 'Models' and file.endswith(tuple(image_extensions)):
+            if directory_type != 'Output Images' and file.endswith(tuple(image_extensions)):
                 os.remove(file_path)
                 continue
             if not file.endswith(tuple(trash_extensions)) and '.' in file:
@@ -107,10 +107,7 @@ directories = {
     'Models': model_dir,
     'VAE': vae_dir,
     'LoRA': lora_dir,
-    'Embeddings': embed_dir,
-    # 'ADetailer': adetailer_dir,
     'ControlNet Models': control_dir,
-    # 'Upscale Models': upscale_dir,
     'CLIP Models': clip_dir,
     'UNET Models': unet_dir,
     'Vision Models': vision_dir,

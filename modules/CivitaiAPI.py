@@ -125,16 +125,28 @@ class CivitAiAPI:
             self.logger.error(f"Failed to parse URL: {url} ({str(e)})")
             return None
 
-    def _get_preview_metadata(self, images: list, model_name: str) -> Tuple[Optional[str], Optional[str]]:
-        """Extract appropriate preview image from model metadata"""
+    def _get_preview_metadata(self, images: list, model_name: str, skip_video_previews: bool = True) -> Tuple[Optional[str], Optional[str]]:
+        """Extract appropriate preview image from model metadata
+
+        Args:
+            images: List of image metadata from API
+            model_name: Base name for the preview file
+            skip_video_previews: If True, will skip video previews (default: True)
+        """
         if not images:
             return None, None
 
         for img in images:
             try:
+                image_url = img['url']
+
+                # Skip video previews if enabled
+                if skip_video_previews and any(image_url.lower().endswith(ext) for ext in ('.mp4', '.webm', '.mov', '.avi')):
+                    continue
+
                 if img['nsfwLevel'] >= 4 and self.is_KAGGLE:   # Filter NSFW images for Kaggle
                     continue
-                image_url = img['url']
+
                 file_extension = image_url.split('.')[-1].split('?')[0]
                 base_name = Path(model_name).stem
                 return image_url, f"{base_name}.preview.{file_extension}"

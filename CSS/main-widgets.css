@@ -3,6 +3,7 @@
 :root {
     /* Accent Color */
     --aw-accent-color: #ff97ef;
+    --aw-elements-shadow: 0 0 15px rgba(0, 0, 0, 0.35);
 
     /* Text - Fonts */
     --aw-font-family-primary: "Shantell Sans", serif;
@@ -213,7 +214,7 @@ a {
     background-color: var(--aw-container-bg);
     border: var(--aw-container-border);
     border-radius: 16px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.35), inset 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--aw-elements-shadow), inset 0 0 10px rgba(0, 0, 0, 0.3);
     overflow: hidden !important;
 }
 .container::after {
@@ -249,7 +250,7 @@ a {
     background-color: var(--aw-container-bg);
     border: var(--aw-container-border);
     border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.35), inset 0 0 10px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: var(--aw-elements-shadow), inset 0 0 10px rgba(0, 0, 0, 0.3) !important;
     cursor: pointer;
     outline: none;
     transition: all 0.15s ease;
@@ -470,6 +471,7 @@ a {
     background-size: 200% 100%;
     background-position: left bottom;
     border-radius: 15px;
+    box-shadow: var(--aw-elements-shadow);
 }
 .button_api {
     position: relative;

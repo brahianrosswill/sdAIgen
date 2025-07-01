@@ -52,7 +52,7 @@ locals().update(settings)
 
 # Initialize the WidgetFactory
 factory = WidgetFactory()
-HR = widgets.HTML('<hr class="divider-line">')
+HR = widgets.HTML('<hr>')
 
 
 # ====================== File Utilities ====================
@@ -139,7 +139,10 @@ header = factory.create_html(
 
 widget_section = create_all_sections()
 output_widgets = [widget for widget, items in widget_section.items() if items]
-result_output_container = factory.create_hbox(output_widgets, class_names=['sectionsContainer'])
+result_output_container = factory.create_hbox(
+    output_widgets, class_names=['sectionsContainer'],
+    layout={'width': '100%'}
+)
 
 main_container = factory.create_vbox(
     [header, HR, result_output_container, HR],
