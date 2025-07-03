@@ -198,8 +198,8 @@ a {
 
 .mainContainer * { overflow: visible !important; } /* Fix For Containers Shadow */
 .mainContainer {
-    padding: var(--aw-conteiner-gap);
-    gap: calc(var(--aw-conteiner-gap) + 10px);
+    padding: calc(var(--aw-conteiner-gap) + 5px);
+    gap: calc(var(--aw-conteiner-gap) + 5px);
 }
 .widgetContainer { gap: var(--aw-conteiner-gap); }
 .widgetContainer > .model-vae {
