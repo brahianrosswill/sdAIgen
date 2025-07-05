@@ -141,7 +141,7 @@ class CivitAiAPI:
                 image_url = img['url']
 
                 # Skip video previews if enabled
-                if skip_video_previews and any(image_url.lower().endswith(ext) for ext in ('.mp4', '.webm', '.mov', '.avi')):
+                if skip_video_previews and any(image_url.lower().endswith(ext) for ext in ('.gif', '.mp4', '.webm', '.mov', '.avi')):
                     continue
 
                 if img['nsfwLevel'] >= 4 and self.is_KAGGLE:   # Filter NSFW images for Kaggle

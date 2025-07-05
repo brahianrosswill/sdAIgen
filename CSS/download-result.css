@@ -103,9 +103,9 @@ hr {
     overflow: visible;
 }
 .output-section {
-    flex: 1 1 auto;
+    flex: 1 1 auto !important;
     padding: 15px;
-    min-width: min-content;
+    /* min-width: min-content; */
     background-color: var(--aw-output-section-bg);
     border: var(--aw-output-section-border);
     border-radius: 16px;
