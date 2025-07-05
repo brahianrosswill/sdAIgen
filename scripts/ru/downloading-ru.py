@@ -180,18 +180,21 @@ locals().update(settings)
 
 # ========================== WEBUI =========================
 
-if UI in ['A1111', 'SD-UX'] and not os.path.exists('/root/.cache/huggingface/hub/models--Bingsu--adetailer'):
-    print('🚚 Распаковка кэша моделей ADetailer...')
+if UI in ['A1111', 'SD-UX']:
+    cache_path = '/root/.cache/huggingface/hub/models--Bingsu--adetailer'
+    if not os.path.exists(cache_path):
+        print('🚚 Распаковка кэша моделей ADetailer...')
 
-    name_zip = 'hf_cache_adetailer'
-    chache_url = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main/hf_chache_adetailer.zip'
+        name_zip = 'hf_cache_adetailer'
+        chache_url = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main/hf_cache_adetailer.zip'
 
-    zip_path = f"{HOME}/{name_zip}.zip"
-    m_download(f"{chache_url} {HOME} {name_zip}")
-    ipySys(f"unzip -q -o {zip_path} -d /")
-    ipySys(f"rm -rf {zip_path}")
+        zip_path = HOME / f"{name_zip}.zip"
+        parent_cache_dir = os.path.dirname(cache_path)
+        os.makedirs(parent_cache_dir, exist_ok=True)
 
-    clear_output()
+        m_download(f"{chache_url} {HOME} {name_zip}")
+        ipySys(f"unzip -q -o {zip_path} -d {parent_cache_dir} && rm -rf {zip_path}")
+        clear_output()
 
 start_timer = js.read(SETTINGS_PATH, 'ENVIRONMENT.start_timer')
 
@@ -199,7 +202,7 @@ if not os.path.exists(WEBUI):
     start_install = time.time()
     print(f"⌚ Распаковка Stable Diffusion... | WEBUI: {COL.B}{UI}{COL.X}", end='')
 
-    ipyRun('run', f"{SCRIPTS}/UIs/{UI}.py")
+    ipyRun('run', f"{SCRIPTS}/webui-installer.py")
     handle_setup_timer(WEBUI, start_timer)		# Setup timer (for timer-extensions)
 
     install_time = time.time() - start_install
@@ -208,7 +211,6 @@ if not os.path.exists(WEBUI):
 
 else:
     print(f"🔧 Текущий WebUI: {COL.B}{UI}{COL.X}")
-    print('🚀 Распаковка завершена. Пропуск. ⚡')
 
     timer_env = handle_setup_timer(WEBUI, start_timer)
     elapsed_time = str(timedelta(seconds=time.time() - timer_env)).split('.')[0]
@@ -226,8 +228,6 @@ if latest_webui or latest_extensions:
         ## Update Webui
         if latest_webui:
             CD(WEBUI)
-            # ipySys('git restore .')
-            # ipySys('git pull -X theirs --rebase --autostash')
 
             ipySys('git stash push --include-untracked')
             ipySys('git pull --rebase')
@@ -235,7 +235,6 @@ if latest_webui or latest_extensions:
 
         ## Update extensions
         if latest_extensions:
-            # ipySys('{\'for dir in \' + WEBUI + \'/extensions/*/; do cd \\'$dir\\' && git reset --hard && git pull; done\'}')
             for entry in os.listdir(f"{WEBUI}/extensions"):
                 dir_path = f"{WEBUI}/extensions/{entry}"
                 if os.path.isdir(dir_path):
@@ -243,12 +242,6 @@ if latest_webui or latest_extensions:
                     subprocess.run(['git', 'pull'], cwd=dir_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     print(f"\r✨ Обновление {action} Завершено!")
-
-
-# === FIXING EXTENSIONS ===
-with capture.capture_output():
-    # --- Umi-Wildcard ---
-    ipySys("sed -i '521s/open=\\(False\\|True\\)/open=False/' {WEBUI}/extensions/Umi-AI-Wildcards/scripts/wildcard_recursive.py")    # Closed accordion by default
 
 
 ## Version switching
@@ -384,6 +377,14 @@ handle_gdrive(mountGDrive)
 
 # ======================= DOWNLOADING ======================
 
+def handle_errors(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f">> An error occurred in {func.__name__}: {str(e)}")
+    return wrapper
+
 # Get XL or 1.5 models list
 ## model_list | vae_list | controlnet_list
 model_files = '_xl-models-data.py' if XL_models else '_models-data.py'
@@ -459,16 +460,9 @@ def _extract_filename(url):
         return None
     return Path(urlparse(url).path).name
 
-def _unpack_zips():
-    """Recursively extract and delete all .zip files in PREFIX_MAP directories."""
-    for dir_path, _ in PREFIX_MAP.values():
-        for zip_file in Path(dir_path).rglob('*.zip'):
-            with zipfile.ZipFile(zip_file, 'r') as zf:
-                zf.extractall(zip_file.with_suffix(''))
-            zip_file.unlink()
-
 # Download Core
 
+@handle_errors
 def _process_download_link(link):
     """Processes a download link, splitting prefix, URL, and filename."""
     link = _clean_url(link)
@@ -478,6 +472,7 @@ def _process_download_link(link):
             return prefix, re.sub(r'\[.*?\]', '', path), _extract_filename(path)
     return None, link, None
 
+@handle_errors
 def download(line):
     """Downloads files from comma-separated links, processes prefixes, and unpacks zips post-download."""
     for link in filter(None, map(str.strip, line.split(','))):
@@ -496,8 +491,7 @@ def download(line):
             url, dst_dir, file_name = url.split()
             manual_download(url, dst_dir, file_name)
 
-    _unpack_zips()
-
+@handle_errors
 def manual_download(url, dst_dir, file_name=None, prefix=None):
     clean_url = url
     image_url, image_name = None, None
@@ -522,8 +516,8 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
     # Formatted info output
     format_output(clean_url, dst_dir, file_name, image_url, image_name)
 
-    # Downloading
-    m_download(f"{url} {dst_dir} {file_name or ''}", log=True)
+    # Downloading Files | With Logs and Auto Unpacking ZIP Archives
+    m_download(f"{url} {dst_dir} {file_name or ''}", log=True, unzip=True)
 
 ''' SubModels - Added URLs '''
 
@@ -567,10 +561,19 @@ def _parse_selection_numbers(num_str, max_num):
 
 def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, inpainting_model=False):
     selected = []
-    if selection == "ALL":
-        selected = sum(model_dict.values(), [])
-    elif selection in model_dict:
-        selected.extend(model_dict[selection])
+
+    if selection.lower() != 'none':
+        if selection == 'ALL':
+            selected = sum(model_dict.values(), [])
+        elif selection in model_dict:
+            selected.extend(model_dict[selection])
+
+        if num_selection:
+            max_num = len(model_dict)
+            for num in _parse_selection_numbers(num_selection, max_num):
+                if 1 <= num <= max_num:
+                    name = list(model_dict.keys())[num - 1]
+                    selected.extend(model_dict[name])
 
     if num_selection:
         max_num = len(model_dict)

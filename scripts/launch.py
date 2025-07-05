@@ -50,7 +50,7 @@ osENV.update({
     'PATH': f"{BIN}:{osENV['PATH']}" if BIN not in osENV['PATH'] else osENV['PATH'],
     'PYTHONPATH': f"{PKG}:{osENV['PYTHONPATH']}" if PKG not in osENV['PYTHONPATH'] else osENV['PYTHONPATH']
 })
-sys.path.insert(0, PKG)
+# sys.path.insert(0, PKG)
 
 
 # Text Colors (\033)
@@ -121,7 +121,7 @@ def get_launch_command():
     base_args = commandline_arguments
     password = 'emoy4cnkm6imbysp84zmfiz1opahooblh7j34sgh'
 
-    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark --share'
+    common_args = ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'    # Remove: --share
     if ENV_NAME == 'Kaggle':
         common_args += f" --encrypt-pass={password}"
 
