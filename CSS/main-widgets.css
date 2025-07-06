@@ -324,8 +324,21 @@ a {
 }
 
 
-/* Slider Checkbox style */
+/* Disabled state */
+._disable {
+    opacity: 0.5 !important;
+    filter: grayscale(100%) brightness(0.6) !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    cursor: not-allowed !important;
+}
+._disable * {
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+}
 
+
+/* Slider Checkbox style */
 /* .widget-checkbox label { pointer-events: none; } */
 
 .widget-checkbox input[type="checkbox"] {

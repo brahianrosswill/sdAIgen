@@ -72,7 +72,7 @@ English | [Русский](README-ru-RU.md)
 
 </details>
 
-## 💙 Support:
+## 💙 Support me:
 
 <div align="center">
     <a href="https://www.donationalerts.com/r/anxety">
@@ -83,6 +83,9 @@ English | [Русский](README-ru-RU.md)
     </a>
 </div>
 
-<div align="center">
-	<h6>Some scripts are taken from <a href="https://github.com/gutris1">gutris1</a>.</h6>
-</div>
+---
+
+## 😄 Credits:
+[gutris1](https://github.com/gutris1) - Thanks to him for his work, scripts, extensions and for calling me gay 💀</br>
+[NoCrypt](https://github.com/NoCrypt) - NoteBook was originally built on a version of it :3</br>
+[DEX-1101](https://github.com/DEX-1101) - At one time gave us the Kaggle version~
