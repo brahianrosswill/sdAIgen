@@ -37,6 +37,7 @@ SETTINGS_PATH = PATHS['settings_path']
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
+EXTS = Path(js.read(SETTINGS_PATH, 'WEBUI.extension_dir'))
 
 
 nest_asyncio.apply()  # Async support for Jupyter
