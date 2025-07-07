@@ -99,9 +99,60 @@ def _trashing():
         cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+def find_latest_tag_file(target='danbooru'):
+    """Find the latest tag file for specified target in TagComplete extension."""
+    from datetime import datetime
+
+    possible_names = [
+        'a1111-sd-webui-tagcomplete',
+        'sd-webui-tagcomplete',
+        'webui-tagcomplete',
+        'tag-complete',
+        'tagcomplete'
+    ]
+
+    # Find TagComplete extension directory
+    tagcomplete_dir = None
+    if EXTS.exists():
+        for ext_dir in EXTS.iterdir():
+            if ext_dir.is_dir():
+                dir_name_lower = ext_dir.name.lower()
+                for possible_name in possible_names:
+                    if dir_name_lower == possible_name.lower():
+                        tagcomplete_dir = ext_dir
+                        break
+                if tagcomplete_dir:
+                    break
+
+    if not tagcomplete_dir:
+        return None
+
+    tags_dir = tagcomplete_dir / 'tags'
+    if not tags_dir.exists():
+        return None
+
+    # Find files matching target pattern
+    latest_file = None
+    latest_date = None
+
+    for file_path in tags_dir.glob(f"{target}_*.csv"):
+        # Extract date from filename
+        date_match = re.search(rf"{re.escape(target)}_(\d{{4}}-\d{{2}}-\d{{2}})\.csv$", file_path.name)
+        if date_match:
+            try:
+                file_date = datetime.strptime(date_match.group(1), '%Y-%m-%d')
+                if latest_date is None or file_date > latest_date:
+                    latest_date = file_date
+                    latest_file = file_path.name
+            except ValueError:
+                continue
+
+    return latest_file
+
 def _update_config_paths():
     """Update configuration paths in WebUI config file"""
     config_mapping = {
+        'tac_tagFile': find_latest_tag_file() or 'danbooru.csv',
         'tagger_hf_cache_dir': f"{WEBUI}/models/interrogators/",
         'ad_extra_models_dir': adetailer_dir,
         # 'sd_checkpoint_hash': '',

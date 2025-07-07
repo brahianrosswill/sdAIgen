@@ -115,7 +115,7 @@ class TagsParser:
         # Get main directory contents
         contents = await self.get_directory_contents()
 
-        # Initialize with our target categories
+        # Initialize with target categories
         latest_files = {category: {'date': None, 'file': None, 'path': None}
                        for category in TARGET_CATEGORIES}
 
@@ -130,7 +130,7 @@ class TagsParser:
                 # Get subdirectory contents
                 subdir_contents = await self.get_directory_contents(subdir_name)
 
-                # Find CSV files in this subdirectory
+                # Find CSV files in subdirectory
                 for file_item in subdir_contents:
                     if file_item['type'] == 'file' and self.is_csv_file(file_item['name']):
                         filename = file_item['name']
