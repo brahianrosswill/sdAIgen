@@ -78,7 +78,7 @@
     <a href="https://www.donationalerts.com/r/anxety">
         <img src=".Docs/SVG/DA_Logo_Color.svg" width="250" height="100" alt="DonationAlerts">
     </a>
-    <a href="https://boosty.to/anxety/single-payment/donation/707920">
+    <a href="https://boosty.to/anxety/donate">
         <img src=".Docs/SVG/Boosty_Logo_Color.svg" width="250" height="100" alt="Boosty">
     </a>
 </div>
