@@ -98,6 +98,7 @@ hr {
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
     gap: var(--aw-output-section-gap);
     align-content: flex-start;
+    align-items: stretch !important;
     text-align: start;
     overflow: visible;
 }

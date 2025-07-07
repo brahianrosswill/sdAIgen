@@ -304,7 +304,6 @@ def update_change_webui(change, widget):
 
     is_comfy = webui == 'ComfyUI'
 
-    latest_webui_widget.value = True
     latest_extensions_widget.layout.display = 'none' if is_comfy else ''
     latest_extensions_widget.value = not is_comfy
     check_custom_nodes_deps_widget.layout.display = '' if is_comfy else 'none'

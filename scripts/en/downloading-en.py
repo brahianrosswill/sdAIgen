@@ -233,8 +233,6 @@ if latest_webui or latest_extensions:
             ipySys('git pull --rebase')
             ipySys('git stash pop')
 
-            js.update(SETTINGS_PATH, 'WIDGETS.latest_webui', False) # Update widget-values | One-time update for UI
-
         ## Update extensions
         if latest_extensions:
             for entry in os.listdir(f"{WEBUI}/extensions"):
@@ -242,8 +240,6 @@ if latest_webui or latest_extensions:
                 if os.path.isdir(dir_path):
                     subprocess.run(['git', 'reset', '--hard'], cwd=dir_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                     subprocess.run(['git', 'pull'], cwd=dir_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-            js.update(SETTINGS_PATH, 'WIDGETS.latest_extensions', False) # Update widget-values | One-time update for UI
 
     print(f"\r✨ Update {action} Completed!")
 

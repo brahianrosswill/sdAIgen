@@ -228,10 +228,11 @@ class TunnelManager:
                 'command': f"gradio-tun {self.tunnel_port}",
                 'pattern': re.compile(r'[\w-]+\.gradio\.live')
             }),
-            ('Serveo', {
-                'command': f"ssh -o StrictHostKeyChecking=no -R 80:localhost:{self.tunnel_port} serveo.net",
-                'pattern': re.compile(r'[\w-]+\.serveo\.net')
-            }),
+            ## RIP
+            # ('Serveo', {
+            #     'command': f"ssh -T -N -o StrictHostKeyChecking=no -R 80:localhost:{self.tunnel_port} serveo.net",
+            #     'pattern': re.compile(r'[\w-]+\.serveo\.net')
+            # }),
             ('Pinggy', {
                 'command': f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{self.tunnel_port} a.pinggy.io",
                 'pattern': re.compile(r'[\w-]+\.a\.free\.pinggy\.link')
