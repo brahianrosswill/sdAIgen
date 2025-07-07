@@ -1,4 +1,4 @@
-# ~ csv-tags-parser.py | CSV Tags Downloader for Danbooru & e621 | by ANXETY ~
+# ~ csv-tags-parser.py | CSV Tags Downloader for sd-webui-tagcomplete | by ANXETY ~
 
 import json_utils as js
 
@@ -18,7 +18,7 @@ GITHUB_API_URL = "https://api.github.com/repos/DraconicDragon/dbr-e621-lists-arc
 GITHUB_RAW_URL = "https://raw.githubusercontent.com/DraconicDragon/dbr-e621-lists-archive/main/tag-lists"
 
 # Target categories to process
-TARGET_CATEGORIES = ['danbooru', 'e621']
+TARGET_CATEGORIES = ['danbooru_e621_merged', 'danbooru', 'e621'] # Order is IMPORTANT!
 
 osENV = os.environ
 PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}
@@ -82,10 +82,12 @@ class TagsParser:
                 if response.status == 200:
                     return await response.json()
                 else:
-                    print(f"Error fetching directory {path}: {response.status}")
+                    if self.verbose:
+                        print(f"Error fetching directory {path}: {response.status}")
                     return []
         except Exception as e:
-            print(f"Error fetching directory {path}: {e}")
+            if self.verbose:
+                print(f"Error fetching directory {path}: {e}")
             return []
 
     def extract_date_from_filename(self, filename):
@@ -106,7 +108,7 @@ class TagsParser:
         return filename.lower().endswith('.csv')
 
     async def find_latest_files(self):
-        """Find the latest CSV files for each category (danbooru, e621)."""
+        """Find the latest CSV files for each category (TARGET_CATEGORIES)."""
         if self.verbose:
             print('🔍 Searching for latest tag files...')
 
@@ -226,12 +228,12 @@ class TagsParser:
 
 async def main(args=None):
     """Main function to run the parser."""
-    parser = argparse.ArgumentParser(description='CSV Tags Parser for Danbooru & e621')
+    parser = argparse.ArgumentParser(description=f"CSV Tags Parser for {', '.join(TARGET_CATEGORIES)}")
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose output')
     args, _ = parser.parse_known_args(args)
 
     if args.verbose:
-        print('🚀 Starting CSV Tags Parser for Danbooru & e621')
+        print(f"🚀 Starting CSV Tags Parser for {', '.join(TARGET_CATEGORIES)}")
         print('=' * 50)
 
     try:

@@ -93,7 +93,7 @@ CONFIG_MAP = {
         f"{CONFIG_URL}/notification.mp3",
         # Special Scripts
         f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py",
-        f"{CONFIG_URL}/tagcompete-tags-parser.py"
+        f"{CONFIG_URL}/tagcomplete-tags-parser.py"
     ],
     'ComfyUI': [
         f"{CONFIG_URL}/{UI}/install-deps.py",
@@ -111,7 +111,7 @@ CONFIG_MAP = {
         f"{CONFIG_URL}/notification.mp3",
         # Special Scripts
         f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.11/site-packages/gradio_tunneling, main.py",
-        f"{CONFIG_URL}/tagcompete-tags-parser.py"
+        f"{CONFIG_URL}/tagcomplete-tags-parser.py"
     ]
 }
 
@@ -167,7 +167,7 @@ def apply_classic_fixes():
                'default=os.path.join(models_path, \'hypernetworks\'), help="hypernetwork directory")')
 
 def run_tagcomplete_tag_parser():
-    ipyRun('run', f"{WEBUI}/tagcompete-tags-parser.py")
+    ipyRun('run', f"{WEBUI}/tagcomplete-tags-parser.py")
 
 # ======================== MAIN CODE =======================
 
