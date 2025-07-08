@@ -290,6 +290,13 @@ def update_XL_options(change, widget):
     # Set default values from the dictionary
     model_widget.value, vae_widget.value, controlnet_widget.value = defaults[is_xl]
 
+    # Disable/enable inpainting checkbox based on SDXL state
+    if is_xl:
+        inpainting_model_widget.add_class('_disable')
+        inpainting_model_widget.value = False
+    else:
+        inpainting_model_widget.remove_class('_disable')
+
 # Callback functions for updating widgets
 def update_change_webui(change, widget):
     webui = change['new']

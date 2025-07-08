@@ -174,8 +174,8 @@ def download_file(url, filename, log):
 
 def download_with_aria2(url, filename, log):
     """Download using aria2c."""
-    UA = 'CivitaiLink:Automatic1111' if 'civitai.com' in url else 'Mozilla/5.0'
-    aria2_args = ('aria2c --header="User-Agent: {UA}" --allow-overwrite=true --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5')
+    user_agent = 'CivitaiLink:Automatic1111' if 'civitai.com' in url else 'Mozilla/5.0'
+    aria2_args = ('aria2c --header="User-Agent: {user_agent}" --allow-overwrite=true --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5')
 
     if HF_TOKEN and 'huggingface.co' in url:
         aria2_args += f' --header="Authorization: Bearer {HF_TOKEN}"'

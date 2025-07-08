@@ -16,6 +16,7 @@ import os
 osENV = os.environ
 CD = os.chdir
 ipySys = get_ipython().system
+ipyRun = get_ipython().run_line_magic
 
 # Constants (auto-convert env vars to Path)
 PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
@@ -90,13 +91,16 @@ CONFIG_MAP = {
         f"{CONFIG_URL}/user.css",
         f"{CONFIG_URL}/card-no-preview.png, {WEBUI}/html",
         f"{CONFIG_URL}/notification.mp3",
-        f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py"
+        # Special Scripts
+        f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py",
+        f"{CONFIG_URL}/tagcomplete-tags-parser.py"
     ],
     'ComfyUI': [
         f"{CONFIG_URL}/{UI}/install-deps.py",
         f"{CONFIG_URL}/{UI}/comfy.settings.json, {WEBUI}/user/default",
         f"{CONFIG_URL}/{UI}/Comfy-Manager/config.ini, {WEBUI}/user/default/ComfyUI-Manager",
         f"{CONFIG_URL}/{UI}/workflows/anxety-workflow.json, {WEBUI}/user/default/workflows",
+        # Special Scripts
         f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py"
     ],
     'Classic': [
@@ -105,7 +109,9 @@ CONFIG_MAP = {
         f"{CONFIG_URL}/styles.csv",
         f"{CONFIG_URL}/user.css",
         f"{CONFIG_URL}/notification.mp3",
-        f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.11/site-packages/gradio_tunneling, main.py"
+        # Special Scripts
+        f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.11/site-packages/gradio_tunneling, main.py",
+        f"{CONFIG_URL}/tagcomplete-tags-parser.py"
     ]
 }
 
@@ -160,6 +166,8 @@ def apply_classic_fixes():
         f.write('parser.add_argument("--hypernetwork-dir", type=normalized_filepath, '
                'default=os.path.join(models_path, \'hypernetworks\'), help="hypernetwork directory")')
 
+def run_tagcomplete_tag_parser():
+    ipyRun('run', f"{WEBUI}/tagcomplete-tags-parser.py")
 
 # ======================== MAIN CODE =======================
 
@@ -168,6 +176,7 @@ async def main():
     await download_configuration()
     await install_extensions()
     apply_classic_fixes()
+    run_tagcomplete_tag_parser()
 
 if __name__ == '__main__':
     with capture.capture_output():
