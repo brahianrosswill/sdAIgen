@@ -176,7 +176,9 @@ async def main():
     await download_configuration()
     await install_extensions()
     apply_classic_fixes()
-    run_tagcomplete_tag_parser()
+
+    if UI != 'ComfyUI':
+        run_tagcomplete_tag_parser()
 
 if __name__ == '__main__':
     with capture.capture_output():

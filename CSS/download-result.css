@@ -31,7 +31,7 @@
 }
 
 
-/* Element text style */
+/* Element Text Style */
 
 .widget-html {
     font-size: var(--aw-text-size);
@@ -64,7 +64,7 @@ hr {
 }
 
 
-/* Container style */
+/* Container Style */
 
 .mainResult-container {
     position: relative;
@@ -124,7 +124,7 @@ hr {
 }
 
 
-/* Animation of elements */
+/* Animation of Elements */
 
 .mainResult-container,
 .output-section {
