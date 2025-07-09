@@ -167,7 +167,7 @@ a {
 }
 
 
-/* Element text style */
+/* Element Text Style */
 
 .widget-text,
 .widget-button,
@@ -194,7 +194,7 @@ a {
 }
 
 
-/* Containers style */
+/* Containers Style */
 
 .mainContainer * { overflow: visible !important; } /* Fix For Containers Shadow */
 .mainContainer {
@@ -262,7 +262,7 @@ a {
 }
 
 
-/* Input field styles */
+/* Input Field Styles */
 
 .widget-dropdown select,
 .widget-text input[type="text"],
@@ -338,7 +338,7 @@ a {
 }
 
 
-/* Slider Checkbox style */
+/* Slider Checkbox Style */
 /* .widget-checkbox label { pointer-events: none; } */
 
 .widget-checkbox input[type="checkbox"] {
@@ -387,7 +387,7 @@ a {
 }
 
 
-/* Popup style of `INFO` window */
+/* Popup Style of `INFO` Window */
 
 .info {
     position: absolute;

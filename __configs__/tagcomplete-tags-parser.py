@@ -1,4 +1,4 @@
-# ~ csv-tags-parser.py | CSV Tags Downloader for sd-webui-tagcomplete | by ANXETY ~
+# ~ tagcomplete-tags-parser.py | CSV Tags Downloader for sd-webui-tagcomplete | by ANXETY ~
 
 import json_utils as js
 
@@ -47,7 +47,7 @@ def find_tagcomplete_dir():
             if ext_dir.is_dir():
                 dir_name_lower = ext_dir.name.lower()
 
-                # Check if directory name matches any of our possible names (case-insensitive)
+                # Check if directory name matches any of possible names
                 for possible_name in possible_names:
                     if dir_name_lower == possible_name.lower():
                         tags_dir = ext_dir / 'tags'

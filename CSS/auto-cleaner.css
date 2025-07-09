@@ -53,7 +53,7 @@ hr {
 }
 
 
-/* Special fixes for IpyWidgets */
+/* Special Fixes for IpyWidgets */
 
 /* Remove Shit-margin for Boxes */
 .widget-inline-hbox { margin: 2px 0; } /* 2px - default ipywidgets margin */
@@ -104,7 +104,7 @@ hr {
 }
 
 
-/* Container style */
+/* Container Style */
 
 .mainCleaner-container {
     flex: 1;
@@ -254,7 +254,7 @@ hr {
 }
 
 
-/* Animation of elements */
+/* Animation of Elements */
 
 .mainCleaner-container { animation: slideInTopBlur 0.7s forwards; }
 .mainCleaner-container.hide { animation: slideOutTopBlur 0.3s forwards; }
