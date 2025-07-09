@@ -9,8 +9,8 @@
                 --container-width: 800px;
                 --container-height: 160px;
                 --container-radius: 10px;
-                --main-bg: #ff7871;
-                --main-bg-shadow: #ff9e97;
+                --main-bg: #d15c55;
+                --main-bg-shadow: #e88a84;
                 --dots-color: rgba(255, 255, 255, 0.2);
                 --dots-size: 16px;
                 --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
@@ -23,8 +23,8 @@
                 --h1-spacing: 10px;
             
                 /* H2 */
-                --h2-color: #FFFFFF;
-                --h2-shadow: #BDBBBB;
+                --h2-color: #ffffff;
+                --h2-shadow: #bdbbbb;
                 --h2-size: 60px;
                 --h2-spacing-from: 15px;
                 --h2-spacing-to: 20px;

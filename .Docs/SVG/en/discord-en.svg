@@ -8,7 +8,7 @@
                 --container-width: 800px;
                 --container-height: 130px;
                 --container-radius: 10px;
-                --main-bg: #004C4C;
+                --main-bg: #004c4c;
                 --main-bg-shadow: #006666;
                 --dots-color: rgba(255, 255, 255, 0.2);
                 --dots-size: 16px;
@@ -16,7 +16,7 @@
 
                 /* === Texts === */
                 /* H1 */
-                --h1-color: #B2D8D8;
+                --h1-color: #b2d8d8;
                 --h1-shadow: #008080;
                 --h1-size: 70px;
                 --h1-spacing: 10px;
