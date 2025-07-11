@@ -2,7 +2,7 @@
 <img width="1080px" height="auto" src="https://raw.githubusercontent.com/anxety-solo/sdAIgen/main/.Docs/Imgs/preview.png"/></br>
 <h1>~ ANXETY | Stable Diffusion WebUI | NoteBook V2 ~</h1>
 
-English | [Русский](README-ru-RU.md)
+English • [Русский](README-ru-RU.md)
 
 </div>
 
