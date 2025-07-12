@@ -56,7 +56,7 @@ class CivitAiAPI:
     """
 
     BASE_URL = 'https://civitai.com/api/v1'
-    SUPPORTED_TYPES = {'Checkpoint', 'TextualInversion', 'LORA', ''}    # For Save Preview
+    SUPPORTED_TYPES = {'Checkpoint', 'TextualInversion', 'LORA'}    # For Save Preview
     IS_KAGGLE = os.getenv('KAGGLE_URL_BASE')
 
     def __init__(self, token: Optional[str] = None, log: bool = True):
@@ -214,7 +214,7 @@ class CivitAiAPI:
             self.logger.log("No preview image URL available", "warning")
             return
 
-        save_dir = Path(save_path) if save_path else Path(".")
+        save_dir = Path(save_path) if save_path else Path.cwd()
         save_dir.mkdir(parents=True, exist_ok=True)
         file_path = save_dir / model_data.image_name
 
@@ -257,7 +257,7 @@ class CivitAiAPI:
             self.logger.log("ModelData is None — skipping save_model_info", "warning")
             return
 
-        save_dir = Path(save_path) if save_path else Path(".")
+        save_dir = Path(save_path) if save_path else Path.cwd()
         save_dir.mkdir(parents=True, exist_ok=True)
         info_file = save_dir / f"{Path(model_data.model_name).stem}.json"
 
