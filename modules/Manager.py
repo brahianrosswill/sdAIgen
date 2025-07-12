@@ -87,7 +87,19 @@ def handle_path_and_filename(parts, url, is_git=False):
             filename = arg
 
     if not filename:
-        filename = _get_file_name(url, is_git=is_git)
+        url_path = urlparse(url).path
+        if url_path:
+            url_filename = Path(url_path).name
+            if url_filename:
+                filename = url_filename
+
+    if not is_git and 'drive.google.com' not in url:
+        if filename and not Path(filename).suffix:
+            url_ext = Path(urlparse(url).path).suffix
+            if url_ext:
+                filename += url_ext
+            else:
+                filename = None
 
     return path, filename
 
@@ -220,6 +232,7 @@ def _aria2_monitor(command, log):
     """Monitor aria2c download progress."""
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     result, error_codes, error_messages = '', [], []
+    br = False
 
     try:
         while True:
@@ -234,12 +247,16 @@ def _aria2_monitor(command, log):
                     formatted = _format_aria_line(raw_line)
                     if log:
                         print(f"\r{' ' * 180}\r{formatted}", end='', flush=True)
+                        br = True
 
         if log:
             if error_codes or error_messages:
                 print()
             for err in error_codes + error_messages:
                 print(err)
+
+            if br:
+                print()
 
             if '======+====+===========' in result:
                 for line in result.splitlines():
