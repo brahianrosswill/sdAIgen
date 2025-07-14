@@ -2,7 +2,7 @@
 <img width="1080px" height="auto" src="https://raw.githubusercontent.com/anxety-solo/sdAIgen/main/.Docs/Imgs/preview.png"/></br>
 <h1>~ ANXETY | Stable Diffusion WebUI | NoteBook V2 ~</h1>
 
-[English](README.md) | Русский
+[English](README.md) • Русский
 
 </div>
 
@@ -87,5 +87,5 @@
 
 ## 😄 Благодарности:
 [gutris1](https://github.com/gutris1) - Спасибо ему за работу, скрипты, расширения и за то, что назвал меня геем 💀</br>
-[NoCrypt](https://github.com/NoCrypt) - NoteBook изначально был построен на его версии :3</br>
+[NoCrypt](https://github.com/NoCrypt) - Блокнот изначально был построен на его версии :3</br>
 [DEX-1101](https://github.com/DEX-1101) - В своё время предоставил нам Kaggle-версию~

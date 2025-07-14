@@ -575,13 +575,6 @@ def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, in
                     name = list(model_dict.keys())[num - 1]
                     selected.extend(model_dict[name])
 
-    if num_selection:
-        max_num = len(model_dict)
-        for num in _parse_selection_numbers(num_selection, max_num):
-            if 1 <= num <= max_num:
-                name = list(model_dict.keys())[num - 1]
-                selected.extend(model_dict[name])
-
     unique_models = {}
     for model in selected:
         name = model.get('name') or os.path.basename(model['url'])    # ToolTip: `name` is an optional parameter
