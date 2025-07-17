@@ -4,6 +4,7 @@ from widget_factory import WidgetFactory        # WIDGETS
 from webui_utils import update_current_webui    # WEBUI
 import json_utils as js                         # JSON
 
+from IPython.display import display
 import ipywidgets as widgets
 from pathlib import Path
 import os
@@ -191,12 +192,12 @@ save_button = factory.create_button('Save', class_names=['button', 'button_save'
 
 # ============== MODULE | GDrive Toggle Button =============
 """Create Google Drive toggle button for Colab only."""
-TOOLTIPS = ("Unmount Google Drive storage", "Mount Google Drive storage")
 BTN_STYLE = {'width': '48px', 'height': '48px'}
+TOOLTIPS = ("Unmount Google Drive storage", "Mount Google Drive storage")
 
 GD_status = js.read(SETTINGS_PATH, 'mountGDrive', False)
-GDrive_button = factory.create_button('', layout=BTN_STYLE, class_names=['gdrive-btn'])
-GDrive_button.tooltip = TOOLTIPS[not GD_status]  # Invert index
+GDrive_button = factory.create_button('', layout=BTN_STYLE, class_names=['sideContainer-btn', 'gdrive-btn'])
+GDrive_button.tooltip = TOOLTIPS[not GD_status]    # Invert index
 GDrive_button.toggle = GD_status
 
 if ENV_NAME != 'Google Colab':
@@ -212,6 +213,7 @@ else:
         btn.toggle and btn.add_class('active') or btn.remove_class('active')
 
     GDrive_button.on_click(handle_toggle)
+
 
 # =================== DISPLAY / SETTINGS ===================
 

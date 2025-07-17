@@ -3,9 +3,9 @@
     "Comfy.TutorialCompleted": true,
     "Comfy.Locale": "en",
     "Comfy.Sidebar.Size": "small",
-    "Comfy.ColorPalette": "comfy-anxety",
     "Comfy.Graph.LinkMarkers": 2,
     "Comfy.NodeSuggestions.number": 15,
+    "Comfy.ColorPalette": "comfy-anxety",
     "Comfy.CustomColorPalettes": {
         "comfy-anxety": {
             "id": "comfy-anxety",

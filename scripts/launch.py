@@ -434,7 +434,7 @@ if __name__ == '__main__':
     # Post-execution cleanup
     if zrok_token:
         ipySys('zrok disable &> /dev/null')
-        print('/n🔐 Zrok tunnel disabled :3')
+        print('\n🔐 Zrok tunnel disabled :3')
 
     # Display session duration
     try:

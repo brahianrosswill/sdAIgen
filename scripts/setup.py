@@ -19,6 +19,7 @@ nest_asyncio.apply()  # Async support for Jupyter
 
 
 # ======================== CONSTANTS =======================
+
 HOME = Path.home()
 SCR_PATH = HOME / 'ANXETY'
 SETTINGS_PATH = SCR_PATH / 'settings.json'

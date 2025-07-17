@@ -201,7 +201,10 @@ a {
     padding: calc(var(--aw-conteiner-gap) + 5px);
     gap: calc(var(--aw-conteiner-gap) + 5px);
 }
-.widgetContainer { gap: var(--aw-conteiner-gap); }
+.widgetContainer,
+.sideContainer {
+    gap: var(--aw-conteiner-gap);
+}
 .widgetContainer > .model-vae {
     gap: var(--aw-conteiner-gap);
     align-items: stretch;
@@ -238,15 +241,14 @@ a {
     height: 305px;
 }
 
-/* GDrive Button */
-.gdrive-btn {
+/* === SideContainer Buttons === */
+.sideContainer-btn {
     align-self: flex-start;
     margin: 0 !important;
     padding: 0 !important;
     background-size: 70%;
     background-position: center;
     background-repeat: no-repeat;
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg');
     background-color: var(--aw-container-bg);
     border: var(--aw-container-border);
     border-radius: 8px;
@@ -255,10 +257,19 @@ a {
     outline: none;
     transition: all 0.15s ease;
 }
+.sideContainer-btn:active {
+    background-color: var(--aw-container-bg);
+    transform: scale(0.95) !important;
+}
+
+/* GDrive Button */
+.gdrive-btn {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg');
+}
 .gdrive-btn.active {
     background-color: #006d33;
     border-color: #00d062;
-    transform: scale(0.9) !important;
+    /* transform: scale(0.9) !important; */
 }
 
 
@@ -552,14 +563,14 @@ a {
 /* Animation of elements */
 
 .container,
-.gdrive-btn,
-.button_save {
+.button_save,
+.sideContainer-btn {
     animation: showedWidgets 0.8s forwards ease;
 }
 
 .container.hide,
-.gdrive-btn.hide,
-.button_save.hide {
+.button_save.hide,
+.sideContainer-btn.hide {
     animation: hideWidgets 0.5s forwards ease;
 }
 

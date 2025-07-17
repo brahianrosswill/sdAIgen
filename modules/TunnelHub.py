@@ -399,7 +399,7 @@ class Tunnel:
             interval=1,
             timeout=self.timeout,
         ):
-            self.logger.warning('Timeout while getting tunnel URLs, print available URLs')
+            self.logger.warning('⏳ Timeout while getting tunnel URLs, print available URLs:')
 
         if not self.stop_event.is_set():
             self.display_urls()
