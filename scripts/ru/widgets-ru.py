@@ -4,9 +4,11 @@ from widget_factory import WidgetFactory        # WIDGETS
 from webui_utils import update_current_webui    # WEBUI
 import json_utils as js                         # JSON
 
-from IPython.display import display
+from IPython.display import display, Javascript
+from google.colab import output
 import ipywidgets as widgets
 from pathlib import Path
+import json
 import os
 
 
@@ -214,6 +216,87 @@ else:
 
     GDrive_button.on_click(handle_toggle)
 
+# ========= Export/Import Widget Settings Buttons ==========
+"""Create buttons to export and import widget settings to JSON."""
+export_button = factory.create_button('', layout=BTN_STYLE, class_names=['sideContainer-btn', 'export-btn'])
+export_button.tooltip = "Экспорт настроек в JSON"
+
+import_button = factory.create_button('', layout=BTN_STYLE, class_names=['sideContainer-btn', 'import-btn'])
+import_button.tooltip = "Импорт настроек из JSON"
+
+# EXPORT
+def export_settings(button=None):
+    settings_data = {
+        'widgets': {key: globals()[f"{key}_widget"].value for key in SETTINGS_KEYS},
+        'gdrive_status': GDrive_button.toggle
+    }
+
+    json_data = json.dumps(settings_data, indent=2, ensure_ascii=False)
+    display(Javascript(f"""
+        const blob = new Blob([`{json_data}`], {{ type: 'application/json' }});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'widget_settings.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        window.alert("✅ Настройки успешно экспортированы!");
+    """))
+
+# IMPORT
+def import_settings(button=None):
+    display(Javascript('''
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.style.display = 'none';
+        input.onchange = async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const text = await file.text();
+            try {
+                const jsonData = JSON.parse(text);
+                google.colab.kernel.invokeFunction('importSettingsFromJS', [jsonData], {});
+            } catch (err) {
+                window.alert("❌ Failed to parse JSON: " + err.message);
+            }
+        };
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    '''))
+
+# APPLY SETTINGS
+def apply_imported_settings(data):
+    try:
+        if 'widgets' in data:
+            for key, value in data['widgets'].items():
+                if key in SETTINGS_KEYS and f"{key}_widget" in globals():
+                    try:
+                        globals()[f"{key}_widget"].value = value
+                    except:
+                        pass
+
+        if 'gdrive_status' in data:
+            GDrive_button.value = data['gdrive_status']
+            if GDrive_button.value:
+                GDrive_button.add_class('active')
+            else:
+                GDrive_button.remove_class('active')
+
+        # Выводим JS alert через eval_js
+        output.eval_js('window.alert("✅ Настройки успешно импортированы!");')
+
+    except Exception as e:
+        # Сообщаем об ошибке через JS alert
+        output.eval_js(f'window.alert("❌ Error applying settings: {str(e)}");')
+
+# REGISTER CALLBACK
+output.register_callback('importSettingsFromJS', apply_imported_settings)
+export_button.on_click(export_settings)
+import_button.on_click(import_settings)
+
 
 # =================== DISPLAY / SETTINGS ===================
 
@@ -257,7 +340,7 @@ widgetContainer = factory.create_vbox(
     layout={'min_width': CONTAINERS_WIDTH, 'max_width': CONTAINERS_WIDTH}
 )
 sideContainer = factory.create_vbox(
-    [GDrive_button],
+    [GDrive_button, export_button, import_button],
     class_names=['sideContainer']
 )
 mainContainer = factory.create_hbox(
@@ -383,7 +466,10 @@ def load_settings():
 def save_data(button):
     """Handle save button click."""
     save_settings()
-    all_widgets = [model_box, vae_box, additional_box, custom_download_box, save_button, GDrive_button]
+    all_widgets = [
+        model_box, vae_box, additional_box, custom_download_box, save_button,   # mainContainer
+        GDrive_button, export_button, import_button                             # sideContainer
+    ]
     factory.close(all_widgets, class_names=['hide'], delay=0.8)
 
 load_settings()
