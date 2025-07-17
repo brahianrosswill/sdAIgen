@@ -217,18 +217,23 @@ else:
     GDrive_button.on_click(handle_toggle)
 
 # ========= Export/Import Widget Settings Buttons ==========
-"""Create buttons to export and import widget settings to JSON."""
+"""Create buttons to export/import widget settings to JSON for Colab only(?)"""
 export_button = factory.create_button('', layout=BTN_STYLE, class_names=['sideContainer-btn', 'export-btn'])
 export_button.tooltip = "Экспорт настроек в JSON"
 
 import_button = factory.create_button('', layout=BTN_STYLE, class_names=['sideContainer-btn', 'import-btn'])
 import_button.tooltip = "Импорт настроек из JSON"
 
+if ENV_NAME != 'Google Colab':
+    # Hide buttons if not Colab
+    export_button.layout.display = 'none'
+    import_button.layout.display = 'none'
+
 # EXPORT
 def export_settings(button=None):
     settings_data = {
         'widgets': {key: globals()[f"{key}_widget"].value for key in SETTINGS_KEYS},
-        'gdrive_status': GDrive_button.toggle
+        'mountGDrive': GDrive_button.toggle
     }
 
     json_data = json.dumps(settings_data, indent=2, ensure_ascii=False)
@@ -278,18 +283,16 @@ def apply_imported_settings(data):
                     except:
                         pass
 
-        if 'gdrive_status' in data:
-            GDrive_button.value = data['gdrive_status']
-            if GDrive_button.value:
+        if 'mountGDrive' in data:
+            GDrive_button.toggle = data['mountGDrive']
+            if GDrive_button.toggle:
                 GDrive_button.add_class('active')
             else:
                 GDrive_button.remove_class('active')
 
-        # Выводим JS alert через eval_js
         output.eval_js('window.alert("✅ Настройки успешно импортированы!");')
 
     except Exception as e:
-        # Сообщаем об ошибке через JS alert
         output.eval_js(f'window.alert("❌ Error applying settings: {str(e)}");')
 
 # REGISTER CALLBACK
