@@ -192,7 +192,7 @@ custom_file_urls_widget = factory.create_text('File (txt):')
 """Create button widgets."""
 save_button = factory.create_button('Save', class_names=['button', 'button_save'])
 
-# ============== MODULE | GDrive Toggle Button =============
+# =================== GDrive Toggle Button =================
 """Create Google Drive toggle button for Colab only."""
 BTN_STYLE = {'width': '48px', 'height': '48px'}
 TOOLTIPS = ("Unmount Google Drive storage", "Mount Google Drive storage")
@@ -217,7 +217,7 @@ else:
     GDrive_button.on_click(handle_toggle)
 
 # ========= Export/Import Widget Settings Buttons ==========
-"""Create buttons to export/import widget settings to JSON for Colab only(?)"""
+"""Create buttons to export/import widget settings to JSON for Colab onl."""
 export_button = factory.create_button('', layout=BTN_STYLE, class_names=['sideContainer-btn', 'export-btn'])
 export_button.tooltip = "Export settings to JSON"
 
@@ -230,12 +230,19 @@ if ENV_NAME != 'Google Colab':
     import_button.layout.display = 'none'
 
 # EXPORT
-def export_settings(button=None):
+def export_settings(button=None, filter_empty=True):
     try:
+        widgets_data = {}
+        for key in SETTINGS_KEYS:
+            value = globals()[f"{key}_widget"].value
+            if not filter_empty or (value not in [None, '', False]):
+                widgets_data[key] = value
+
         settings_data = {
-            'widgets': {key: globals()[f"{key}_widget"].value for key in SETTINGS_KEYS},
+            'widgets': widgets_data,
             'mountGDrive': GDrive_button.toggle
         }
+
         display(Javascript(f'downloadJson({json.dumps(settings_data)});'))
         show_notification("Settings exported successfully!", "success")
     except Exception as e:
@@ -279,7 +286,7 @@ def apply_imported_settings(data):
         pass
 
 # ============= NOTIFICATION for Export/Import =============
-
+"""Create widget-popup displaying status of Export/Import settings."""
 notification_popup = factory.create_html('', class_names=['notification-popup', 'hidden'])
 
 def show_notification(message, message_type='info'):
