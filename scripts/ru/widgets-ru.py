@@ -231,55 +231,35 @@ if ENV_NAME != 'Google Colab':
 
 # EXPORT
 def export_settings(button=None):
-    settings_data = {
-        'widgets': {key: globals()[f"{key}_widget"].value for key in SETTINGS_KEYS},
-        'mountGDrive': GDrive_button.toggle
-    }
-
-    json_data = json.dumps(settings_data, indent=2, ensure_ascii=False)
-    display(Javascript(f"""
-        const blob = new Blob([`{json_data}`], {{ type: 'application/json' }});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'widget_settings.json';
-        a.click();
-        URL.revokeObjectURL(url);
-        window.alert("✅ Настройки успешно экспортированы!");
-    """))
+    try:
+        settings_data = {
+            'widgets': {key: globals()[f"{key}_widget"].value for key in SETTINGS_KEYS},
+            'mountGDrive': GDrive_button.toggle
+        }
+        display(Javascript(f'downloadJson({json.dumps(settings_data)});'))
+        # show_notification("Settings exported successfully!", "success")
+    except Exception as e:
+        # show_notification(f"Export failed: {str(e)}", "error")
+        pass
 
 # IMPORT
-def import_settings(button=None):
-    display(Javascript('''
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.style.display = 'none';
-        input.onchange = async (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
 
-            const text = await file.text();
-            try {
-                const jsonData = JSON.parse(text);
-                google.colab.kernel.invokeFunction('importSettingsFromJS', [jsonData], {});
-            } catch (err) {
-                window.alert("❌ Failed to parse JSON: " + err.message);
-            }
-        };
-        document.body.appendChild(input);
-        input.click();
-        document.body.removeChild(input);
-    '''))
+def import_settings(button=None):
+    display(Javascript('openFilePicker();'))
 
 # APPLY SETTINGS
 def apply_imported_settings(data):
     try:
+        success_count = 0
+        total_count = 0
+
         if 'widgets' in data:
             for key, value in data['widgets'].items():
+                total_count += 1
                 if key in SETTINGS_KEYS and f"{key}_widget" in globals():
                     try:
                         globals()[f"{key}_widget"].value = value
+                        success_count += 1
                     except:
                         pass
 
@@ -290,13 +270,22 @@ def apply_imported_settings(data):
             else:
                 GDrive_button.remove_class('active')
 
-        output.eval_js('window.alert("✅ Настройки успешно импортированы!");')
+        # if success_count == total_count:
+        #     show_notification("Settings imported successfully!", "success")
+        # else:
+        #     show_notification(f"Imported {success_count}/{total_count} settings", "warning")
 
     except Exception as e:
-        output.eval_js(f'window.alert("❌ Error applying settings: {str(e)}");')
+        # show_notification(f"Import failed: {str(e)}", "error")
+        pass
 
 # REGISTER CALLBACK
+"""
+Registers the Python function 'apply_imported_settings' under the name 'importSettingsFromJS'
+so it can be called from JavaScript via google.colab.kernel.invokeFunction(...)
+"""
 output.register_callback('importSettingsFromJS', apply_imported_settings)
+
 export_button.on_click(export_settings)
 import_button.on_click(import_settings)
 
