@@ -296,7 +296,7 @@ def show_notification(message, message_type='info'):
         'info':     'ℹ️',
         'warning':  '⚠️'
     }
-    icon = icon_map.get(message_type, '')
+    icon = icon_map.get(message_type, 'info')
 
     notification_popup.value = f'''
     <div class="notification {message_type}">
@@ -305,7 +305,8 @@ def show_notification(message, message_type='info'):
     </div>
     '''
 
-    # Trigger re-show
+    # Trigger re-show | Anxety-Tip: JS Script removes class only from DOM but not from widgets?!
+    notification_popup.remove_class('visible')
     notification_popup.remove_class('hidden')
     notification_popup.add_class('visible')
 

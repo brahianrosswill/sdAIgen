@@ -53,10 +53,12 @@ function openFilePicker(callbackName='importSettingsFromJS') {
 // Hide Notification PopUp
 function hideNotification(delay = 2500) {
     setTimeout(() => {
-        const el = document.querySelector('.notification');
-        if (el) {
-            el.classList.add('hidden')
-            el.classList.remove('visible')
+        const popup = document.querySelector('.notification-popup');
+        if (popup) {
+            setTimeout(() => {
+                popup.classList.add('hidden')
+                popup.classList.remove('visible')
+            }, 500);
         };
     }, delay);
 }
