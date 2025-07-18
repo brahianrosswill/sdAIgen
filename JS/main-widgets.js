@@ -40,7 +40,7 @@ function openFilePicker(callbackName='importSettingsFromJS') {
             google.colab.kernel.invokeFunction(callbackName, [jsonData], {});
         } catch (err) {
             // Notify Python of JSON parsing error using a registered callback
-            google.colab.kernel.invokeFunction('showNotificationFromJS', 
+            google.colab.kernel.invokeFunction('showNotificationFromJS',
                 ["Failed to parse JSON: " + err.message, "error"], {});
         }
     };
@@ -54,6 +54,9 @@ function openFilePicker(callbackName='importSettingsFromJS') {
 function hideNotification(delay = 2500) {
     setTimeout(() => {
         const el = document.querySelector('.notification');
-        if (el) el.classList.add('hidden');
+        if (el) {
+            el.classList.add('hidden')
+            el.classList.remove('visible')
+        };
     }, delay);
 }

@@ -237,10 +237,9 @@ def export_settings(button=None):
             'mountGDrive': GDrive_button.toggle
         }
         display(Javascript(f'downloadJson({json.dumps(settings_data)});'))
-        # show_notification("Settings exported successfully!", "success")
+        show_notification("Settings exported successfully!", "success")
     except Exception as e:
-        # show_notification(f"Export failed: {str(e)}", "error")
-        pass
+        show_notification(f"Export failed: {str(e)}", "error")
 
 # IMPORT
 
@@ -270,14 +269,41 @@ def apply_imported_settings(data):
             else:
                 GDrive_button.remove_class('active')
 
-        # if success_count == total_count:
-        #     show_notification("Settings imported successfully!", "success")
-        # else:
-        #     show_notification(f"Imported {success_count}/{total_count} settings", "warning")
+        if success_count == total_count:
+            show_notification("Settings imported successfully!", "success")
+        else:
+            show_notification(f"Imported {success_count}/{total_count} settings", "warning")
 
     except Exception as e:
-        # show_notification(f"Import failed: {str(e)}", "error")
+        show_notification(f"Import failed: {str(e)}", "error")
         pass
+
+# ============= NOTIFICATION for Export/Import =============
+
+notification_popup = factory.create_html('', class_names=['notification-popup', 'hidden'])
+
+def show_notification(message, message_type='info'):
+    icon_map = {
+        'success':  '✅',
+        'error':    '❌',
+        'info':     'ℹ️',
+        'warning':  '⚠️'
+    }
+    icon = icon_map.get(message_type, '')
+
+    notification_popup.value = f'''
+    <div class="notification {message_type}">
+        <span class="notification-icon">{icon}</span>
+        <span class="notification-text">{message}</span>
+    </div>
+    '''
+
+    # Trigger re-show
+    notification_popup.remove_class('hidden')
+    notification_popup.add_class('visible')
+
+    # Auto-hide PopUp After 2.5s
+    display(Javascript("hideNotification(delay = 2500);"))
 
 # REGISTER CALLBACK
 """
@@ -285,6 +311,7 @@ Registers the Python function 'apply_imported_settings' under the name 'importSe
 so it can be called from JavaScript via google.colab.kernel.invokeFunction(...)
 """
 output.register_callback('importSettingsFromJS', apply_imported_settings)
+output.register_callback('showNotificationFromJS', show_notification)
 
 export_button.on_click(export_settings)
 import_button.on_click(import_settings)
@@ -332,7 +359,7 @@ widgetContainer = factory.create_vbox(
     layout={'min_width': CONTAINERS_WIDTH, 'max_width': CONTAINERS_WIDTH}
 )
 sideContainer = factory.create_vbox(
-    [GDrive_button, export_button, import_button],
+    [GDrive_button, export_button, import_button, notification_popup],
     class_names=['sideContainer']
 )
 mainContainer = factory.create_hbox(
