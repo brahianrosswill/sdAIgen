@@ -114,7 +114,7 @@ def create_all_sections():
         ('VAEs', get_files(vae_dir, '.safetensors')),
         ('Embeddings', get_files(embed_dir, ('.safetensors', '.pt'), excluded_dirs=['SD', 'XL'])),
         ('LoRAs', get_files(lora_dir, '.safetensors')),
-        (ext_type, get_folders(extension_dir), is_grid=True),
+        (ext_type, get_folders(extension_dir), True),
         ('ADetailers', get_files(adetailer_dir, ('.safetensors', '.pt'))),
         ## Others
         ('Clips', get_files(clip_dir, '.safetensors')),

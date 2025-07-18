@@ -361,7 +361,7 @@ a {
     background: linear-gradient(
         90deg,
         transparent 0%,
-        var(--aw-status-color) 75%,
+        var(--aw-status-color) 80%,
         transparent 100%
     );
     animation: notificationProgress 3s ease-out forwards;
@@ -680,7 +680,8 @@ a {
 
 .container.hide,
 .button_save.hide,
-.sideContainer-btn.hide {
+.sideContainer-btn.hide,
+.notification-popup.hide {
     animation: hideWidgets 0.5s forwards ease;
 }
 

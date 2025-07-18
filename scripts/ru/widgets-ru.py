@@ -230,7 +230,7 @@ if ENV_NAME != 'Google Colab':
     import_button.layout.display = 'none'
 
 # EXPORT
-def export_settings(button=None, filter_empty=True):
+def export_settings(button=None, filter_empty=False):
     try:
         widgets_data = {}
         for key in SETTINGS_KEYS:
@@ -495,7 +495,7 @@ def save_data(button):
     save_settings()
     all_widgets = [
         model_box, vae_box, additional_box, custom_download_box, save_button,   # mainContainer
-        GDrive_button, export_button, import_button                             # sideContainer
+        GDrive_button, export_button, import_button, notification_popup         # sideContainer
     ]
     factory.close(all_widgets, class_names=['hide'], delay=0.8)
 
