@@ -26,7 +26,7 @@ CSS = SCR_PATH / 'CSS'
 widgets_css = CSS / 'download-result.css'
 
 EXCLUDED_EXTENSIONS = {'.txt', '.yaml', '.log', '.json'}
-CONTAINER_WIDTH = '1080px'
+CONTAINER_WIDTH = '1200px'
 HEADER_DL = 'DOWNLOAD RESULTS'
 VERSION = 'v1'
 
@@ -108,11 +108,11 @@ def create_all_sections():
     """Create all content sections."""
     ext_type = 'Nodes' if UI == 'ComfyUI' else 'Extensions'
     SECTIONS = [
-        # TITLE | GET LIST | file.formats | is_grid=bool
+        # TITLE | GET LIST(content_dir) | file.formats | excluded_dirs=[List] (files); is_grid=bool (folders)
         ## Mains
         ('Models', get_files(model_dir, ('.safetensors', '.ckpt'))),
         ('VAEs', get_files(vae_dir, '.safetensors')),
-        ('Embeddings', get_files(embed_dir, ('.safetensors', '.pt'), ['SD', 'XL'])),
+        ('Embeddings', get_files(embed_dir, ('.safetensors', '.pt'), excluded_dirs=['SD', 'XL'])),
         ('LoRAs', get_files(lora_dir, '.safetensors')),
         (ext_type, get_folders(extension_dir), True),
         ('ADetailers', get_files(adetailer_dir, ('.safetensors', '.pt'))),
@@ -140,7 +140,8 @@ header = factory.create_html(
 widget_section = create_all_sections()
 output_widgets = [widget for widget, items in widget_section.items() if items]
 result_output_container = factory.create_hbox(
-    output_widgets, class_names=['sectionsContainer'],
+    output_widgets,
+    class_names=['sectionsContainer'],
     layout={'width': '100%'}
 )
 

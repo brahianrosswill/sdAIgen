@@ -4,8 +4,11 @@ from widget_factory import WidgetFactory        # WIDGETS
 from webui_utils import update_current_webui    # WEBUI
 import json_utils as js                         # JSON
 
+from IPython.display import display, Javascript
+from google.colab import output
 import ipywidgets as widgets
 from pathlib import Path
+import json
 import os
 
 
@@ -189,14 +192,14 @@ custom_file_urls_widget = factory.create_text('Файл (txt):')
 """Create button widgets."""
 save_button = factory.create_button('Сохранить', class_names=['button', 'button_save'])
 
-# ============== MODULE | GDrive Toggle Button =============
+# =================== GDrive Toggle Button =================
 """Create Google Drive toggle button for Colab only."""
-TOOLTIPS = ("Отключить Гугл Диск", "Подключить Гугл Диск")
 BTN_STYLE = {'width': '48px', 'height': '48px'}
+TOOLTIPS = ("Отключить Гугл Диск", "Подключить Гугл Диск")
 
 GD_status = js.read(SETTINGS_PATH, 'mountGDrive', False)
-GDrive_button = factory.create_button('', layout=BTN_STYLE, class_names=['gdrive-btn'])
-GDrive_button.tooltip = TOOLTIPS[not GD_status]  # Invert index
+GDrive_button = factory.create_button('', layout=BTN_STYLE, class_names=['sideContainer-btn', 'gdrive-btn'])
+GDrive_button.tooltip = TOOLTIPS[not GD_status]    # Invert index
 GDrive_button.toggle = GD_status
 
 if ENV_NAME != 'Google Colab':
@@ -212,6 +215,115 @@ else:
         btn.toggle and btn.add_class('active') or btn.remove_class('active')
 
     GDrive_button.on_click(handle_toggle)
+
+# ========= Export/Import Widget Settings Buttons ==========
+"""Create buttons to export/import widget settings to JSON for Colab only."""
+export_button = factory.create_button('', layout=BTN_STYLE, class_names=['sideContainer-btn', 'export-btn'])
+export_button.tooltip = "Экспорт настроек в JSON"
+
+import_button = factory.create_button('', layout=BTN_STYLE, class_names=['sideContainer-btn', 'import-btn'])
+import_button.tooltip = "Импорт настроек из JSON"
+
+if ENV_NAME != 'Google Colab':
+    # Hide buttons if not Colab
+    export_button.layout.display = 'none'
+    import_button.layout.display = 'none'
+
+# EXPORT
+def export_settings(button=None, filter_empty=False):
+    try:
+        widgets_data = {}
+        for key in SETTINGS_KEYS:
+            value = globals()[f"{key}_widget"].value
+            if not filter_empty or (value not in [None, '', False]):
+                widgets_data[key] = value
+
+        settings_data = {
+            'widgets': widgets_data,
+            'mountGDrive': GDrive_button.toggle
+        }
+
+        display(Javascript(f'downloadJson({json.dumps(settings_data)});'))
+        show_notification("Settings exported successfully!", "success")
+    except Exception as e:
+        show_notification(f"Export failed: {str(e)}", "error")
+
+# IMPORT
+
+def import_settings(button=None):
+    display(Javascript('openFilePicker();'))
+
+# APPLY SETTINGS
+def apply_imported_settings(data):
+    try:
+        success_count = 0
+        total_count = 0
+
+        if 'widgets' in data:
+            for key, value in data['widgets'].items():
+                total_count += 1
+                if key in SETTINGS_KEYS and f"{key}_widget" in globals():
+                    try:
+                        globals()[f"{key}_widget"].value = value
+                        success_count += 1
+                    except:
+                        pass
+
+        if 'mountGDrive' in data:
+            GDrive_button.toggle = data['mountGDrive']
+            if GDrive_button.toggle:
+                GDrive_button.add_class('active')
+            else:
+                GDrive_button.remove_class('active')
+
+        if success_count == total_count:
+            show_notification("Settings imported successfully!", "success")
+        else:
+            show_notification(f"Imported {success_count}/{total_count} settings", "warning")
+
+    except Exception as e:
+        show_notification(f"Import failed: {str(e)}", "error")
+        pass
+
+# ============= NOTIFICATION for Export/Import =============
+"""Create widget-popup displaying status of Export/Import settings."""
+notification_popup = factory.create_html('', class_names=['notification-popup', 'hidden'])
+
+def show_notification(message, message_type='info'):
+    icon_map = {
+        'success':  '✅',
+        'error':    '❌',
+        'info':     'ℹ️',
+        'warning':  '⚠️'
+    }
+    icon = icon_map.get(message_type, 'info')
+
+    notification_popup.value = f'''
+    <div class="notification {message_type}">
+        <span class="notification-icon">{icon}</span>
+        <span class="notification-text">{message}</span>
+    </div>
+    '''
+
+    # Trigger re-show | Anxety-Tip: JS Script removes class only from DOM but not from widgets?!
+    notification_popup.remove_class('visible')
+    notification_popup.remove_class('hidden')
+    notification_popup.add_class('visible')
+
+    # Auto-hide PopUp After 2.5s
+    display(Javascript("hideNotification(delay = 2500);"))
+
+# REGISTER CALLBACK
+"""
+Registers the Python function 'apply_imported_settings' under the name 'importSettingsFromJS'
+so it can be called from JavaScript via google.colab.kernel.invokeFunction(...)
+"""
+output.register_callback('importSettingsFromJS', apply_imported_settings)
+output.register_callback('showNotificationFromJS', show_notification)
+
+export_button.on_click(export_settings)
+import_button.on_click(import_settings)
+
 
 # =================== DISPLAY / SETTINGS ===================
 
@@ -255,7 +367,7 @@ widgetContainer = factory.create_vbox(
     layout={'min_width': CONTAINERS_WIDTH, 'max_width': CONTAINERS_WIDTH}
 )
 sideContainer = factory.create_vbox(
-    [GDrive_button],
+    [GDrive_button, export_button, import_button, notification_popup],
     class_names=['sideContainer']
 )
 mainContainer = factory.create_hbox(
@@ -381,7 +493,10 @@ def load_settings():
 def save_data(button):
     """Handle save button click."""
     save_settings()
-    all_widgets = [model_box, vae_box, additional_box, custom_download_box, save_button, GDrive_button]
+    all_widgets = [
+        model_box, vae_box, additional_box, custom_download_box, save_button,   # mainContainer
+        GDrive_button, export_button, import_button, notification_popup         # sideContainer
+    ]
     factory.close(all_widgets, class_names=['hide'], delay=0.8)
 
 load_settings()

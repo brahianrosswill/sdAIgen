@@ -201,7 +201,10 @@ a {
     padding: calc(var(--aw-conteiner-gap) + 5px);
     gap: calc(var(--aw-conteiner-gap) + 5px);
 }
-.widgetContainer { gap: var(--aw-conteiner-gap); }
+.widgetContainer,
+.sideContainer {
+    gap: var(--aw-conteiner-gap);
+}
 .widgetContainer > .model-vae {
     gap: var(--aw-conteiner-gap);
     align-items: stretch;
@@ -238,15 +241,14 @@ a {
     height: 305px;
 }
 
-/* GDrive Button */
-.gdrive-btn {
+/* === SideContainer Buttons === */
+.sideContainer-btn {
     align-self: flex-start;
     margin: 0 !important;
     padding: 0 !important;
-    background-size: 70%;
+    background-size: 65%;
     background-position: center;
     background-repeat: no-repeat;
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg');
     background-color: var(--aw-container-bg);
     border: var(--aw-container-border);
     border-radius: 8px;
@@ -255,10 +257,133 @@ a {
     outline: none;
     transition: all 0.15s ease;
 }
+.sideContainer-btn:active {
+    background-color: var(--aw-container-bg);
+    transform: scale(0.95) !important;
+}
+
+/* GDrive Button */
+.gdrive-btn {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg');
+}
 .gdrive-btn.active {
     background-color: #006d33;
     border-color: #00d062;
-    transform: scale(0.9) !important;
+    /* transform: scale(0.9) !important; */
+}
+
+/* Export/Import Button */
+/* (↓ arrow) --> SVG Icon Page: https://www.svgrepo.com/svg/357903/import */
+.export-btn {
+  background-image: url(data:image/svg+xml;base64,PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KDTwhLS0gVXBsb2FkZWQgdG86IFNWRyBSZXBvLCB3d3cuc3ZncmVwby5jb20sIFRyYW5zZm9ybWVkIGJ5OiBTVkcgUmVwbyBNaXhlciBUb29scyAtLT4KPHN2ZyBmaWxsPSIjZmZmZmZmIiB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KDTxnIGlkPSJTVkdSZXBvX2JnQ2FycmllciIgc3Ryb2tlLXdpZHRoPSIwIi8+Cg08ZyBpZD0iU1ZHUmVwb190cmFjZXJDYXJyaWVyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KDTxnIGlkPSJTVkdSZXBvX2ljb25DYXJyaWVyIj4KDTxwYXRoIGQ9Ik0yMSwxNGExLDEsMCwwLDAtMSwxdjRhMSwxLDAsMCwxLTEsMUg1YTEsMSwwLDAsMS0xLTFWMTVhMSwxLDAsMCwwLTIsMHY0YTMsMywwLDAsMCwzLDNIMTlhMywzLDAsMCwwLDMtM1YxNUExLDEsMCwwLDAsMjEsMTRabS05LjcxLDEuNzFhMSwxLDAsMCwwLC4zMy4yMS45NC45NCwwLDAsMCwuNzYsMCwxLDEsMCwwLDAsLjMzLS4yMWw0LTRhMSwxLDAsMCwwLTEuNDItMS40MkwxMywxMi41OVYzYTEsMSwwLDAsMC0yLDB2OS41OWwtMi4yOS0yLjNhMSwxLDAsMSwwLTEuNDIsMS40MloiLz4KDTwvZz4KDTwvc3ZnPg==);
+}
+/* (↑ arrow) --> SVG Icon Page: https://www.svgrepo.com/svg/357723/export */
+.import-btn {
+  background-image: url(data:image/svg+xml;base64,PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KDTwhLS0gVXBsb2FkZWQgdG86IFNWRyBSZXBvLCB3d3cuc3ZncmVwby5jb20sIFRyYW5zZm9ybWVkIGJ5OiBTVkcgUmVwbyBNaXhlciBUb29scyAtLT4KPHN2ZyBmaWxsPSIjZmZmZmZmIiB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KDTxnIGlkPSJTVkdSZXBvX2JnQ2FycmllciIgc3Ryb2tlLXdpZHRoPSIwIi8+Cg08ZyBpZD0iU1ZHUmVwb190cmFjZXJDYXJyaWVyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KDTxnIGlkPSJTVkdSZXBvX2ljb25DYXJyaWVyIj4KDTxwYXRoIGQ9Ik04LjcxLDcuNzEsMTEsNS40MVYxNWExLDEsMCwwLDAsMiwwVjUuNDFsMi4yOSwyLjNhMSwxLDAsMCwwLDEuNDIsMCwxLDEsMCwwLDAsMC0xLjQybC00LTRhMSwxLDAsMCwwLS4zMy0uMjEsMSwxLDAsMCwwLS43NiwwLDEsMSwwLDAsMC0uMzMuMjFsLTQsNEExLDEsMCwxLDAsOC43MSw3LjcxWk0yMSwxNGExLDEsMCwwLDAtMSwxdjRhMSwxLDAsMCwxLTEsMUg1YTEsMSwwLDAsMS0xLTFWMTVhMSwxLDAsMCwwLTIsMHY0YTMsMywwLDAsMCwzLDNIMTlhMywzLDAsMCwwLDMtM1YxNUExLDEsMCwwLDAsMjEsMTRaIi8+Cg08L2c+Cg08L3N2Zz4=);
+}
+
+/* Notification popUp */
+.notification-popup {
+    margin: 0;
+    cursor: default;
+    user-select: none;
+    pointer-events: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.notification-popup.hidden {
+    margin-top: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(15px) scale(0.9);
+}
+.notification-popup.visible {
+    margin-top: 10px;
+    opacity: 1;
+    overflow: hidden;
+    transform: translateY(0) scale(1);
+}
+
+.notification {
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-family: var(--aw-font-family-primary);
+    font-size: var(--aw-text-size);
+    color: var(--aw-color-text-primary);
+    padding: 14px 18px;
+    background-color: var(--aw-container-bg);
+    /* border-left: 4px solid transparent; */
+    border: var(--aw-container-border);
+    border-radius: 16px;
+    box-shadow: var(--aw-elements-shadow), inset 0 0 6px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    gap: 10px;
+    animation: fadeOut 0.5s ease-in-out 2.5s forwards;
+}
+
+/* Status BG Color */
+.notification.success { --aw-status-color: #4caf50; }
+.notification.error   { --aw-status-color: #f44336; }
+.notification.info    { --aw-status-color: #2196f3; }
+.notification.warning { --aw-status-color: #ffc107; }
+
+/*
+.notification.success,
+.notification.error,
+.notification.info,
+.notification.warning {
+    border-left-color: var(--aw-status-color);
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--aw-status-color) 10%, transparent) 0%,
+        var(--aw-container-bg) 50%,
+        color-mix(in srgb, var(--aw-status-color) 20%, transparent) 100%
+    );
+}
+*/
+
+.notification-icon {
+    font-size: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+.notification-text {
+    font-weight: 400;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Animated progress bar */
+.notification.success::after,
+.notification.error::after,
+.notification.info::after,
+.notification.warning::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--aw-status-color) 80%,
+        transparent 100%
+    );
+    animation: notificationProgress 3s ease-out forwards;
+}
+
+/* Progress bar animation */
+@keyframes notificationProgress {
+    0% { width: 0%; opacity: 0; }
+    50% { opacity: 1; }
+    100% { width: 100%; opacity: 0; }
+}
+
+/* Fade out after timeout */
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(15px);
+    }
 }
 
 
@@ -552,14 +677,15 @@ a {
 /* Animation of elements */
 
 .container,
-.gdrive-btn,
-.button_save {
+.button_save,
+.sideContainer-btn {
     animation: showedWidgets 0.8s forwards ease;
 }
 
 .container.hide,
-.gdrive-btn.hide,
-.button_save.hide {
+.button_save.hide,
+.sideContainer-btn.hide,
+.notification-popup.hide {
     animation: hideWidgets 0.5s forwards ease;
 }
 
