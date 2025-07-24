@@ -87,6 +87,7 @@ English • [Русский](README-ru-RU.md)
 ---
 
 ## 😄 Credits:
+
 [gutris1](https://github.com/gutris1) - Thanks to him for his work, scripts, extensions and for calling me gay 💀</br>
 [NoCrypt](https://github.com/NoCrypt) - NoteBook was originally built on a version of it :3</br>
 [DEX-1101](https://github.com/DEX-1101) - At one time gave us the Kaggle version~
