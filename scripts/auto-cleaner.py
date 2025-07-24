@@ -129,7 +129,6 @@ selection_widget = factory.create_select_multiple(
     [],
     class_names=['selection-panel']
 )
-
 output_widget = widgets.Output().add_class('output-panel')
 
 execute_button = factory.create_button('Execute Cleaning', class_names=['cleaner_button', 'button_execute'])
