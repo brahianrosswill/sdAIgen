@@ -242,7 +242,7 @@ def export_settings(button=None, filter_empty=False):
 
         settings_data = {
             'widgets': widgets_data,
-            'mountGDrive': GDrive_button.toggle
+            # 'mountGDrive': GDrive_button.toggle
         }
 
         display(Javascript(f'downloadJson({json.dumps(settings_data)});'))
