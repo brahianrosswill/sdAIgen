@@ -57,7 +57,7 @@ class CivitAiAPI:
 
     BASE_URL = 'https://civitai.com/api/v1'
     SUPPORTED_TYPES = {'Checkpoint', 'TextualInversion', 'LORA'}    # For Save Preview
-    IS_KAGGLE = os.getenv('KAGGLE_URL_BASE')
+    IS_KAGGLE = 'KAGGLE_URL_BASE' in os.environ
 
     def __init__(self, token: Optional[str] = None, log: bool = True):
         self.token = token or '65b66176dcf284b266579de57fbdc024'    # FAKE

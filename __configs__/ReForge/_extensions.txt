@@ -1,12 +1,12 @@
 ## ANXETY Edits
 https://github.com/anxety-solo/sd-civitai-browser-plus Civitai-Browser-Plus
+https://github.com/anxety-solo/sd-civitai-extension Civitai-Extension
 https://github.com/anxety-solo/webui_timer timer
 https://github.com/anxety-solo/Umi-AI-Wildcards
 https://github.com/anxety-solo/anxety-theme
 
 ## Gutris1 Edits
 # https://github.com/gutris1/sd-civitai-browser-plus Civitai-Browser-Plus
-# https://github.com/gutris1/sd_civitai_extension Civitai-Extension
 
 https://github.com/gutris1/sd-image-viewer Image-Viewer
 https://github.com/gutris1/sd-image-info Image-Info
