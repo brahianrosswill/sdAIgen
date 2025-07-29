@@ -59,9 +59,9 @@ def read_model_data(file_path, data_type):
 WEBUI_SELECTION = {
     'A1111':   "--xformers --no-half-vae",
     'ComfyUI': "--dont-print-server",
-    'Forge':   "--xformers --cuda-stream --pin-shared-memory",              # Remove: --disable-xformers --opt-sdp-attention
-    'Classic': "--persistent-patches --cuda-stream --pin-shared-memory",    # Remove: --xformers
-    'ReForge': "--xformers --cuda-stream --pin-shared-memory",
+    'Forge':   "--xformers --cuda-stream",              # Remove: --disable-xformers --opt-sdp-attention --pin-shared-memory
+    'Classic': "--persistent-patches --cuda-stream",    # Remove: --xformers --pin-shared-memory
+    'ReForge': "--xformers --cuda-stream",              # Remove: --pin-shared-memory
     'SD-UX':   "--xformers --no-half-vae"
 }
 
