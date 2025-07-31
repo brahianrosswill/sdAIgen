@@ -68,7 +68,7 @@ async def get_extensions_list():
                 if response.status == 200:
                     extensions = [
                         line.strip() for line in (await response.text()).splitlines()
-                        if line.strip() and not line.startswith('#')  # Skip empty lines and comments
+                        if line.strip() and not line.startswith('#')    # Skip empty lines and comments
                     ]
     except Exception as e:
         print(f"Error fetching extensions list: {e}")
@@ -151,9 +151,6 @@ def unpack_webui():
 
 def apply_classic_fixes():
     """Apply specific fixes for Classic UI."""
-    if UI != 'Classic':
-        return
-
     cmd_args_path = WEBUI / 'modules/cmd_args.py'
     if not cmd_args_path.exists():
         return
@@ -169,16 +166,22 @@ def apply_classic_fixes():
 def run_tagcomplete_tag_parser():
     ipyRun('run', f"{WEBUI}/tagcomplete-tags-parser.py")
 
+
 # ======================== MAIN CODE =======================
 
 async def main():
+    # Main Func
     unpack_webui()
     await download_configuration()
     await install_extensions()
-    apply_classic_fixes()
+
+    # Special Func
+    if UI == 'Classic':
+        apply_classic_fixes()
 
     if UI != 'ComfyUI':
         run_tagcomplete_tag_parser()
+
 
 if __name__ == '__main__':
     with capture.capture_output():

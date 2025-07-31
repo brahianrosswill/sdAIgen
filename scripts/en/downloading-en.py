@@ -501,9 +501,9 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
         if not (data := api.validate_download(url, file_name)):
             return
 
-        model_type, file_name = data.model_type, data.model_name    # Type, Name
-        clean_url, url = data.clean_url, data.download_url          # Clean_URL, URL
-        image_url, image_name = data.image_url, data.image_name     # Img_URL, Img_Name
+        model_type, file_name = data.model_type, data.model_name    # Model_Type, Model_Name
+        clean_url, url = data.clean_url, data.download_url          # Clean_URL, Download_URL
+        image_url, image_name = data.image_url, data.image_name     # Image_URL, Image_Name
 
         # Download preview images
         if image_url and image_name:

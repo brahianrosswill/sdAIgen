@@ -57,10 +57,10 @@ class CivitAiAPI:
 
     BASE_URL = 'https://civitai.com/api/v1'
     SUPPORTED_TYPES = {'Checkpoint', 'TextualInversion', 'LORA'}    # For Save Preview
-    IS_KAGGLE = os.getenv('KAGGLE_URL_BASE')
+    IS_KAGGLE = 'KAGGLE_URL_BASE' in os.environ
 
     def __init__(self, token: Optional[str] = None, log: bool = True):
-        self.token = token or '65b66176dcf284b266579de57fbdc024'  # FAKE
+        self.token = token or '65b66176dcf284b266579de57fbdc024'    # FAKE
         self.logger = APILogger(verbose=log)
 
     # === Core Helpers ===
@@ -109,8 +109,8 @@ class CivitAiAPI:
         final_url = f"{clean_url}?token={self.token}" if self.token else clean_url
         return clean_url, final_url
 
-    def _get_preview(self, images: List[Dict], name: str) -> Tuple[Optional[str], Optional[str]]:
-        """Extract a valid preview image URL and filename"""
+    def _get_preview(self, images: List[Dict], name: str, resize: Optional[int] = 512) -> Tuple[Optional[str], Optional[str]]:
+        """Extract a valid preview image URL and filename, with optional resizing via width in URL"""
         for img in images:
             url = img.get('url', '')
             if self.IS_KAGGLE and img.get('nsfwLevel', 0) >= 4:
@@ -118,6 +118,9 @@ class CivitAiAPI:
             if any(url.lower().endswith(ext) for ext in ['.gif', '.mp4', '.webm']):
                 continue
             ext = url.split('.')[-1].split('?')[0]
+            if resize is not None:
+                # Replace /width=XXXX/ with /width=resize/ if present
+                url = re.sub(r"/width=\d+/", f"/width={resize}/", url)
             return url, f"{Path(name).stem}.preview.{ext}"
         return None, None
 
@@ -137,6 +140,17 @@ class CivitAiAPI:
             version_id = data.get('id')
             self.logger.log(f"Requires Early Access: https://civitai.com/models/{model_id}?modelVersionId={version_id}", "warning")
         return ea
+
+    def get_sha256(self, data: Optional[dict] = None, version_id: Optional[str] = None) -> Optional[str]:
+        """
+        Get the model's sha256 hash from version data or by version_id.
+        If data is not provided, it will be loaded using version_id.
+        """
+        if data is None and version_id is not None:
+            data = self._get(self._build_url(f"model-versions/{version_id}"))
+        if not data:
+            return None
+        return data.get("files", [{}])[0].get("hashes", {}).get("SHA256")
 
     # === sdAIgen ===
     def validate_download(self, url: str, file_name: Optional[str] = None) -> Optional[ModelData]:
@@ -170,7 +184,7 @@ class CivitAiAPI:
             image_name=preview_name,
             base_model=data.get("baseModel"),
             trained_words=data.get("trainedWords"),
-            sha256=data.get("files", [{}])[0].get("hashes", {}).get("SHA256")
+            sha256=self.get_sha256(data)
         )
 
     # === General ===
@@ -195,7 +209,6 @@ class CivitAiAPI:
     def find_by_sha256(self, sha256: str) -> Optional[Dict]:
         """Find model version data by SHA256 hash"""
         return self._get(self._build_url(f"model-versions/by-hash/{sha256}"))
-
 
     def download_preview_image(self, model_data: ModelData, save_path: Optional[Union[str, Path]] = None, resize: bool = False):
         """
@@ -276,6 +289,7 @@ class CivitAiAPI:
             "activation_text": ', '.join(model_data.trained_words or []),
             "sha256": model_data.sha256
         }
+
         try:
             info_file.write_text(json.dumps(info, indent=4))
             self.logger.log(f"Saved model info: {info_file}", "success")

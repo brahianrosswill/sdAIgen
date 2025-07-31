@@ -30,7 +30,7 @@ widgets_css = CSS / 'main-widgets.css'
 widgets_js = JS / 'main-widgets.js'
 
 
-# ========================= WIDGETS ========================
+# ================ WIDGETS (Main Container) ================
 
 def create_expandable_button(text, url):
     return factory.create_html(f'''
@@ -59,9 +59,9 @@ def read_model_data(file_path, data_type):
 WEBUI_SELECTION = {
     'A1111':   "--xformers --no-half-vae",
     'ComfyUI': "--dont-print-server",
-    'Forge':   "--xformers --cuda-stream --pin-shared-memory",              # Remove: --disable-xformers --opt-sdp-attention
-    'Classic': "--persistent-patches --cuda-stream --pin-shared-memory",    # Remove: --xformers
-    'ReForge': "--xformers --cuda-stream --pin-shared-memory",
+    'Forge':   "--xformers --cuda-stream",              # Remove: --disable-xformers --opt-sdp-attention --pin-shared-memory
+    'Classic': "--persistent-patches --cuda-stream",    # Remove: --xformers --pin-shared-memory
+    'ReForge': "--xformers --cuda-stream",              # Remove: --pin-shared-memory
     'SD-UX':   "--xformers --no-half-vae"
 }
 
@@ -192,7 +192,9 @@ custom_file_urls_widget = factory.create_text('File (txt):')
 """Create button widgets."""
 save_button = factory.create_button('Save', class_names=['button', 'button_save'])
 
-# =================== GDrive Toggle Button =================
+
+# ===================== Side Container =====================
+# --- GDrive Toggle Button ---
 """Create Google Drive toggle button for Colab only."""
 BTN_STYLE = {'width': '48px', 'height': '48px'}
 TOOLTIPS = ("Unmount Google Drive storage", "Mount Google Drive storage")
@@ -216,7 +218,7 @@ else:
 
     GDrive_button.on_click(handle_toggle)
 
-# ========= Export/Import Widget Settings Buttons ==========
+# === Export/Import Widget Settings Buttons ===
 """Create buttons to export/import widget settings to JSON for Colab only."""
 export_button = factory.create_button('', layout=BTN_STYLE, class_names=['sideContainer-btn', 'export-btn'])
 export_button.tooltip = "Export settings to JSON"
@@ -240,7 +242,7 @@ def export_settings(button=None, filter_empty=False):
 
         settings_data = {
             'widgets': widgets_data,
-            'mountGDrive': GDrive_button.toggle
+            # 'mountGDrive': GDrive_button.toggle
         }
 
         display(Javascript(f'downloadJson({json.dumps(settings_data)});'))
@@ -285,7 +287,7 @@ def apply_imported_settings(data):
         show_notification(f"Import failed: {str(e)}", "error")
         pass
 
-# ============= NOTIFICATION for Export/Import =============
+# === NOTIFICATION for Export/Import ===
 """Create widget-popup displaying status of Export/Import settings."""
 notification_popup = factory.create_html('', class_names=['notification-popup', 'hidden'])
 
@@ -293,7 +295,7 @@ def show_notification(message, message_type='info'):
     icon_map = {
         'success':  '✅',
         'error':    '❌',
-        'info':     'ℹ️',
+        'info':     '💡',
         'warning':  '⚠️'
     }
     icon = icon_map.get(message_type, 'info')
@@ -457,6 +459,7 @@ factory.connect_widgets([(empowerment_widget, 'value')], update_empowerment)
 
 SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',
+      # Additional
       'latest_webui', 'latest_extensions', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
       'controlnet', 'controlnet_num', 'commit_hash',
       'civitai_token', 'huggingface_token', 'zrok_token', 'ngrok_token', 'commandline_arguments', 'theme_accent',

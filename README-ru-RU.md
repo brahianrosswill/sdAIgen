@@ -25,7 +25,7 @@
   - Предустановленные пользовательские: *Настройки* + *Стили* + [*UI Тема*](https://github.com/anxety-solo/anxety-theme)
   - Скачивание превью для *моделей, LoRa и embedding* (CivitAi) | ***Для Kaggle есть ограничения.***
   - Выбор WebUI между *A1111*, *ComfyUI*, *Forge*, *Classic (Forge)*, *ReForge*, *SD-UX.*
-  - Эксклюзив для **Google Colab**_: Подключение к GDrive и кнопки для экспорта/импорта настроек виджетов~ | ***Основные виджеты***.
+  - _Эксклюзив для **Google Colab**_: Подключение к GDrive и кнопки для экспорта/импорта настроек виджетов~ | ***Основные виджеты***.
 
 <details>
 <summary>📚 Установленные Расширения</summary>
@@ -38,7 +38,8 @@
 | [adetailer](https://github.com/Bing-su/adetailer) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [anxety-theme](https://github.com/anxety-solo/anxety-theme) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [Aspect-Ratio-Helper](https://github.com/thomasasfk/sd-webui-aspect-ratio-helper) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| [CivitAi-Browser-plus](https://github.com/anxety-solo/sd-civitai-browser-plus) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| [Civitai-Browser-plus](https://github.com/anxety-solo/sd-civitai-browser-plus) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| [Civitai-Extension](https://github.com/anxety-solo/sd-civitai-extension) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [ControlNet](https://github.com/Mikubill/sd-webui-controlnet) | ✔️ | 🔄 | 🔄 | 🔄 | ✔️ |
 | [Encrypt-Image](https://github.com/anxety-solo/sd-encrypt-image) | ✔️<sup>†</sup> | ✔️<sup>†</sup> | ✔️<sup>†</sup> | ✔️<sup>†</sup> | ✔️<sup>†</sup> |
 | [Image-Info](https://github.com/gutris1/sd-image-info) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -87,6 +88,7 @@
 ---
 
 ## 😄 Благодарности:
+
 [gutris1](https://github.com/gutris1) - Спасибо ему за работу, скрипты, расширения и за то, что назвал меня геем 💀</br>
 [NoCrypt](https://github.com/NoCrypt) - Блокнот изначально был построен на его версии :3</br>
 [DEX-1101](https://github.com/DEX-1101) - В своё время предоставил нам Kaggle-версию~

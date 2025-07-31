@@ -21,7 +21,6 @@ SCR_PATH = PATHS['scr_path']
 SETTINGS_PATH = PATHS['settings_path']
 
 DEFAULT_UI = 'A1111'
-
 WEBUI_PATHS = {
     'A1111': (
         'Stable-diffusion', 'VAE', 'Lora',

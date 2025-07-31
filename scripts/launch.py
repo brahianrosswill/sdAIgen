@@ -191,7 +191,6 @@ def get_launch_command():
 
 class TunnelManager:
     """Class for managing tunnel services"""
-
     def __init__(self, tunnel_port):
         self.tunnel_port = tunnel_port
         self.tunnels = []

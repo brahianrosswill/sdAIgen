@@ -135,12 +135,19 @@ def setup_module_folder(modules_folder = None):
 
 # =================== ENVIRONMENT SETUP ====================
 
-def detect_environment():
-    """Detect runtime environment."""
+def detect_environment(force_env=None):
+    """Detect runtime environment, optionally forcing an emulated environment."""
+    envs = list(SUPPORTED_ENVS.values())
+
+    if force_env:
+        if force_env not in envs:
+            raise EnvironmentError(f"Unsupported forced environment: {force_env}. Supported: {', '.join(envs)}")
+        return force_env
     for var, name in SUPPORTED_ENVS.items():
         if var in os.environ:
             return name
-    raise EnvironmentError(f"Unsupported environment. Supported: {', '.join(SUPPORTED_ENVS.values())}")
+
+    raise EnvironmentError(f"Unsupported environment. Supported: {', '.join(envs)}")
 
 def parse_fork_arg(fork_arg):
     """Parse fork argument into user/repo."""
@@ -245,10 +252,11 @@ async def main_async(args=None):
     parser.add_argument('--fork', default=None, help="Specify project fork (user or user/repo)")
     parser.add_argument('-s', '--skip-download', action="store_true", help="Skip downloading files")
     parser.add_argument('-l', "--log", action="store_true", help="Enable logging of download errors")
+    parser.add_argument('-e', '--force-env', default=None, help=f"Force emulated environment (only supported: {', '.join(SUPPORTED_ENVS.values())})")
 
     args, _ = parser.parse_known_args(args)
 
-    env = detect_environment()
+    env = detect_environment(force_env=args.force_env)
     user, repo = parse_fork_arg(args.fork)   # GitHub: user/repo
 
     # download scripts files
