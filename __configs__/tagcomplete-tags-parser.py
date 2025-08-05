@@ -2,15 +2,13 @@
 
 import json_utils as js
 
-from datetime import datetime
-from pathlib import Path
-import subprocess
 import argparse
 import asyncio
 import aiohttp
-import json
 import re
 import os
+from datetime import datetime
+from pathlib import Path
 
 
 # Configuration
@@ -73,7 +71,7 @@ class TagsParser:
         if self.session:
             await self.session.close()
 
-    async def get_directory_contents(self, path=""):
+    async def get_directory_contents(self, path=''):
         """Get contents of a directory from GitHub API."""
         url = f"{GITHUB_API_URL}/{path}" if path else GITHUB_API_URL
 
@@ -243,7 +241,7 @@ async def main(args=None):
         print(f"❌ Error: {e}")
 
     if args.verbose:
-        print("✨ Parser completed!")
+        print('✨ Parser completed!')
 
 if __name__ == '__main__':
     asyncio.run(main())

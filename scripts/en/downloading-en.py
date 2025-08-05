@@ -484,7 +484,7 @@ def download(line):
                 extension_repo.append((url, filename))
                 continue
             try:
-                manual_download(url, dir_path, filename, prefix)
+                manual_download(url, dir_path, filename)
             except Exception as e:
                 print(f"\n> Download error: {e}")
         else:
@@ -492,7 +492,7 @@ def download(line):
             manual_download(url, dst_dir, file_name)
 
 @handle_errors
-def manual_download(url, dst_dir, file_name=None, prefix=None):
+def manual_download(url, dst_dir, file_name=None):
     clean_url = url
     image_url, image_name = None, None
 
@@ -505,9 +505,10 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
         clean_url, url = data.clean_url, data.download_url          # Clean_URL, Download_URL
         image_url, image_name = data.image_url, data.image_name     # Image_URL, Image_Name
 
+        ## Preview will be downloaded automatically via [CivitAI-Extension]
         # Download preview images
-        if image_url and image_name:
-            m_download(f"{image_url} {dst_dir} {image_name}")
+        # if image_url and image_name:
+        #     m_download(f"{image_url} {dst_dir} {image_name}")
 
     elif any(s in url for s in ('github', 'huggingface.co')):
         if file_name and '.' not in file_name:
@@ -591,7 +592,7 @@ def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, in
 
     return base_url
 
-line = ""
+line = ''
 line = handle_submodels(model, model_num, model_list, model_dir, line)
 line = handle_submodels(vae, vae_num, vae_list, vae_dir, line)
 line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir, line)
