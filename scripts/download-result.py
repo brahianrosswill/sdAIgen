@@ -6,7 +6,6 @@ import json_utils as js                     # JSON
 import ipywidgets as widgets
 from pathlib import Path
 import json
-import time
 import re
 import os
 

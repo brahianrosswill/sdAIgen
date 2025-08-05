@@ -1,6 +1,6 @@
 """ JSON Utilities Module | by ANXETY """
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 from functools import wraps
 from pathlib import Path
 import logging

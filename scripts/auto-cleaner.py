@@ -3,12 +3,11 @@
 from widget_factory import WidgetFactory    # WIDGETS
 import json_utils as js                     # JSON
 
-from IPython.display import display, HTML, clear_output
+from IPython.display import display, HTML
 import ipywidgets as widgets
 from pathlib import Path
 import psutil
 import json
-import time
 import os
 
 

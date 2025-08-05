@@ -13,7 +13,6 @@ from datetime import timedelta
 from pathlib import Path
 import subprocess
 import requests
-import zipfile
 import shutil
 import shlex
 import time

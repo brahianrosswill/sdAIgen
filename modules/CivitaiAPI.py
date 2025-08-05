@@ -1,7 +1,7 @@
 """ CivitAi API Module (V2) | by ANXETY """
 
-from urllib.parse import urlparse, parse_qs, urlencode
 from typing import Optional, Union, Tuple, Dict, Any, List
+from urllib.parse import urlparse, parse_qs, urlencode
 from dataclasses import dataclass
 from pathlib import Path
 from PIL import Image

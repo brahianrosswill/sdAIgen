@@ -8,7 +8,6 @@ from pathlib import Path
 import subprocess
 import zipfile
 import shlex
-import sys
 import re
 import os
 

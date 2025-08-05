@@ -3,7 +3,6 @@
 from Manager import m_download   # Every Download
 import json_utils as js          # JSON
 
-from IPython.display import clear_output
 from IPython.utils import capture
 from IPython import get_ipython
 from pathlib import Path
