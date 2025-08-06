@@ -392,8 +392,8 @@ empowerment_output_widget.add_class('hidden')
 def update_XL_options(change, widget):
     is_xl = change['new']
     defaults = {
-        True: ('4. WAI-illustrious [Anime] [V14] [XL]', '1. sdxl.vae', 'none'),    # XL models
-        False: ('4. Counterfeit [Anime] [V3] + INP', '3. Blessed2.vae', 'none')    # SD 1.5 models
+        True: ('2. Nova IL [Anime] [V9] [XL]', '1. sdxl.vae', 'none'),           # XL models
+        False: ('4. Counterfeit [Anime] [V3] + INP', '3. Blessed2.vae', 'none')  # SD 1.5 models
     }
 
     data_file = '_xl-models-data.py' if is_xl else '_models-data.py'

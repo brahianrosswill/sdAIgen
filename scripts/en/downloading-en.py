@@ -243,16 +243,38 @@ if latest_webui or latest_extensions:
     print(f"\r✨ Update {action} Completed!")
 
 
-## Version switching
+## Version or branch switching 
+def _git_branch_exists(branch: str) -> bool:
+    result = subprocess.run(
+        ["git", "show-ref", "--verify", f"refs/heads/{branch}"],
+        cwd=WEBUI,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+    return result.returncode == 0
+
 if commit_hash:
-    print('🔄 Switching to the specified version...', end='')
+    print("🔄 Switching to the specified commit or branch...", end="")
     with capture.capture_output():
         CD(WEBUI)
         ipySys('git config --global user.email "you@example.com"')
         ipySys('git config --global user.name "Your Name"')
-        ipySys('git reset --hard {commit_hash}')
-        ipySys('git pull origin {commit_hash}')    # Get last changes in branch
-    print(f"\r🔄 Switch complete! Current commit: {COL.B}{commit_hash}{COL.X}")
+
+        is_commit = re.fullmatch(r"[0-9a-f]{7,40}", commit_hash) is not None
+
+        if is_commit:
+            ipySys(f"git checkout {commit_hash}")
+        else:
+            ipySys(f"git fetch origin {commit_hash}")
+
+            if _git_branch_exists(commit_hash):
+                ipySys(f"git checkout {commit_hash}")
+            else:
+                ipySys(f"git checkout -b {commit_hash} origin/{commit_hash}")
+
+            ipySys("git pull")
+    print(f"\r🔄 Switch complete! Now at: {COL.B}{commit_hash}{COL.X}")
+
 
 
 # === Google Drive Mounting | EXCLUSIVE for Colab ===

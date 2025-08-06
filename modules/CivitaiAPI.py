@@ -113,8 +113,9 @@ class CivitAiAPI:
         """Extract a valid preview image URL and filename, with optional resizing via width in URL"""
         for img in images:
             url = img.get('url', '')
-            if self.IS_KAGGLE and img.get('nsfwLevel', 0) >= 4:
-                continue
+            ## Images are now downloaded via [Civitai-Extension]
+            # if self.IS_KAGGLE and img.get('nsfwLevel', 0) >= 4:
+            #     continue
             if any(url.lower().endswith(ext) for ext in ['.gif', '.mp4', '.webm']):
                 continue
             ext = url.split('.')[-1].split('?')[0]

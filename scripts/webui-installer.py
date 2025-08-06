@@ -155,7 +155,7 @@ def apply_classic_fixes():
     if not cmd_args_path.exists():
         return
 
-    marker = '# Arguments added by ANXETY'
+    marker = '# === Arguments added by ANXETY ==='
     with cmd_args_path.open('r+', encoding='utf-8') as f:
         if marker in f.read():
             return
@@ -176,8 +176,9 @@ async def main():
     await install_extensions()
 
     # Special Func
-    if UI == 'Classic':
-        apply_classic_fixes()
+    ## Note: At the moment, this build does not require any fixes.
+    # if UI == 'Classic':
+    #     apply_classic_fixes()
 
     if UI != 'ComfyUI':
         run_tagcomplete_tag_parser()
