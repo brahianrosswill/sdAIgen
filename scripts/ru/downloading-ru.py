@@ -243,7 +243,7 @@ if latest_webui or latest_extensions:
     print(f"\r✨ Обновление {action} Завершено!")
 
 
-## Version or branch switching 
+## Version or branch switching
 def _git_branch_exists(branch: str) -> bool:
     result = subprocess.run(
         ["git", "show-ref", "--verify", f"refs/heads/{branch}"],

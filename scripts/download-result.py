@@ -110,14 +110,14 @@ def create_all_sections():
         # TITLE | GET LIST(content_dir) | file.formats | excluded_dirs=[List] (files); is_grid=bool (folders)
         ## Mains
         ('Models', get_files(model_dir, ('.safetensors', '.ckpt'))),
-        ('VAEs', get_files(vae_dir, '.safetensors')),
+        ('VAEs', get_files(vae_dir, '.safetensors', '.vae')),
         ('Embeddings', get_files(embed_dir, ('.safetensors', '.pt'), excluded_dirs=['SD', 'XL'])),
         ('LoRAs', get_files(lora_dir, '.safetensors')),
         (ext_type, get_folders(extension_dir), True),
         ('ADetailers', get_files(adetailer_dir, ('.safetensors', '.pt'))),
         ## Others
         ('Clips', get_files(clip_dir, '.safetensors')),
-        ('Unets', get_files(unet_dir, '.safetensors')),
+        ('Unets', get_files(unet_dir, '.safetensors', '.gguf')),
         ('Visions', get_files(vision_dir, '.safetensors')),
         ('Encoders', get_files(encoder_dir, '.safetensors')),
         ('Diffusions', get_files(diffusion_dir, '.safetensors')),
