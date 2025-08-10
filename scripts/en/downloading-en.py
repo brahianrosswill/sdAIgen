@@ -260,17 +260,14 @@ if commit_hash or branch != 'none':
         ipySys('git config --global user.email "you@example.com"')
         ipySys('git config --global user.name "Your Name"')
 
-        # commit_hash > branch
         commit_hash = branch if branch != "none" and not commit_hash else commit_hash
 
-        # Checking for local changes
-        stash_needed = subprocess.run(
-            ["git", "diff", "--quiet"], cwd=WEBUI
-        ).returncode != 0 or subprocess.run(
-            ["git", "diff", "--cached", "--quiet"], cwd=WEBUI
-        ).returncode != 0
+        # Check for local changes (in the working directory and staged)
+        stash_needed = subprocess.run(["git", "diff", "--quiet"], cwd=WEBUI).returncode != 0 \
+                    or subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=WEBUI).returncode != 0
 
         if stash_needed:
+            # Save local changes and untracked files
             ipySys('git stash push -u -m "Temporary stash"')
 
         is_commit = re.fullmatch(r"[0-9a-f]{7,40}", commit_hash) is not None
@@ -287,12 +284,22 @@ if commit_hash or branch != 'none':
 
             ipySys("git pull")
 
-        # Restore stash, but overwrite tracked files from the branch
         if stash_needed:
-            ipySys("git stash pop || true")
-            # Forcefully leave the version from the current branch
-            ipySys("git restore --ours .")
-            ipySys("git add .")
+            # Apply stash, saving the index
+            ipySys("git stash pop --index || true")
+
+            # In case of conflicts, we resolve them while preserving local changes.
+            conflicts = subprocess.run(
+                ["git", "diff", "--name-only", "--diff-filter=U"],
+                cwd=WEBUI, stdout=subprocess.PIPE, text=True
+            ).stdout.strip().splitlines()
+
+            for f in conflicts:
+                # Save the local version of the file (ours)
+                ipySys(f"git checkout --ours -- \"{f}\"")
+
+            if conflicts:
+                ipySys(f"git add {' '.join(conflicts)}")
     print(f"\r✅ Switch complete! Now at: {COL.B}{commit_hash}{COL.X}")
 
 
