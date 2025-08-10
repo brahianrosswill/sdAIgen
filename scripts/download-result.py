@@ -132,7 +132,7 @@ def create_all_sections():
 factory.load_css(widgets_css)   # load CSS (widgets)
 
 header = factory.create_html(
-    f'<div><span class="header-main-title">{HEADER_DL}</span> '
+    f'<div><span class="header-main-title">{HEADER_DL}</span>'
     f'<span style="color: grey; opacity: 0.25;">| {VERSION}</span></div>'
 )
 

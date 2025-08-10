@@ -253,12 +253,13 @@ def _git_branch_exists(branch: str) -> bool:
     )
     return result.returncode == 0
 
-if commit_hash:
+if commit_hash or branch != 'none':
     print("🔄 Switching to the specified commit or branch...", end="")
     with capture.capture_output():
         CD(WEBUI)
         ipySys('git config --global user.email "you@example.com"')
         ipySys('git config --global user.name "Your Name"')
+        commit_hash = branch if branch != 'none' else commit_hash
 
         is_commit = re.fullmatch(r"[0-9a-f]{7,40}", commit_hash) is not None
 
