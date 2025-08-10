@@ -86,7 +86,8 @@ def fetch_github_branches(repo_url, max_retries=3):
             else:
                 break
 
-    return ['none', 'main', 'master']
+    # Fail-Safe
+    return ['none']
 
 REPO_MAP = {
     'A1111':   "https://github.com/AUTOMATIC1111/stable-diffusion-webui",

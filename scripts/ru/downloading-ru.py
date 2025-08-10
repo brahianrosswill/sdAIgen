@@ -259,7 +259,19 @@ if commit_hash or branch != 'none':
         CD(WEBUI)
         ipySys('git config --global user.email "you@example.com"')
         ipySys('git config --global user.name "Your Name"')
-        commit_hash = branch if branch != 'none' else commit_hash
+
+        # commit_hash > branch
+        commit_hash = branch if branch != "none" and not commit_hash else commit_hash
+
+        # Checking for local changes
+        stash_needed = subprocess.run(
+            ["git", "diff", "--quiet"], cwd=WEBUI
+        ).returncode != 0 or subprocess.run(
+            ["git", "diff", "--cached", "--quiet"], cwd=WEBUI
+        ).returncode != 0
+
+        if stash_needed:
+            ipySys('git stash push -u -m "Temporary stash"')
 
         is_commit = re.fullmatch(r"[0-9a-f]{7,40}", commit_hash) is not None
 
@@ -274,7 +286,14 @@ if commit_hash or branch != 'none':
                 ipySys(f"git checkout -b {commit_hash} origin/{commit_hash}")
 
             ipySys("git pull")
-    print(f"\r🔄 Переключение завершено! Текущий коммит/ветка: {COL.B}{commit_hash}{COL.X}")
+
+        # Restore stash, but overwrite tracked files from the branch
+        if stash_needed:
+            ipySys("git stash pop || true")
+            # Forcefully leave the version from the current branch
+            ipySys("git restore --ours .")
+            ipySys("git add .")
+    print(f"\r✅ Переключение завершено! Текущий коммит/ветка: {COL.B}{commit_hash}{COL.X}")
 
 
 # === Google Drive Mounting | EXCLUSIVE for Colab ===
