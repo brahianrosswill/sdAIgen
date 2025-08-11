@@ -1,7 +1,7 @@
 # ~ webui-installer.py | by ANXETY ~
 
-from Manager import m_download   # Every Download
-import json_utils as js          # JSON
+from Manager import m_download  # Every Download
+import json_utils as js         # JSON
 
 from IPython.utils import capture
 from IPython import get_ipython
@@ -139,7 +139,6 @@ async def install_extensions():
         ) for ext in extensions
     ]
     await asyncio.gather(*tasks)
-
 
 # =================== WEBUI SETUP & FIXES ==================
 
