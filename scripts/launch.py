@@ -89,6 +89,11 @@ locals().update(settings)
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--log', action='store_true', help='Show failed tunnel details')
+    parser.add_argument(
+        '-t', '--tagger',
+        choices=['m', 'merged', 'e', 'e621', 'd', 'danbooru'],
+        help='Select tagger type: m/merged, e/e621, d/danbooru'
+    )
     return parser.parse_args()
 
 def _trashing():
@@ -99,60 +104,71 @@ def _trashing():
         cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def find_latest_tag_file(target='danbooru'):
+def find_latest_tag_file(target="danbooru"):
     """Find the latest tag file for specified target in TagComplete extension."""
     from datetime import datetime
+    import re
 
-    possible_names = [
-        'a1111-sd-webui-tagcomplete',
-        'sd-webui-tagcomplete',
-        'webui-tagcomplete',
-        'tag-complete',
-        'tagcomplete'
-    ]
+    possible_names = {
+        "a1111-sd-webui-tagcomplete",
+        "sd-webui-tagcomplete",
+        "webui-tagcomplete",
+        "tag-complete",
+        "tagcomplete",
+    }
 
     # Find TagComplete extension directory
-    tagcomplete_dir = None
-    if EXTS.exists():
-        for ext_dir in EXTS.iterdir():
-            if ext_dir.is_dir():
-                dir_name_lower = ext_dir.name.lower()
-                for possible_name in possible_names:
-                    if dir_name_lower == possible_name.lower():
-                        tagcomplete_dir = ext_dir
-                        break
-                if tagcomplete_dir:
-                    break
-
+    tagcomplete_dir = next(
+        (ext_dir for ext_dir in EXTS.iterdir()
+         if ext_dir.is_dir() and ext_dir.name.lower() in possible_names),
+        None
+    )
     if not tagcomplete_dir:
         return None
 
-    tags_dir = tagcomplete_dir / 'tags'
+    tags_dir = tagcomplete_dir / "tags"
     if not tags_dir.exists():
         return None
 
-    # Find files matching target pattern
+    # Prepare patterns
+    if target == "merged":
+        glob_pattern = "*_merged_*.csv"
+        regex_pattern = r".*_merged_(\d{4}-\d{2}-\d{2})\.csv$"
+    else:
+        glob_pattern = f"{target}_*.csv"
+        regex_pattern = rf"{re.escape(target)}_(\d{{4}}-\d{{2}}-\d{{2}})\.csv$"
+
+    # Find latest file
     latest_file = None
     latest_date = None
 
-    for file_path in tags_dir.glob(f"{target}_*.csv"):
-        # Extract date from filename
-        date_match = re.search(rf"{re.escape(target)}_(\d{{4}}-\d{{2}}-\d{{2}})\.csv$", file_path.name)
-        if date_match:
-            try:
-                file_date = datetime.strptime(date_match.group(1), '%Y-%m-%d')
-                if latest_date is None or file_date > latest_date:
-                    latest_date = file_date
-                    latest_file = file_path.name
-            except ValueError:
-                continue
+    for file_path in tags_dir.glob(glob_pattern):
+        match = re.search(regex_pattern, file_path.name)
+        if not match:
+            continue
+        try:
+            file_date = datetime.strptime(match.group(1), "%Y-%m-%d")
+        except ValueError:
+            continue
+        if latest_date is None or file_date > latest_date:
+            latest_date, latest_file = file_date, file_path.name
 
     return latest_file
 
-def _update_config_paths():
+def _update_config_paths(tagger=None):
     """Update configuration paths in WebUI config file"""
+    tagger_map = {
+        'm': 'merged',
+        'merged': 'merged',
+        'e': 'e621',
+        'e621': 'e621',
+        'd': 'danbooru',
+        'danbooru': 'danbooru'
+    }
+    target_tagger = tagger_map.get(tagger, 'danbooru')
+
     config_mapping = {
-        'tac_tagFile': find_latest_tag_file() or 'danbooru.csv',
+        'tac_tagFile': find_latest_tag_file(target_tagger),
         'tagger_hf_cache_dir': f"{WEBUI}/models/interrogators/",
         'ad_extra_models_dir': adetailer_dir,
         # 'sd_checkpoint_hash': '',
@@ -392,7 +408,7 @@ if __name__ == '__main__':
 
     # Launch sequence
     _trashing()
-    _update_config_paths()
+    _update_config_paths(args.tagger)
     LAUNCHER = get_launch_command()
 
     # Setup pinggy timer
