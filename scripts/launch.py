@@ -438,6 +438,19 @@ if __name__ == '__main__':
                 print(f"  - {error['name']}: {error['reason']}")
             print()
 
+        # Display selected trigger if was used
+        if args.tagger:
+            trigger_map = {
+                'm': 'merged',
+                'merged': 'merged',
+                'e': 'e621',
+                'e621': 'e621',
+                'd': 'danbooru',
+                'danbooru': 'danbooru'
+            }
+            selected_trigger = trigger_map.get(args.tagger, args.tagger)
+            print(f"🏷️ Selected Tagger: {COL.lB}{selected_trigger}{COL.X}\n")
+
         print(f"🔧 WebUI: {COL.B}{UI}{COL.X}")
 
         try:
