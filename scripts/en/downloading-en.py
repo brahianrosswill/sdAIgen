@@ -13,7 +13,6 @@ from datetime import timedelta
 from pathlib import Path
 import subprocess
 import requests
-import zipfile
 import shutil
 import shlex
 import time
@@ -244,16 +243,64 @@ if latest_webui or latest_extensions:
     print(f"\r✨ Update {action} Completed!")
 
 
-## Version switching
-if commit_hash:
-    print('🔄 Switching to the specified version...', end='')
+## Version or branch switching
+def _git_branch_exists(branch: str) -> bool:
+    result = subprocess.run(
+        ["git", "show-ref", "--verify", f"refs/heads/{branch}"],
+        cwd=WEBUI,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+    return result.returncode == 0
+
+if commit_hash or branch != 'none':
+    print("🔄 Switching to the specified commit or branch...", end="")
     with capture.capture_output():
         CD(WEBUI)
         ipySys('git config --global user.email "you@example.com"')
         ipySys('git config --global user.name "Your Name"')
-        ipySys('git reset --hard {commit_hash}')
-        ipySys('git pull origin {commit_hash}')    # Get last changes in branch
-    print(f"\r🔄 Switch complete! Current commit: {COL.B}{commit_hash}{COL.X}")
+
+        commit_hash = branch if branch != "none" and not commit_hash else commit_hash
+
+        # Check for local changes (in the working directory and staged)
+        stash_needed = subprocess.run(["git", "diff", "--quiet"], cwd=WEBUI).returncode != 0 \
+                    or subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=WEBUI).returncode != 0
+
+        if stash_needed:
+            # Save local changes and untracked files
+            ipySys('git stash push -u -m "Temporary stash"')
+
+        is_commit = re.fullmatch(r"[0-9a-f]{7,40}", commit_hash) is not None
+
+        if is_commit:
+            ipySys(f"git checkout {commit_hash}")
+        else:
+            ipySys(f"git fetch origin {commit_hash}")
+
+            if _git_branch_exists(commit_hash):
+                ipySys(f"git checkout {commit_hash}")
+            else:
+                ipySys(f"git checkout -b {commit_hash} origin/{commit_hash}")
+
+            ipySys("git pull")
+
+        if stash_needed:
+            # Apply stash, saving the index
+            ipySys("git stash pop --index || true")
+
+            # In case of conflicts, we resolve them while preserving local changes.
+            conflicts = subprocess.run(
+                ["git", "diff", "--name-only", "--diff-filter=U"],
+                cwd=WEBUI, stdout=subprocess.PIPE, text=True
+            ).stdout.strip().splitlines()
+
+            for f in conflicts:
+                # Save the local version of the file (ours)
+                ipySys(f"git checkout --ours -- \"{f}\"")
+
+            if conflicts:
+                ipySys(f"git add {' '.join(conflicts)}")
+    print(f"\r✅ Switch complete! Now at: {COL.B}{commit_hash}{COL.X}")
 
 
 # === Google Drive Mounting | EXCLUSIVE for Colab ===
@@ -484,7 +531,7 @@ def download(line):
                 extension_repo.append((url, filename))
                 continue
             try:
-                manual_download(url, dir_path, filename, prefix)
+                manual_download(url, dir_path, filename)
             except Exception as e:
                 print(f"\n> Download error: {e}")
         else:
@@ -492,7 +539,7 @@ def download(line):
             manual_download(url, dst_dir, file_name)
 
 @handle_errors
-def manual_download(url, dst_dir, file_name=None, prefix=None):
+def manual_download(url, dst_dir, file_name=None):
     clean_url = url
     image_url, image_name = None, None
 
@@ -505,9 +552,10 @@ def manual_download(url, dst_dir, file_name=None, prefix=None):
         clean_url, url = data.clean_url, data.download_url          # Clean_URL, Download_URL
         image_url, image_name = data.image_url, data.image_name     # Image_URL, Image_Name
 
+        ## Preview will be downloaded automatically via [CivitAI-Extension]
         # Download preview images
-        if image_url and image_name:
-            m_download(f"{image_url} {dst_dir} {image_name}")
+        # if image_url and image_name:
+        #     m_download(f"{image_url} {dst_dir} {image_name}")
 
     elif any(s in url for s in ('github', 'huggingface.co')):
         if file_name and '.' not in file_name:
@@ -591,7 +639,7 @@ def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, in
 
     return base_url
 
-line = ""
+line = ''
 line = handle_submodels(model, model_num, model_list, model_dir, line)
 line = handle_submodels(vae, vae_num, vae_list, vae_dir, line)
 line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir, line)

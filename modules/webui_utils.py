@@ -1,9 +1,8 @@
 """ WebUI Utilities Module | by ANXETY """
 
-import json_utils as js
+import json_utils as js     # JSON
 
 from pathlib import Path
-import json
 import os
 
 

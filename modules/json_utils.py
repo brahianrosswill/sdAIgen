@@ -1,6 +1,6 @@
 """ JSON Utilities Module | by ANXETY """
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 from functools import wraps
 from pathlib import Path
 import logging
@@ -44,11 +44,18 @@ def validate_args(min_args: int, max_args: int):
     def decorator(func):
         @wraps(func)
         def wrapper(*args):
-            if not (min_args <= len(args) <= max_args):
-                logger.error(
-                    f"Invalid argument count for {func.__name__}. "
-                    f"Expected {min_args}-{max_args}, got {len(args)}"
-                )
+            arg_count = len(args)
+            if not (min_args <= arg_count <= max_args):
+                if min_args == max_args:
+                    logger.error(
+                        f"Invalid argument count for {func.__name__}. "
+                        f"Expected exactly {min_args}, got {arg_count}"
+                    )
+                else:
+                    logger.error(
+                        f"Invalid argument count for {func.__name__}. "
+                        f"Expected {min_args}-{max_args}, got {arg_count}"
+                    )
                 return None
             return func(*args)
         return wrapper

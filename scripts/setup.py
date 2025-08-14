@@ -1,7 +1,7 @@
 # ~ setup.py | by ANXETY ~
 
-from IPython.display import display, HTML, clear_output
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, List, Tuple, Optional
+from IPython.display import clear_output
 from pathlib import Path
 from tqdm import tqdm
 import nest_asyncio
@@ -242,6 +242,7 @@ async def download_files_async(lang, fork_user, fork_repo, branch, log_errors):
             for url, path, error in errors:
                 print(f"URL: {url}\nPath: {path}\nError: {error}\n")
 
+
 # ===================== MAIN EXECUTION =====================
 
 async def main_async(args=None):
@@ -276,6 +277,7 @@ async def main_async(args=None):
         lang=args.lang,
         fork=args.fork
     )
+
 
 if __name__ == "__main__":
     asyncio.run(main_async())

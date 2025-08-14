@@ -1,9 +1,8 @@
 # ~ webui-installer.py | by ANXETY ~
 
-from Manager import m_download   # Every Download
-import json_utils as js          # JSON
+from Manager import m_download  # Every Download
+import json_utils as js         # JSON
 
-from IPython.display import clear_output
 from IPython.utils import capture
 from IPython import get_ipython
 from pathlib import Path
@@ -108,6 +107,7 @@ CONFIG_MAP = {
         f"{CONFIG_URL}/{UI}/ui-config.json",
         f"{CONFIG_URL}/styles.csv",
         f"{CONFIG_URL}/user.css",
+        f"{CONFIG_URL}/card-no-preview.png, {WEBUI}/html, card-no-preview.jpg",
         f"{CONFIG_URL}/notification.mp3",
         # Special Scripts
         f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.11/site-packages/gradio_tunneling, main.py",
@@ -140,7 +140,6 @@ async def install_extensions():
     ]
     await asyncio.gather(*tasks)
 
-
 # =================== WEBUI SETUP & FIXES ==================
 
 def unpack_webui():
@@ -155,7 +154,7 @@ def apply_classic_fixes():
     if not cmd_args_path.exists():
         return
 
-    marker = '# Arguments added by ANXETY'
+    marker = '# === Arguments added by ANXETY ==='
     with cmd_args_path.open('r+', encoding='utf-8') as f:
         if marker in f.read():
             return
@@ -176,8 +175,9 @@ async def main():
     await install_extensions()
 
     # Special Func
-    if UI == 'Classic':
-        apply_classic_fixes()
+    ## Note: At the moment, this build does not require any fixes.
+    # if UI == 'Classic':
+    #     apply_classic_fixes()
 
     if UI != 'ComfyUI':
         run_tagcomplete_tag_parser()

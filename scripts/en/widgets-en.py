@@ -8,6 +8,8 @@ from IPython.display import display, Javascript
 from google.colab import output
 import ipywidgets as widgets
 from pathlib import Path
+import requests
+import time
 import json
 import os
 
@@ -56,7 +58,47 @@ def read_model_data(file_path, data_type):
     names = list(local_vars[key].keys())
     return prefixes + names
 
-WEBUI_SELECTION = {
+def fetch_github_branches(repo_url, max_retries=3):
+    """Fetch branch names from GitHub API."""
+    repo_path = repo_url.replace('https://github.com/', '')
+    api_url = f'https://api.github.com/repos/{repo_path}/branches'
+
+    for attempt in range(max_retries):
+        try:
+            r = requests.get(api_url, timeout=10)
+            if r.status_code == 200:
+                branches = [b['name'] for b in r.json()]
+                ordered = ['none']
+                for preferred in ('main', 'master'):
+                    if preferred in branches:
+                        ordered.append(preferred)
+                        branches.remove(preferred)
+                return ordered + branches
+
+            if r.status_code == 403 and attempt < max_retries - 1:
+                time.sleep(2)
+            else:
+                break
+
+        except requests.RequestException:
+            if attempt < max_retries - 1:
+                time.sleep(1)
+            else:
+                break
+
+    # Fail-Safe
+    return ['none']
+
+REPO_MAP = {
+    'A1111':   "https://github.com/AUTOMATIC1111/stable-diffusion-webui",
+    'ComfyUI': "https://github.com/comfyanonymous/ComfyUI",
+    'Forge':   "https://github.com/lllyasviel/stable-diffusion-webui-forge",
+    'Classic': "https://github.com/Haoming02/sd-webui-forge-classic",
+    'ReForge': "https://github.com/Panchovix/stable-diffusion-webui-reForge",
+    'SD-UX':   "https://github.com/anapnoe/stable-diffusion-webui-ux"
+}
+
+WEBUI_PARAMS = {
     'A1111':   "--xformers --no-half-vae",
     'ComfyUI': "--dont-print-server",
     'Forge':   "--xformers --cuda-stream",              # Remove: --disable-xformers --opt-sdp-attention --pin-shared-memory
@@ -93,7 +135,7 @@ additional_header = factory.create_header('Additionally')
 latest_webui_widget = factory.create_checkbox('Update WebUI', True)
 latest_extensions_widget = factory.create_checkbox('Update Extensions', True)
 check_custom_nodes_deps_widget = factory.create_checkbox('Check Custom-Nodes Dependencies', True)
-change_webui_widget = factory.create_dropdown(list(WEBUI_SELECTION.keys()), 'WebUI:', 'A1111', layout={'width': 'auto'})
+change_webui_widget = factory.create_dropdown(list(WEBUI_PARAMS.keys()), 'WebUI:', 'A1111', layout={'width': 'auto'})
 detailed_download_widget = factory.create_dropdown(['off', 'on'], 'Detailed Download:', 'off', layout={'width': 'auto'})
 choose_changes_box = factory.create_hbox(
     [
@@ -109,7 +151,11 @@ choose_changes_box = factory.create_hbox(
 controlnet_options = read_model_data(f"{SCRIPTS}/_models-data.py", 'cnet')
 controlnet_widget = factory.create_dropdown(controlnet_options, 'ControlNet:', 'none')
 controlnet_num_widget = factory.create_text('ControlNet Number:', '', 'Enter ControlNet numbers for download.')
+
 commit_hash_widget = factory.create_text('Commit Hash:', '', 'Switching between branches or commits.')
+branches_options = fetch_github_branches(REPO_MAP['A1111'])
+branch_widget = factory.create_dropdown(branches_options, 'Branch:', 'none', layout={'width': '400px', 'margin': '0 0 0 8px'})    # margin-left
+checkout_options_box = factory.create_hbox([commit_hash_widget, branch_widget])
 
 civitai_token_widget = factory.create_text('CivitAI Token:', '', 'Enter your CivitAi API token.')
 civitai_button = create_expandable_button('Get CivitAI Token', 'https://civitai.com/user/account')
@@ -127,7 +173,7 @@ zrok_token_widget = factory.create_text('Zrok Token:')
 zrok_button = create_expandable_button('Register Zrok Token', 'https://colab.research.google.com/drive/1d2sjWDJi_GYBUavrHSuQyHTDuLy36WpU')
 zrok_box = factory.create_hbox([zrok_token_widget, zrok_button])
 
-commandline_arguments_widget = factory.create_text('Arguments:', WEBUI_SELECTION['A1111'])
+commandline_arguments_widget = factory.create_text('Arguments:', WEBUI_PARAMS['A1111'])
 
 accent_colors_options = ['anxety', 'blue', 'green', 'peach', 'pink', 'red', 'yellow']
 theme_accent_widget = factory.create_dropdown(accent_colors_options, 'Theme Accent:', 'anxety',
@@ -140,7 +186,8 @@ additional_widget_list = [
     choose_changes_box,
     HR,
     controlnet_widget, controlnet_num_widget,
-    commit_hash_widget,
+    # commit_hash_widget,
+    checkout_options_box,
     civitai_box, huggingface_box, zrok_box, ngrok_box,
     HR,
     # commandline_arguments_widget,
@@ -392,8 +439,8 @@ empowerment_output_widget.add_class('hidden')
 def update_XL_options(change, widget):
     is_xl = change['new']
     defaults = {
-        True: ('4. WAI-illustrious [Anime] [V14] [XL]', '1. sdxl.vae', 'none'),    # XL models
-        False: ('4. Counterfeit [Anime] [V3] + INP', '3. Blessed2.vae', 'none')    # SD 1.5 models
+        True: ('2. Nova IL [Anime] [V9] [XL]', '1. sdxl.vae', 'none'),           # XL models
+        False: ('4. Counterfeit [Anime] [V3] + INP', '3. Blessed2.vae', 'none')  # SD 1.5 models
     }
 
     data_file = '_xl-models-data.py' if is_xl else '_models-data.py'
@@ -414,7 +461,12 @@ def update_XL_options(change, widget):
 # Callback functions for updating widgets
 def update_change_webui(change, widget):
     webui = change['new']
-    commandline_arguments_widget.value = WEBUI_SELECTION.get(webui, '')
+    commandline_arguments_widget.value = WEBUI_PARAMS.get(webui, '')
+
+    if webui in REPO_MAP:
+        repo_url = REPO_MAP[webui]
+        new_branches = fetch_github_branches(repo_url)
+        branch_widget.options = new_branches
 
     is_comfy = webui == 'ComfyUI'
 
@@ -461,7 +513,7 @@ SETTINGS_KEYS = [
       'XL_models', 'model', 'model_num', 'inpainting_model', 'vae', 'vae_num',
       # Additional
       'latest_webui', 'latest_extensions', 'check_custom_nodes_deps', 'change_webui', 'detailed_download',
-      'controlnet', 'controlnet_num', 'commit_hash',
+      'controlnet', 'controlnet_num', 'commit_hash', 'branch',
       'civitai_token', 'huggingface_token', 'zrok_token', 'ngrok_token', 'commandline_arguments', 'theme_accent',
       # CustomDL
       'empowerment', 'empowerment_output',

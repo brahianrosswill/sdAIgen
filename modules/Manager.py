@@ -1,14 +1,13 @@
 """ Manager Module (V2) | by ANXETY """
 
-from CivitaiAPI import CivitAiAPI    # CivitAI API
-import json_utils as js              # JSON
+from CivitaiAPI import CivitAiAPI   # CivitAI API
+import json_utils as js             # JSON
 
 from urllib.parse import urlparse
 from pathlib import Path
 import subprocess
 import zipfile
 import shlex
-import sys
 import re
 import os
 
