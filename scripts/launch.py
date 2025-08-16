@@ -55,14 +55,24 @@ osENV.update({
 
 # Text Colors (\033)
 class COLORS:
-    R  =  "\033[31m"     # Red
-    G  =  "\033[32m"     # Green
-    Y  =  "\033[33m"     # Yellow
-    B  =  "\033[34m"     # Blue
-    lB =  "\033[36m"     # lightBlue
-    X  =  "\033[0m"      # Reset
+    R  =  '\033[31m'    # Red
+    G  =  '\033[32m'    # Green
+    Y  =  '\033[33m'    # Yellow
+    B  =  '\033[34m'    # Blue
+    lB =  '\033[36m'    # Light Blue
+    X  =  '\033[0m'     # Reset
 
 COL = COLORS
+
+# Tag-CSV Mapping
+TAGGER_MAP = {
+    'm': 'merged',
+    'merged': 'merged',
+    'e': 'e621',
+    'e621': 'e621',
+    'd': 'danbooru',
+    'danbooru': 'danbooru'
+}
 
 
 # =================== loading settings V5 ==================
@@ -104,36 +114,39 @@ def _trashing():
         cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def find_latest_tag_file(target="danbooru"):
+def find_latest_tag_file(target='danbooru'):
     """Find the latest tag file for specified target in TagComplete extension."""
     from datetime import datetime
     import re
 
     possible_names = {
-        "a1111-sd-webui-tagcomplete",
-        "sd-webui-tagcomplete",
-        "webui-tagcomplete",
-        "tag-complete",
-        "tagcomplete",
+        'a1111-sd-webui-tagcomplete',
+        'sd-webui-tagcomplete',
+        'webui-tagcomplete',
+        'tag-complete',
+        'tagcomplete',
     }
 
     # Find TagComplete extension directory
     tagcomplete_dir = next(
-        (ext_dir for ext_dir in EXTS.iterdir()
-         if ext_dir.is_dir() and ext_dir.name.lower() in possible_names),
+        (
+            ext_dir
+            for ext_dir in EXTS.iterdir()
+            if ext_dir.is_dir() and ext_dir.name.lower() in possible_names
+        ),
         None
     )
     if not tagcomplete_dir:
         return None
 
-    tags_dir = tagcomplete_dir / "tags"
+    tags_dir = tagcomplete_dir / 'tags'
     if not tags_dir.exists():
         return None
 
     # Prepare patterns
-    if target == "merged":
-        glob_pattern = "*_merged_*.csv"
-        regex_pattern = r".*_merged_(\d{4}-\d{2}-\d{2})\.csv$"
+    if target == 'merged':
+        glob_pattern = '*_merged_*.csv'
+        regex_pattern = r'.*_merged_(\d{4}-\d{2}-\d{2})\.csv$'
     else:
         glob_pattern = f"{target}_*.csv"
         regex_pattern = rf"{re.escape(target)}_(\d{{4}}-\d{{2}}-\d{{2}})\.csv$"
@@ -147,7 +160,7 @@ def find_latest_tag_file(target="danbooru"):
         if not match:
             continue
         try:
-            file_date = datetime.strptime(match.group(1), "%Y-%m-%d")
+            file_date = datetime.strptime(match.group(1), '%Y-%m-%d')
         except ValueError:
             continue
         if latest_date is None or file_date > latest_date:
@@ -157,15 +170,7 @@ def find_latest_tag_file(target="danbooru"):
 
 def _update_config_paths(tagger=None):
     """Update configuration paths in WebUI config file"""
-    tagger_map = {
-        'm': 'merged',
-        'merged': 'merged',
-        'e': 'e621',
-        'e621': 'e621',
-        'd': 'danbooru',
-        'danbooru': 'danbooru'
-    }
-    target_tagger = tagger_map.get(tagger, 'danbooru')
+    target_tagger = TAGGER_MAP.get(tagger, 'danbooru')
 
     config_mapping = {
         'tac_tagFile': find_latest_tag_file(target_tagger),
@@ -206,6 +211,7 @@ def get_launch_command():
 
 class TunnelManager:
     """Class for managing tunnel services"""
+
     def __init__(self, tunnel_port):
         self.tunnel_port = tunnel_port
         self.tunnels = []
@@ -440,16 +446,10 @@ if __name__ == '__main__':
 
         # Display selected trigger if was used
         if args.tagger:
-            trigger_map = {
-                'm': 'merged',
-                'merged': 'merged',
-                'e': 'e621',
-                'e621': 'e621',
-                'd': 'danbooru',
-                'danbooru': 'danbooru'
-            }
-            selected_trigger = trigger_map.get(args.tagger, args.tagger)
-            print(f"🏷️ Selected Tagger: {COL.lB}{selected_trigger}{COL.X}\n")
+            selected_trigger = TAGGER_MAP.get(args.tagger, args.tagger)
+            tag_file = find_latest_tag_file(selected_trigger)
+            file_info = f" ({tag_file})" if tag_file else ""
+            print(f"{COL.B}>> Selected Tagger:{COL.X} {COL.lB}{selected_trigger}{COL.X}{file_info}\n")
 
         print(f"🔧 WebUI: {COL.B}{UI}{COL.X}")
 
