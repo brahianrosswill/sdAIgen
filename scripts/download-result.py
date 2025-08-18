@@ -72,7 +72,7 @@ def get_files(directory, extensions, excluded_dirs=None, filter_func=None):
         dirs[:] = [d for d in dirs if d not in excluded_dirs]
         for filename in filenames:
             if (filename.endswith(extensions)) and not filename.endswith(tuple(EXCLUDED_EXTENSIONS)):
-                if filter_func != None or filter_func(filename):
+                if filter_func is None or filter_func(filename):
                     files.append(filename)
     return files
 
