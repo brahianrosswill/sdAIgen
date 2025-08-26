@@ -115,7 +115,7 @@ HR = widgets.HTML('<hr>')
 """Create model selection widgets."""
 model_header = factory.create_header('Model Selection')
 model_options = read_model_data(f"{SCRIPTS}/_models-data.py", 'model')
-model_widget = factory.create_dropdown(model_options, 'Model:', '4. Counterfeit [Anime] [V3] + INP')
+model_widget = factory.create_dropdown(model_options, 'Model:', '2. BluMix [Anime] [V7] + INP')
 model_num_widget = factory.create_text('Model Number:', '', 'Enter model numbers for download.')
 inpainting_model_widget = factory.create_checkbox('Inpainting Models', False, class_names=['inpaint'], layout={'width': '250px'})
 XL_models_widget = factory.create_checkbox('SDXL', False, class_names=['sdxl'])
@@ -439,8 +439,8 @@ empowerment_output_widget.add_class('hidden')
 def update_XL_options(change, widget):
     is_xl = change['new']
     defaults = {
-        True: ('2. Nova IL [Anime] [V9] [XL]', '1. sdxl.vae', 'none'),           # XL models
-        False: ('4. Counterfeit [Anime] [V3] + INP', '3. Blessed2.vae', 'none')  # SD 1.5 models
+        True: ('2. Nova IL [Anime] [V10] [XL]', '1. sdxl.vae', 'none'),     # XL models
+        False: ('2. BluMix [Anime] [V7] + INP', '3. Blessed2.vae', 'none')  # SD 1.5 models
     }
 
     data_file = '_xl-models-data.py' if is_xl else '_models-data.py'

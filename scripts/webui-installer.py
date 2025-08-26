@@ -67,7 +67,7 @@ async def get_extensions_list():
                 if response.status == 200:
                     extensions = [
                         line.strip() for line in (await response.text()).splitlines()
-                        if line.strip() and not line.startswith('#')    # Skip empty lines and comments
+                        if line.strip() and not line.startswith('#')  # Skip empty lines and comments
                     ]
     except Exception as e:
         print(f"Error fetching extensions list: {e}")

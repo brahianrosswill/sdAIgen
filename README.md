@@ -23,7 +23,7 @@ English • [Русский](README-ru-RU.md)
   - Multiplatform notebook: *Google Colab, Kaggle.*
   - *Widgets* for easy interaction.
   - Preset custom: *Settings* + *Styles* + [*UI Theme*](https://github.com/anxety-solo/anxety-theme)
-  - Download previews for *models, LoRa and embedding* (CivitAi) | ***There are limitations for Kaggle.***
+  - Download previews for *models, LoRa and embedding* (CivitAi)
   - Choosing WebUI between *A1111*, *ComfyUI*, *Forge*, *Classic (Forge)*, *ReForge*, *SD-UX.*
   - _Exclusive to **Google Colab**_: Connection to GDrive and buttons to export/import widget settings~ | ***Main Widgets***
 

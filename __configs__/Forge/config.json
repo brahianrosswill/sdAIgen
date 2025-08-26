@@ -54,7 +54,7 @@
         "Spaces"
     ],
     "extra_networks_default_multiplier": 0.7,
-    "samples_filename_pattern": "M=[model_name]_S=[seed]_D=[date]",
+    "samples_filename_pattern": "M=[model_name]_D=[date]",
     "grid_save": true,
     "grid_format": "png",
     "grid_extended_filename": true,

@@ -96,7 +96,9 @@ def controlnet_filter(filename):
 def create_section(title, items, is_grid=False):
     """Create a standardized section widget."""
     header = factory.create_html(f'<div class="section-title">{title} ➤</div>')
-    items_widgets = [factory.create_html(f'<div class="output-item">{item}</div>') for item in items]
+    items_widgets = [
+        factory.create_html(f'<div class="output-item">{item}</div>') for item in items
+    ]
 
     container = factory.create_hbox if is_grid else factory.create_vbox
     content = container(items_widgets).add_class('_horizontal' if is_grid else '')
