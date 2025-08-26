@@ -49,7 +49,7 @@ def update_current_webui(current_value: str) -> None:
 
     js.save(SETTINGS_PATH, 'WEBUI.webui_path', str(HOME / current_value))
     _set_webui_paths(current_value)
-    _update_models_symlink(current_value)
+    _update_webui_symlink(current_value)
 
 
 def _set_webui_paths(ui: str) -> None:
@@ -91,20 +91,21 @@ def _set_webui_paths(ui: str) -> None:
     js.update(SETTINGS_PATH, 'WEBUI', path_config)
 
 
-def _update_models_symlink(ui: str) -> None:
-    """Create/Update models_root symlink in home_work_path."""
+def _update_webui_symlink(ui: str) -> None:
+    """Create/Update webui_root symlink in home_work_path."""
     try:
         home_work = Path(os.environ.get('home_work_path', ''))
         if not home_work.exists():
             return
             
         webui_root = HOME / ui
-        models_root = webui_root / 'models'
-        symlink_path = home_work / 'models_root'
-        
+        # models_root = webui_root / 'models'
+        # symlink_path = home_work / 'models_root'
+        symlink_path = home_work / 'WebUI_root'
+
         if symlink_path.exists():
             symlink_path.unlink()
-        symlink_path.symlink_to(models_root, target_is_directory=True)
+        symlink_path.symlink_to(webui_root, target_is_directory=True)
     except:
         pass
 
