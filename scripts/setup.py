@@ -43,8 +43,8 @@ BASE_GITHUB_URL = 'https://raw.githubusercontent.com'
 
 # Environment detection
 SUPPORTED_ENVS = {
-    'COLAB_GPU': 'Google Colab',
-    'KAGGLE_URL_BASE': 'Kaggle'
+    'COLAB_GPU': ('Google Colab', '/content'),
+    'KAGGLE_URL_BASE': ('Kaggle', '/kaggle/working')
 }
 
 # File structure configuration
@@ -137,14 +137,18 @@ def setup_module_folder(modules_folder=None):
 
 def detect_environment(force_env=None):
     """Detect runtime environment, optionally forcing an emulated environment."""
-    envs = list(SUPPORTED_ENVS.values())
+    envs = [env_info[0] for env_info in SUPPORTED_ENVS.values()]
 
     if force_env:
         if force_env not in envs:
             raise EnvironmentError(f"Unsupported forced environment: {force_env}. Supported: {', '.join(envs)}")
         return force_env
-    for var, name in SUPPORTED_ENVS.items():
+    
+    for var, env_info in SUPPORTED_ENVS.items():
         if var in os.environ:
+            # Set home_work_path for detected environment
+            name, work_path = env_info
+            os.environ['home_work_path'] = work_path
             return name
 
     raise EnvironmentError(f"Unsupported environment. Supported: {', '.join(envs)}")
@@ -163,6 +167,7 @@ def create_environment_data(env, lang, fork_user, fork_repo, branch):
 
     return {
         'ENVIRONMENT': {
+            'home_work_path': os.environ['home_work_path'],
             'env_name': env,
             'install_deps': install_deps,
             'fork': f"{fork_user}/{fork_repo}",
@@ -252,7 +257,7 @@ async def main_async(args=None):
     parser.add_argument('--fork', default=None, help='Specify project fork (user or user/repo)')
     parser.add_argument('-s', '--skip-download', action='store_true', help='Skip downloading files')
     parser.add_argument('-l', '--log', action='store_true', help='Enable logging of download errors')
-    parser.add_argument('-e', '--force-env', default=None, help=f"Force emulated environment (only supported: {', '.join(SUPPORTED_ENVS.values())})")
+    parser.add_argument('-e', '--force-env', default=None, help=f"Force emulated environment (only supported: {', '.join([env_info[0] for env_info in SUPPORTED_ENVS.values()])})")
 
     args, _ = parser.parse_known_args(args)
 
