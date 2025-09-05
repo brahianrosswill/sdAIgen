@@ -305,121 +305,113 @@ if commit_hash or branch != 'none':
 
 # === Google Drive Mounting | EXCLUSIVE for Colab ===
 from google.colab import drive
-mountGDrive = js.read(SETTINGS_PATH, 'mountGDrive')  # Mount/unmount flag
 
-# Configuration
-GD_BASE = "/content/drive/MyDrive/sdAIgen"
-SYMLINK_CONFIG = [
-    {   # model
-        'local_dir': model_dir,
-        'gdrive_subpath': 'Checkpoints',
-    },
-    {   # vae
-        'local_dir': vae_dir,
-        'gdrive_subpath': 'VAE',
-    },
-    {   # lora
-        'local_dir': lora_dir,
-        'gdrive_subpath': 'Lora',
-    }
-]
+mountGDrive = js.read(SETTINGS_PATH, 'mountGDrive')  # mount/unmount flag
+GD_BASE = '/content/drive/MyDrive/sdAIgen'
 
-def create_symlink(src_path, gdrive_path, log=False):
-    """Create symbolic link with content migration and cleanup"""
+def build_symlink_config(ui: str) -> list[dict]:
+    """Build symlink configuration based on UI type"""
+    is_comfy = ui == 'ComfyUI'
+    return [
+        {'local': model_dir,      'gdrive': 'Checkpoints'},
+        {'local': vae_dir,        'gdrive': 'VAE'},
+        {'local': lora_dir,       'gdrive': 'Lora'},
+        {'local': embed_dir,      'gdrive': 'Embeddings'},
+        {'local': extension_dir,  'gdrive': 'Custom Nodes' if is_comfy else 'Extensions'},
+        {'local': control_dir,    'gdrive': 'ControlNet'},
+        {'local': upscale_dir,    'gdrive': 'Upscale'},
+        # Others
+        {'local': adetailer_dir,  'gdrive': 'Adetailer'},
+        {'local': clip_dir,       'gdrive': 'Clip'},
+        {'local': unet_dir,       'gdrive': 'Unet'},
+        {'local': vision_dir,     'gdrive': 'Vision'},
+        {'local': encoder_dir,    'gdrive': 'Encoder'},
+        {'local': diffusion_dir,  'gdrive': 'Diffusion'},
+    ]
+
+def create_symlink(src, dst, log=False):
+    """Create symlink with optional migration of existing content"""
     try:
-        src_exists = os.path.exists(src_path)
-        is_real_dir = src_exists and os.path.isdir(src_path) and not os.path.islink(src_path)
+        # Migrate contents if src is a real dir
+        if os.path.isdir(src) and os.path.islink(src) != True and os.path.exists(dst):
+            for item in os.listdir(src):
+                shutil.move(os.path.join(src, item), dst)
+            shutil.rmtree(src)
+            if log: 
+                print(f"📦 Moved contents: {src} → {dst}")
 
-        # Handle real directory migration
-        if is_real_dir and os.path.exists(gdrive_path):
-            for item in os.listdir(src_path):
-                src_item = os.path.join(src_path, item)
-                dst_item = os.path.join(gdrive_path, item)
-
-                if os.path.exists(dst_item):
-                    shutil.rmtree(dst_item) if os.path.isdir(dst_item) else os.remove(dst_item)
-                shutil.move(src_item, dst_item)
-
-            shutil.rmtree(src_path)
-            if log:
-                print(f"Moved contents from {src_path} to {gdrive_path}")
-
-        # Cleanup existing path
-        if os.path.exists(src_path) and not is_real_dir:
-            if os.path.islink(src_path):
-                os.unlink(src_path)
-            else:
-                os.remove(src_path)
+        # Remove old link or file
+        if os.path.islink(src) or os.path.isfile(src):
+            os.remove(src)
 
         # Create new symlink
-        if not os.path.exists(src_path):
-            os.symlink(gdrive_path, src_path)
-            if log:
-                print(f"Created symlink: {src_path} → {gdrive_path}")
+        if not os.path.exists(src):
+            os.symlink(dst, src)
+            if log: 
+                print(f"🔗 Symlink: {src} → {dst}")
 
     except Exception as e:
-        print(f"Error processing {src_path}: {str(e)}")
+        print(f"❌ Error processing {src}: {str(e)}")
 
-def handle_gdrive(mount_flag, log=False):
-    """Main handler for Google Drive mounting and symlink management"""
-    if mount_flag:
-        if os.path.exists("/content/drive/MyDrive"):
-            print("🎉 Google Drive is connected~")
-        else:
+def handle_gdrive(mount_flag, ui='A1111', log=False):
+    """Main handler for Google Drive mounting and symlink setup"""
+    if not mount_flag:
+        # Unmount logic
+        if os.path.exists('/content/drive/MyDrive'):
             try:
-                print("⏳ Mounting Google Drive...", end='')
-                with capture.capture_output():
-                    drive.mount('/content/drive')
-                print("\r🚀 Google Drive mounted successfully!")
-            except Exception as e:
-                clear_output()
-                print(f"❌ Mounting failed: {str(e)}\n")
-                return
-
-        try:
-            # Create base directory structure
-            os.makedirs(GD_BASE, exist_ok=True)
-            for cfg in SYMLINK_CONFIG:
-                path = os.path.join(GD_BASE, cfg['gdrive_subpath'])
-                os.makedirs(path, exist_ok=True)
-            print(f"📁 → {GD_BASE}")
-
-            # Create symlinks
-            for cfg in SYMLINK_CONFIG:
-                src = os.path.join(cfg['local_dir'], 'GDrive')
-                dst = os.path.join(GD_BASE, cfg['gdrive_subpath'])
-                create_symlink(src, dst, log)
-
-            print("✅ Symlinks created successfully!")
-
-        except Exception as e:
-            print(f"❌ Setup error: {str(e)}\n")
-
-        # Trashing
-        cmd = f"find {GD_BASE} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
-        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    else:
-        if os.path.exists("/content/drive/MyDrive"):
-            try:
-                print("⏳ Unmounting Google Drive...", end='')
+                print('⏳ Unmounting Google Drive...', end='')
                 with capture.capture_output():
                     drive.flush_and_unmount()
-                    os.system("rm -rf /content/drive")
-                print("\r✅ Google Drive unmounted and cleaned!")
+                    os.system('rm -rf /content/drive')
+                print('\r✅ Google Drive unmounted and cleaned!')
 
                 # Remove symlinks
-                for cfg in SYMLINK_CONFIG:
-                    link_path = os.path.join(cfg['local_dir'], 'GDrive')
+                for cfg in build_symlink_config(ui):
+                    link_path = os.path.join(cfg['local'], 'GDrive')
                     if os.path.islink(link_path):
                         os.unlink(link_path)
 
-                print("🗑️ Symlinks removed successfully!")
-
+                print('🗑️ Symlinks removed successfully!')
             except Exception as e:
-                print(f"❌ Unmount error: {str(e)}\n")
+                print(f"❌ Unmount error: {str(e)}")
+        return
 
-handle_gdrive(mountGDrive)
+    # Mount logic
+    if not os.path.exists('/content/drive/MyDrive'):
+        try:
+            print('⏳ Mounting Google Drive...', end='')
+            with capture.capture_output():
+                drive.mount('/content/drive')
+            print('\r🚀 Google Drive mounted successfully!')
+        except Exception as e:
+            # clear_output()
+            print(f"❌ Mounting failed: {str(e)}")
+            return
+    else:
+        print('🎉 Google Drive is connected~')
+
+    try:
+        os.makedirs(GD_BASE, exist_ok=True)
+
+        # Create structure in Drive and symlinks
+        for cfg in build_symlink_config(ui):
+            dst = os.path.join(GD_BASE, cfg['gdrive'])
+            os.makedirs(dst, exist_ok=True)
+            src = os.path.join(cfg['local'], 'GDrive')
+            create_symlink(src, dst, log)
+
+        print('✅ Symlinks created successfully!')
+
+    except Exception as e:
+        print(f"❌ Setup error: {str(e)}")
+
+    # Cleanup notebook checkpoints
+    subprocess.run(
+        shlex.split(f"find {GD_BASE} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"),
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+
+handle_gdrive(mountGDrive, ui=UI)
 
 
 # ======================= DOWNLOADING ======================
