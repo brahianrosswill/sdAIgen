@@ -317,7 +317,7 @@ def build_symlink_config(ui: str) -> list[dict]:
         {'local': vae_dir,        'gdrive': 'VAE'},
         {'local': lora_dir,       'gdrive': 'Lora'},
         {'local': embed_dir,      'gdrive': 'Embeddings'},
-        {'local': extension_dir,  'gdrive': 'Custom Nodes' if is_comfy else 'Extensions'},
+        {'local': extension_dir,  'gdrive': 'CustomNodes' if is_comfy else 'Extensions'},
         {'local': control_dir,    'gdrive': 'ControlNet'},
         {'local': upscale_dir,    'gdrive': 'Upscale'},
         # Others
@@ -337,7 +337,7 @@ def create_symlink(src, dst, log=False):
             for item in os.listdir(src):
                 shutil.move(os.path.join(src, item), dst)
             shutil.rmtree(src)
-            if log: 
+            if log:
                 print(f"📦 Moved contents: {src} → {dst}")
 
         # Remove old link or file
@@ -347,7 +347,7 @@ def create_symlink(src, dst, log=False):
         # Create new symlink
         if not os.path.exists(src):
             os.symlink(dst, src)
-            if log: 
+            if log:
                 print(f"🔗 Symlink: {src} → {dst}")
 
     except Exception as e:
@@ -749,6 +749,20 @@ if UI == 'ComfyUI':
                 os.remove(src)
             else:
                 shutil.move(src, dest)
+
+## Copy Custom Nodes from GDrive to extension_dir (if enabled)
+if UI == 'ComfyUI' and mountGDrive:
+    gdrive_path = os.path.join(extension_dir, 'GDrive')
+    if os.path.isdir(gdrive_path):
+        for folder in os.listdir(gdrive_path):
+            src = os.path.join(gdrive_path, folder)
+            dst = os.path.join(extension_dir, folder)
+            if os.path.isdir(src):
+                # Copy directory tree; if dst exists, merge contents
+                if os.path.exists(dst):
+                    shutil.copytree(src, dst, dirs_exist_ok=True)
+                else:
+                    shutil.copytree(src, dst)
 
 
 ## List Models and stuff

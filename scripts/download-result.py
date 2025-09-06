@@ -77,7 +77,7 @@ def get_files(directory, extensions, excluded_dirs=None, filter_func=None):
     return files
 
 def get_folders(directory, exclude_hidden=True):
-    """List folders in a directory, excluding hidden folders. 
+    """List folders in a directory, excluding hidden folders.
        If 'GDrive' is found, include its subfolders instead."""
     if not os.path.isdir(directory):
         return []
