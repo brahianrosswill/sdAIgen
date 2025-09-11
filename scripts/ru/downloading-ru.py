@@ -750,8 +750,8 @@ if UI == 'ComfyUI':
             else:
                 shutil.move(src, dest)
 
-## Copy Custom Nodes from GDrive to extension_dir (if enabled)
-if UI == 'ComfyUI' and mountGDrive:
+## Copy dir from GDrive to extension_dir (if enabled)
+if mountGDrive:
     gdrive_path = os.path.join(extension_dir, 'GDrive')
     if os.path.isdir(gdrive_path):
         for folder in os.listdir(gdrive_path):
