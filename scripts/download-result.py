@@ -27,7 +27,7 @@ widgets_css = CSS / 'download-result.css'
 EXCLUDED_EXTENSIONS = {'.txt', '.yaml', '.log', '.json'}
 CONTAINER_WIDTH = '1200px'
 HEADER_DL = 'DOWNLOAD RESULTS'
-VERSION = 'v1'
+VERSION = 'v1.1'
 
 
 # =================== loading settings V5 ==================
@@ -77,13 +77,22 @@ def get_files(directory, extensions, excluded_dirs=None, filter_func=None):
     return files
 
 def get_folders(directory, exclude_hidden=True):
-    """List folders in a directory, excluding hidden folders."""
+    """List folders in a directory, excluding hidden folders.
+       If 'GDrive' is found, include its subfolders instead."""
     if not os.path.isdir(directory):
         return []
-    return [
-        folder for folder in os.listdir(directory)
-        if os.path.isdir(os.path.join(directory, folder)) and (not exclude_hidden or not folder.startswith('__'))
-    ]
+    folders = []
+    for folder in os.listdir(directory):
+        path = os.path.join(directory, folder)
+        if not os.path.isdir(path) or (exclude_hidden and folder.startswith('__')):
+            continue
+        if folder == 'GDrive':
+            folders.extend(
+                f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))
+            )
+        else:
+            folders.append(folder)
+    return folders
 
 def controlnet_filter(filename):
     """Filter function for ControlNet files."""

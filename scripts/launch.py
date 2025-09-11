@@ -449,7 +449,7 @@ if __name__ == '__main__':
             selected_trigger = TAGGER_MAP.get(args.tagger, args.tagger)
             tag_file = find_latest_tag_file(selected_trigger)
             file_info = f" ({tag_file})" if tag_file else ""
-            print(f"{COL.B}>> Selected Tagger:{COL.X} {COL.lB}{selected_trigger}{COL.X}{file_info}\n")
+            print(f"{COL.B}>> 🏷️ Selected Tagger:{COL.X} {COL.lB}{selected_trigger}{COL.X}{file_info}\n")
 
         print(f"🔧 WebUI: {COL.B}{UI}{COL.X}")
 

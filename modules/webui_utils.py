@@ -97,11 +97,11 @@ def _update_webui_symlink(ui: str) -> None:
         home_work = Path(os.environ.get('home_work_path', ''))
         if not home_work.exists():
             return
-            
+
         webui_root = HOME / ui
         # models_root = webui_root / 'models'
         # symlink_path = home_work / 'models_root'
-        symlink_path = home_work / 'WebUI_root'
+        symlink_path = home_work / 'webui_root'
 
         if symlink_path.exists():
             symlink_path.unlink()
