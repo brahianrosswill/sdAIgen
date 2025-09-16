@@ -142,6 +142,7 @@ def detect_environment(force_env=None):
     if force_env:
         if force_env not in envs:
             raise EnvironmentError(f"Unsupported forced environment: {force_env}. Supported: {', '.join(envs)}")
+        os.environ['home_work_path'] = ''
         return force_env
 
     for var, env_info in SUPPORTED_ENVS.items():
