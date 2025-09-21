@@ -60,6 +60,12 @@
     --aw-button-api-hover: radial-gradient(circle at top left, purple 10%, #1d94bb 90%);
 }
 
+/* Suka Blyat' KAGGLE! */
+.widget-label {
+    font-weight: 350 !important;
+    margin-bottom: 0 !important;
+}
+
 
 /* General Styles */
 
@@ -113,7 +119,6 @@ a {
 
 
 /* Special Styles */
-
 ::selection {
     background: #3d4142;
 }
@@ -161,7 +166,7 @@ a {
 .widget-dropdown select,
 .widget-textarea textarea,
 .widget-text input[type="text"] {
-    font-family: var(--aw-font-family-primary);
+    font-family: var(--aw-font-family-primary) !important;
     font-optical-sizing: auto;
     /* text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); */
 }
@@ -177,20 +182,20 @@ a {
 .widget-dropdown select,
 .widget-textarea textarea,
 .widget-text input[type="text"] {
-    font-style: normal;
-    font-size: var(--aw-text-size);
+    font-style: normal !important;
+    font-size: var(--aw-text-size) !important;
     color: var(--aw-color-text-primary) !important;
-    user-select: none;
+    user-select: none !important;
 }
 .widget-text input[type="text"]::placeholder {
     color: grey;
-    font-size: var(--aw-text-size);
+    font-size: var(--aw-text-size) !important;
 }
 
 /* TextArea */
 .widget-textarea textarea,
 .widget-textarea textarea::placeholder {
-    font-size: var(--aw-text-size-small);
+    font-size: var(--aw-text-size-small) !important;
 }
 
 
@@ -392,23 +397,30 @@ a {
 .widget-dropdown select,
 .widget-text input[type="text"],
 .widget-textarea textarea {
-    height: 30px;
+    font-weight: 350 !important;
+    height: 30px !important;
     margin: 0 !important;
     background-color: var(--aw-input-bg);
-    border: var(--aw-input-border);
-    border-radius: 10px;
+    border: var(--aw-input-border) !important;
+    border-radius: 10px !important;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
     transition: all 0.25s ease-in-out;
 }
-.widget-textarea textarea {
-    height: 200px;
+.widget-textarea{ /* Kaggle... */
+    height: 200px !important;
     resize: none;
+    line-height: 1.2;
+}
+.widget-textarea textarea {
+    height: 200px !important;
+    resize: none;
+    line-height: 1.2;
 }
 
 .widget-dropdown select:focus,
 .widget-text input[type="text"]:focus,
 .widget-textarea textarea:focus {
-    border-color: var(--aw-input-border-focus);
+    border-color: var(--aw-input-border-focus) !important;
 }
 
 .widget-dropdown select:hover,
@@ -429,23 +441,23 @@ a {
 }
 /* Standard state */
 .widget-text.empowerment-text-field {
-    opacity: 1;
-    max-height: 30px;
-    visibility: visible;
+    opacity: 1 !important;
+    max-height: 30px !important;
+    visibility: visible !important;
 }
 .widget-textarea.empowerment-output {
-    opacity: 1;
-    max-height: 200px;
-    visibility: visible;
+    opacity: 1 !important;
+    max-height: 200px !important;
+    visibility: visible !important;
 }
 /* Hidden state */
 .widget-text.empowerment-text-field.hidden,
 .widget-textarea.empowerment-output.hidden {
-    opacity: 0;
-    max-height: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    visibility: hidden;
+    opacity: 0 !important;
+    max-height: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    visibility: hidden !important;
 }
 
 
