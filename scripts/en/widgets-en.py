@@ -4,7 +4,7 @@ from widget_factory import WidgetFactory        # WIDGETS
 from webui_utils import update_current_webui    # WEBUI
 import json_utils as js                         # JSON
 
-from IPython.display import display, Javascript
+from IPython.display import display, HTML, Javascript
 from google.colab import output
 import ipywidgets as widgets
 from pathlib import Path
@@ -298,7 +298,6 @@ def export_settings(button=None, filter_empty=False):
         show_notification(f"Export failed: {str(e)}", "error")
 
 # IMPORT
-
 def import_settings(button=None):
     display(Javascript('openFilePicker();'))
 
