@@ -17,13 +17,11 @@ CD = os.chdir
 ipySys = get_ipython().system
 ipyRun = get_ipython().run_line_magic
 
-# Constants (auto-convert env vars to Path)
-PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
-
-HOME = PATHS['home_path']
-VENV = PATHS['venv_path']
-SCR_PATH = PATHS['scr_path']
-SETTINGS_PATH = PATHS['settings_path']
+# Auto-convert *_path env vars to Path
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}
+HOME, VENV, SCR_PATH, SETTINGS_PATH = (
+    PATHS['home_path'], VENV = PATHS['venv_path'], PATHS['scr_path'], PATHS['settings_path']
+)
 
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = HOME / UI
@@ -41,7 +39,7 @@ CD(HOME)
 # ==================== WEBUI OPERATIONS ====================
 
 async def _download_file(url, directory=WEBUI, filename=None):
-    """Download single file."""
+    """Download single file"""
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
     file_path = directory / (filename or Path(url).name)
@@ -57,7 +55,7 @@ async def _download_file(url, directory=WEBUI, filename=None):
     await process.communicate()
 
 async def get_extensions_list():
-    """Fetch list of extensions from config file."""
+    """Fetch list of extensions from config file"""
     ext_file_url = f"{CONFIG_URL}/{UI}/_extensions.txt"
     extensions = []
 
@@ -126,7 +124,7 @@ async def download_configuration():
 # ================= EXTENSIONS INSTALLATION ================
 
 async def install_extensions():
-    """Install all required extensions."""
+    """Install all required extensions"""
     extensions = await get_extensions_list()
     EXTS.mkdir(parents=True, exist_ok=True)
     CD(EXTS)
@@ -143,13 +141,13 @@ async def install_extensions():
 # =================== WEBUI SETUP & FIXES ==================
 
 def unpack_webui():
-    """Download and extract WebUI archive."""
+    """Download and extract WebUI archive"""
     zip_path = HOME / f"{UI}.zip"
     m_download(f"{REPO_URL} {HOME} {UI}.zip")
     ipySys(f"unzip -q -o {zip_path} -d {WEBUI} && rm -rf {zip_path}")
 
 def apply_classic_fixes():
-    """Apply specific fixes for Classic UI."""
+    """Apply specific fixes for Classic UI"""
     cmd_args_path = WEBUI / 'modules/cmd_args.py'
     if not cmd_args_path.exists():
         return

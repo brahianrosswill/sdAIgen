@@ -12,12 +12,11 @@ import os
 
 osENV = os.environ
 
-# Constants (auto-convert env vars to Path)
-PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
-
-HOME = PATHS['home_path']
-SCR_PATH = PATHS['scr_path']
-SETTINGS_PATH = PATHS['settings_path']
+# Auto-convert *_path env vars to Path
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}
+HOME, SCR_PATH, SETTINGS_PATH = (
+    PATHS['home_path'], PATHS['scr_path'], PATHS['settings_path']
+)
 
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 
@@ -33,7 +32,7 @@ VERSION = 'v1.1'
 # =================== loading settings V5 ==================
 
 def load_settings(path):
-    """Load settings from a JSON file."""
+    """Load settings from a JSON file"""
     try:
         return {
             **js.read(path, 'ENVIRONMENT'),
@@ -57,7 +56,7 @@ HR = widgets.HTML('<hr>')
 # ====================== File Utilities ====================
 
 def get_files(directory, extensions, excluded_dirs=None, filter_func=None):
-    """Generic function to get files with optional filtering."""
+    """Generic function to get files with optional filtering"""
     if not os.path.isdir(directory):
         return []
 
@@ -77,8 +76,8 @@ def get_files(directory, extensions, excluded_dirs=None, filter_func=None):
     return files
 
 def get_folders(directory, exclude_hidden=True):
-    """List folders in a directory, excluding hidden folders.
-       If 'GDrive' is found, include its subfolders instead."""
+    """List folders in a directory, excluding hidden folders
+       If 'GDrive' is found, include its subfolders instead"""
     if not os.path.isdir(directory):
         return []
     folders = []
@@ -95,7 +94,7 @@ def get_folders(directory, exclude_hidden=True):
     return folders
 
 def controlnet_filter(filename):
-    """Filter function for ControlNet files."""
+    """Filter function for ControlNet files"""
     match = re.match(r'^[^_]*_[^_]*_[^_]*_(.*)_fp16\.safetensors', filename)
     return match.group(1) if match else filename
 
@@ -103,7 +102,7 @@ def controlnet_filter(filename):
 # ==================== Widget Generators ===================
 
 def create_section(title, items, is_grid=False):
-    """Create a standardized section widget."""
+    """Create a standardized section widget"""
     header = factory.create_html(f'<div class="section-title">{title} ➤</div>')
     items_widgets = [
         factory.create_html(f'<div class="output-item">{item}</div>') for item in items
@@ -115,7 +114,7 @@ def create_section(title, items, is_grid=False):
     return factory.create_vbox([header, content], class_names=['output-section'])
 
 def create_all_sections():
-    """Create all content sections."""
+    """Create all content sections"""
     ext_type = 'Nodes' if UI == 'ComfyUI' else 'Extensions'
     SECTIONS = [
         # TITLE | GET LIST(content_dir) | file.formats | excluded_dirs=[List] (files); is_grid=bool (folders)
