@@ -30,7 +30,7 @@ ipyRun = get_ipython().run_line_magic
 # Auto-convert *_path env vars to Path
 PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}
 HOME, VENV, SCR_PATH, SETTINGS_PATH = (
-    PATHS['home_path'], VENV = PATHS['venv_path'], PATHS['scr_path'], PATHS['settings_path']
+    PATHS['home_path'], PATHS['venv_path'], PATHS['scr_path'], PATHS['settings_path']
 )
 
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')

@@ -30,7 +30,7 @@ ipyRun = get_ipython().run_line_magic
 # Auto-convert *_path env vars to Path
 PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}
 HOME, VENV, SCR_PATH, SETTINGS_PATH = (
-    PATHS['home_path'], VENV = PATHS['venv_path'], PATHS['scr_path'], PATHS['settings_path']
+    PATHS['home_path'], PATHS['venv_path'], PATHS['scr_path'], PATHS['settings_path']
 )
 
 ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
@@ -494,7 +494,7 @@ def _clean_url(url):
 def _extract_filename(url):
     if match := re.search(r'\[(.*?)\]', url):
         return match.group(1)
-    if any(d in urlparse(url).netloc for d in 'civitai.com', 'drive.google.com']):
+    if any(d in urlparse(url).netloc for d in ['civitai.com', 'drive.google.com']):
         return None
     return Path(urlparse(url).path).name
 
