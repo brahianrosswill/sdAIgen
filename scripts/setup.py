@@ -18,6 +18,12 @@ import os
 nest_asyncio.apply()  # Async support for Jupyter
 
 
+# === Remove default Colab sample_data ===
+sample_data_path = Path('/content/sample_data')
+if sample_data_path.exists() and sample_data_path.is_dir():
+    os.system(f"rm -rf {sample_data_path}")
+
+
 # ======================== CONSTANTS =======================
 
 HOME = Path.home()

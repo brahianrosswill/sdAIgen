@@ -14,7 +14,6 @@ HOME, VENV, SCR_PATH, SETTINGS_PATH = (
     PATHS['home_path'], PATHS['venv_path'], PATHS['scr_path'], PATHS['settings_path']
 )
 
-
 DEFAULT_UI = 'A1111'
 WEBUI_PATHS = {
     'A1111': (

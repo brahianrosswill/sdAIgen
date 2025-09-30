@@ -43,12 +43,12 @@ WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
 # Text Colors (\033)
 class COLORS:
-    R  =  "\033[31m"     # Red
-    G  =  "\033[32m"     # Green
-    Y  =  "\033[33m"     # Yellow
-    B  =  "\033[34m"     # Blue
-    lB =  "\033[36;1m"   # lightBlue + BOLD
-    X  =  "\033[0m"      # Reset
+    R  =  '\033[31m'     # Red
+    G  =  '\033[32m'     # Green
+    Y  =  '\033[33m'     # Yellow
+    B  =  '\033[34m'     # Blue
+    lB =  '\033[36;1m'   # lightBlue + BOLD
+    X  =  '\033[0m'      # Reset
 
 COL = COLORS
 
@@ -131,8 +131,9 @@ latest_ui = js.read(SETTINGS_PATH, 'WEBUI.latest')
 # Determine whether to reinstall venv
 venv_needs_reinstall = (
     not VENV.exists()  # venv is missing
-    # Check category change (Classic <-> other)
+    # Check category change (Classic <-> other, ComfyUI <-> other)
     or (latest_ui == 'Classic') != (current_ui == 'Classic')
+    or (latest_ui == 'ComfyUI') != (current_ui == 'ComfyUI')
 )
 
 if venv_needs_reinstall:
@@ -143,13 +144,13 @@ if venv_needs_reinstall:
 
     HF_VENV_URL = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main'
     venv_config = {
-        'Classic': (f"{HF_VENV_URL}/python31113-venv-torch260-cu124-C-Classic.tar.lz4", '(3.11.13)'),
-        'ComfyUI': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-ComfyUI.tar.lz4", '(3.10.18)'),
-        'default': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-fa.tar.lz4", '(3.10.18)')
+        'Classic': (f"{HF_VENV_URL}/python31113-venv-torch260-cu124-C-Classic.tar.lz4", 'Classic • 3.11.13'),
+        'ComfyUI': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-ComfyUI.tar.lz4", 'ComfyUI • 3.10.18'),
+        'default': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-fa.tar.lz4", 'Default • 3.10.18')
     }
     venv_url, py_version = venv_config.get(current_ui, venv_config['default'])
 
-    print(f"♻️ Установка VENV {py_version}, это займет некоторое время...")
+    print(f"♻️ Установка VENV: {py_version}, это может занять некоторое время...")
     setup_venv(venv_url)
     clear_output()
 
