@@ -4,11 +4,11 @@ model_list = {
     "1. Flanime-IL [Anime] [V2] [XL]": [
         {'url': "https://civitai.com/api/download/models/2125353", 'name': "FlanimeXL-illustrious_V2.safetensors"}
     ],
-    "2. Hassaku-XL [Anime] [V3] [XL]": [
-        {'url': "https://civitai.com/api/download/models/2010753", 'name': "HassakuXL-illustrious_V3.safetensors"}
+    "2. Hassaku-XL [Anime] [V3.1] [XL]": [
+        {'url': "https://civitai.com/api/download/models/2262382", 'name': "HassakuXL-illustrious_V3.1.safetensors"}
     ],
-    "3. Nova-IL [Anime] [V11] [XL]": [
-        {'url': "https://civitai.com/api/download/models/2173013", 'name': "Nova-illustrious_V11.safetensors"}
+    "3. Nova-IL [Anime] [V12] [XL]": [
+        {'url': "https://civitai.com/api/download/models/2268916", 'name': "Nova-illustrious_V12.safetensors"}
     ],
     "4. NoobAI [Anime] [VP-1.0] [XL]": [
         {'url': "https://civitai.com/api/download/models/1190596", 'name': "NoobAI_VP1.safetensors"}
