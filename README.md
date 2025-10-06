@@ -37,7 +37,7 @@ English • [Русский](README-ru-RU.md)
 |-----------|-------|-------|---------|---------|-------|
 | [adetailer](https://github.com/Bing-su/adetailer) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [anxety-theme](https://github.com/anxety-solo/anxety-theme) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| [Aspect-Ratio](https://github.com/anxety-solo/sd-aspect-ratio) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| [Aspect-Ratio-Plus](https://github.com/anxety-solo/sd-aspect-ratio-plus) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [Civitai-Browser-plus](https://github.com/anxety-solo/sd-civitai-browser-plus) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [Civitai-Extension](https://github.com/anxety-solo/sd-civitai-extension) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [ControlNet](https://github.com/Mikubill/sd-webui-controlnet) | ✔️ | 🔄 | 🔄 | 🔄 | ✔️ |
