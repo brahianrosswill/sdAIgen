@@ -23,15 +23,22 @@ HOME, VENV, SCR_PATH, SETTINGS_PATH = (
     PATHS['home_path'], PATHS['venv_path'], PATHS['scr_path'], PATHS['settings_path']
 )
 
-UI = js.read(SETTINGS_PATH, 'WEBUI.current')
+UI    = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = HOME / UI
-EXTS = Path(js.read(SETTINGS_PATH, 'WEBUI.extension_dir'))
-ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
-FORK_REPO = js.read(SETTINGS_PATH, 'ENVIRONMENT.fork')
-BRANCH = js.read(SETTINGS_PATH, 'ENVIRONMENT.branch')
+EXTS  = Path(js.read(SETTINGS_PATH, 'WEBUI.extension_dir'))
+EMBED = Path(js.read(SETTINGS_PATH, 'WEBUI.embed_dir'))
+UPSC  = Path(js.read(SETTINGS_PATH, 'WEBUI.upscale_dir'))
 
-REPO_URL = f"https://huggingface.co/NagisaNao/ANXETY/resolve/main/{UI}.zip"
+ENV_NAME  = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
+FORK_REPO = js.read(SETTINGS_PATH, 'ENVIRONMENT.fork')
+BRANCH    = js.read(SETTINGS_PATH, 'ENVIRONMENT.branch')
+
+# === Common Repo Base ===
+HF_URL_BASE = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main'
+
+REPO_URL   = f"{HF_URL_BASE}/{UI}.zip"
 CONFIG_URL = f"https://raw.githubusercontent.com/{FORK_REPO}/{BRANCH}/__configs__"
+ARIA_FLAGS = '--allow-overwrite=true --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5'
 
 CD(HOME)
 
@@ -75,7 +82,6 @@ async def get_extensions_list():
         extensions.append('https://github.com/anxety-solo/sd-encrypt-image Encrypt-Image')
 
     return extensions
-
 
 # ================= CONFIGURATION HANDLING =================
 
@@ -138,6 +144,33 @@ async def install_extensions():
     ]
     await asyncio.gather(*tasks)
 
+# =================== ARCHIVES HANDLING ====================
+
+async def process_archives():
+    """Download and extract embed & upscaler archives via aria2"""
+    archives = [
+        (f"{HF_URL_BASE}/embeds.zip", EMBED),
+        (f"{HF_URL_BASE}/upscalers.zip", UPSC)
+    ]
+
+    async def download_and_extract(url, extract_to):
+        archive_path = WEBUI / Path(url).name
+        extract_to.mkdir(parents=True, exist_ok=True)
+
+        # Download archive via aria2
+        cmd = f"aria2c {ARIA_FLAGS} -d {WEBUI} -o {archive_path.name} {url}"
+        process = await asyncio.create_subprocess_shell(
+            cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        await process.communicate()
+
+        # Extract and cleanup
+        ipySys(f"unzip -q -o {archive_path} -d {extract_to} && rm -f {archive_path}")
+
+    await asyncio.gather(*[
+        download_and_extract(url, path) for url, path in archives
+    ])
+
 # =================== WEBUI SETUP & FIXES ==================
 
 def unpack_webui():
@@ -145,6 +178,12 @@ def unpack_webui():
     zip_path = HOME / f"{UI}.zip"
     m_download(f"{REPO_URL} {HOME} {UI}.zip")
     ipySys(f"unzip -q -o {zip_path} -d {WEBUI} && rm -rf {zip_path}")
+
+def apply_comfyui_cleanup():
+    """Remove 'SD' folder inside EMBED directory after unpack"""
+    sd_dir = EMBED / 'SD'
+    if sd_dir.exists() and sd_dir.is_dir():
+        subprocess.run(['rm', '-rf', str(sd_dir)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def apply_classic_fixes():
     """Apply specific fixes for Classic UI"""
@@ -163,16 +202,21 @@ def apply_classic_fixes():
 def run_tagcomplete_tag_parser():
     ipyRun('run', f"{WEBUI}/tagcomplete-tags-parser.py")
 
-
 # ======================== MAIN CODE =======================
 
 async def main():
     # Main Func
     unpack_webui()
-    await download_configuration()
-    await install_extensions()
+    await asyncio.gather(
+        download_configuration(),
+        install_extensions(),
+        process_archives()
+    )
 
     # Special Func
+    if UI == 'ComfyUI':
+        apply_comfyui_cleanup()
+
     ## Note: At the moment, this build does not require any fixes.
     # if UI == 'Classic':
     #     apply_classic_fixes()
