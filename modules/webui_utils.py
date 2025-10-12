@@ -53,8 +53,8 @@ def _set_webui_paths(ui: str) -> None:
     models_root = webui_root / 'models'
 
     # Get path components for selected UI
-    paths = WEBUI_PATHS[selected_ui]
-    checkpoint, vae, lora, embed, extension, upscale, output = paths
+    PATHS = WEBUI_PATHS[selected_ui]
+    checkpoint, vae, lora, embed, extension, upscale, output = PATHS
 
     # Configure special paths
     is_comfy = selected_ui == 'ComfyUI'

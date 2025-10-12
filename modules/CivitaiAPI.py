@@ -97,7 +97,7 @@ class CivitAiAPI:
         if '/api/download/models/' in url:
             return url.split('/api/download/models/')[1].split('?')[0]
 
-        self.logger.log(f"Unsupported URL format: {url}", "error")
+        self.logger.log(f"Unsupported URL format: {url}", 'error')
         return None
 
     def _process_url(self, download_url: str) -> Tuple[str, str]:
@@ -139,7 +139,7 @@ class CivitAiAPI:
         if ea:
             model_id = data.get('modelId')
             version_id = data.get('id')
-            self.logger.log(f"Requires Early Access: https://civitai.com/models/{model_id}?modelVersionId={version_id}", "warning")
+            self.logger.log(f"Requires Early Access: https://civitai.com/models/{model_id}?modelVersionId={version_id}", 'warning')
         return ea
 
     def get_sha256(self, data: Optional[dict] = None, version_id: Optional[str] = None) -> Optional[str]:

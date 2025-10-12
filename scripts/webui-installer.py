@@ -157,8 +157,8 @@ async def process_archives():
         archive_path = WEBUI / Path(url).name
         extract_to.mkdir(parents=True, exist_ok=True)
 
-        # Download archive via aria2
-        cmd = f"aria2c {ARIA_FLAGS} -d {WEBUI} -o {archive_path.name} {url}"
+        # Download archive
+        cmd = f"aria2c {ARIA_FLAGS} -d {WEBUI} -o '{archive_path.name}' '{url}'"
         process = await asyncio.create_subprocess_shell(
             cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )

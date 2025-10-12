@@ -115,7 +115,7 @@ if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
         ## Tunnels
         'localtunnel': "npm install -g localtunnel",
         'cloudflared': "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64; chmod +x /usr/bin/cl",
-        'zrok': "wget -qO zrok_1.0.6_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v1.0.6/zrok_1.0.6_linux_amd64.tar.gz; tar -xzf zrok_1.0.6_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_1.0.6_linux_amd64.tar.gz",
+        'zrok': "wget -qO zrok_1.1.8_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v1.1.8/zrok_1.1.8_linux_amd64.tar.gz; tar -xzf zrok_1.1.8_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_1.1.8_linux_amd64.tar.gz",
         'ngrok': "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
     }
 
@@ -617,7 +617,7 @@ def handle_submodels(selection, num_selection, model_dict, dst_dir, base_url, in
 
     unique_models = {}
     for model in selected:
-        name = model.get('name') or os.path.basename(model['url'])    # ToolTip: `name` is an optional parameter
+        name = model.get('name') or os.path.basename(model['url'])    # Note: `name` is an optional parameter
         if not inpainting_model and "inpainting" in name:
             continue
         unique_models[name] = {
@@ -758,11 +758,7 @@ if mountGDrive:
             src = os.path.join(gdrive_path, folder)
             dst = os.path.join(extension_dir, folder)
             if os.path.isdir(src):
-                # Copy directory tree; if dst exists, merge contents
-                if os.path.exists(dst):
-                    shutil.copytree(src, dst, dirs_exist_ok=True)
-                else:
-                    shutil.copytree(src, dst)
+                shutil.copytree(src, dst, dirs_exist_ok=True)
 
 
 ## List Models and stuff
