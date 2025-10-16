@@ -21,6 +21,9 @@ import sys
 import re
 import os
 
+# === Parse CLI arguments ===
+SKIP_INSTALL_VENV = '-s' in sys.argv or '--skip-install-venv' in sys.argv
+
 
 osENV = os.environ
 CD = os.chdir
@@ -137,7 +140,7 @@ venv_needs_reinstall = (
     or (latest_ui == 'ComfyUI') != (current_ui == 'ComfyUI')
 )
 
-if venv_needs_reinstall:
+if not SKIP_INSTALL_VENV and venv_needs_reinstall:
     if VENV.exists():
         print('🗑️ Remove old venv...')
         shutil.rmtree(VENV)
@@ -152,7 +155,7 @@ if venv_needs_reinstall:
     }
     venv_url, py_version = venv_config.get(current_ui, venv_config['default'])
 
-    print(f"♻️ Installing VENV: {py_version}, this may take a while...")
+    print(f"♻️ Installing VENV: {COL.B}{py_version}{COL.X}, this may take a while...")
     setup_venv(venv_url)
     clear_output()
 
