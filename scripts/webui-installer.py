@@ -118,6 +118,8 @@ CONFIG_MAP = {
         f"{CONFIG_URL}/tagcomplete-tags-parser.py"
     ]
 }
+# 🔁 Alias
+CONFIG_MAP['Neo'] = CONFIG_MAP['Classic']
 
 async def download_configuration():
     """Download all configuration files for current UI"""

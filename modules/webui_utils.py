@@ -29,6 +29,8 @@ WEBUI_PATHS = {
         'embeddings', 'extensions', 'ESRGAN', 'output'
     )
 }
+# 🔁 Alias
+WEBUI_PATHS['Neo'] = WEBUI_PATHS['Classic']
 
 
 # ===================== WEBUI HANDLERS =====================
@@ -58,9 +60,9 @@ def _set_webui_paths(ui: str) -> None:
 
     # Configure special paths
     is_comfy = selected_ui == 'ComfyUI'
-    is_classic = selected_ui == 'Classic'
+    is_haoming = selected_ui in ['Classic', 'Neo']
     control_dir = 'controlnet' if is_comfy else 'ControlNet'
-    embed_root = models_root if (is_comfy or is_classic) else webui_root
+    embed_root = models_root if (is_comfy or is_haoming) else webui_root
     config_root = webui_root / 'user/default' if is_comfy else webui_root
 
     path_config = {

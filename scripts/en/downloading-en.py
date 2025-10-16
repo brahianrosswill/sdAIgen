@@ -85,7 +85,7 @@ def setup_venv(url):
     Path(fn).unlink()
 
     BIN = str(VENV / 'bin')
-    PYTHON_VERSION = '3.11' if UI == 'Classic' else '3.10'
+    PYTHON_VERSION = '3.11' if UI in ['Classic', 'Neo'] else '3.10'
     PKG = str(VENV / f'lib/{PYTHON_VERSION }/site-packages')
 
     osENV.update({
@@ -131,7 +131,8 @@ latest_ui = js.read(SETTINGS_PATH, 'WEBUI.latest')
 # Determine whether to reinstall venv
 venv_needs_reinstall = (
     not VENV.exists()  # venv is missing
-    # Check category change (Classic <-> other, ComfyUI <-> other)
+    # Check UIs change (Classic/Neo <-> other, ComfyUI <-> other)
+    or (latest_ui == 'Neo') != (current_ui == 'Neo')
     or (latest_ui == 'Classic') != (current_ui == 'Classic')
     or (latest_ui == 'ComfyUI') != (current_ui == 'ComfyUI')
 )
@@ -144,6 +145,7 @@ if venv_needs_reinstall:
 
     HF_VENV_URL = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main'
     venv_config = {
+        'Neo':     (f"{HF_VENV_URL}/python31113-venv-torch280-cu126-C-Neo.tar.lz4", 'Neo • 3.11.13'),
         'Classic': (f"{HF_VENV_URL}/python31113-venv-torch260-cu124-C-Classic.tar.lz4", 'Classic • 3.11.13'),
         'ComfyUI': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-ComfyUI.tar.lz4", 'ComfyUI • 3.10.18'),
         'default': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-fa.tar.lz4", 'Default • 3.10.18')

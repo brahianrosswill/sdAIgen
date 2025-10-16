@@ -93,6 +93,7 @@ REPO_MAP = {
     'ComfyUI': "https://github.com/comfyanonymous/ComfyUI",
     'Forge':   "https://github.com/lllyasviel/stable-diffusion-webui-forge",
     'Classic': "https://github.com/Haoming02/sd-webui-forge-classic",
+    'Neo':     "https://github.com/Haoming02/sd-webui-forge-classic",
     'ReForge': "https://github.com/Panchovix/stable-diffusion-webui-reForge",
     'SD-UX':   "https://github.com/anapnoe/stable-diffusion-webui-ux"
 }
@@ -102,6 +103,7 @@ WEBUI_PARAMS = {
     'ComfyUI': "--dont-print-server",
     'Forge':   "--xformers --cuda-stream",                       # Remove: --disable-xformers --opt-sdp-attention --pin-shared-memory
     'Classic': "--xformers --cuda-stream --persistent-patches",  # Remove: --pin-shared-memory
+    'Neo':     "--xformers --cuda-stream",
     'ReForge': "--xformers --cuda-stream",                       # Remove: --pin-shared-memory
     'SD-UX':   "--xformers --no-half-vae"
 }

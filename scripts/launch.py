@@ -41,7 +41,7 @@ nest_asyncio.apply()  # Async support for Jupyter
 
 
 BIN = str(VENV / 'bin')
-PYTHON_VERSION = '3.11' if UI == 'Classic' else '3.10'
+PYTHON_VERSION = '3.11' if UI in ['Classic', 'Neo'] else '3.10'
 PKG = str(VENV / f'lib/python{PYTHON_VERSION}/site-packages')
 
 osENV.update({

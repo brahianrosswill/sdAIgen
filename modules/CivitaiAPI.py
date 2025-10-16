@@ -70,7 +70,7 @@ class CivitAiAPI:
 
     def _get(self, url: str) -> Optional[Dict]:
         """Perform GET request and return JSON or None"""
-        headers = {'Authorization': f'Bearer {self.token}'} if self.token else {}
+        headers = {'Authorization': f"Bearer {self.token}"} if self.token else {}
         try:
             res = requests.get(url, headers=headers)
             res.raise_for_status()

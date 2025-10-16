@@ -18,6 +18,6 @@ https://github.com/hako-mikan/sd-webui-regional-prompter Regional-Prompter
 https://github.com/Mikubill/sd-webui-controlnet ControlNet
 https://github.com/zanllp/sd-webui-infinite-image-browsing Infinite-Image-Browsing
 https://github.com/ilian6806/stable-diffusion-webui-state State
-https://github.com/hako-mikan/sd-webui-supermerger Supermerger
+https://github.com/hako-mikan/sd-webui-supermerger SuperMerger
 https://github.com/DominikDoom/a1111-sd-webui-tagcomplete TagComplete
 https://github.com/picobyte/stable-diffusion-webui-wd14-tagger wd14-tagger
