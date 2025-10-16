@@ -153,9 +153,9 @@ if not SKIP_INSTALL_VENV and venv_needs_reinstall:
         'ComfyUI': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-ComfyUI.tar.lz4", 'ComfyUI • 3.10.18'),
         'default': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-fa.tar.lz4", 'Default • 3.10.18')
     }
-    venv_url, py_version = venv_config.get(current_ui, venv_config['default'])
+    venv_url, venv_version = venv_config.get(current_ui, venv_config['default'])
 
-    print(f"♻️ Установка VENV: {COL.B}{py_version}{COL.X}, это может занять некоторое время...")
+    print(f"♻️ Установка VENV: {COL.B}{venv_version}{COL.X}, это может занять некоторое время...")
     setup_venv(venv_url)
     clear_output()
 
