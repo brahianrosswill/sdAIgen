@@ -6,8 +6,8 @@
     --aw-elements-shadow: 0 0 15px rgba(0, 0, 0, 0.35);
 
     /* Text - Fonts */
-    --aw-font-family-primary: "Shantell Sans", serif;
-    --aw-font-family-secondary: "Tiny5", sans-serif;
+    --aw-font-family-primary: 'Shantell Sans', serif;
+    --aw-font-family-secondary: 'Tiny5', sans-serif;
     --aw-color-text-primary: #f0f8ff;
     --aw-text-size: 14px;
     --aw-text-size-small: 13px;
@@ -122,7 +122,7 @@ a {
 ::selection {
     background: #3d4142;
 }
-::-moz-selection { /* Code for Firefox */
+::-moz-selection {
     background: #3d4142;
 }
 
@@ -165,7 +165,7 @@ a {
 .widget-dropdown label,
 .widget-dropdown select,
 .widget-textarea textarea,
-.widget-text input[type="text"] {
+.widget-text input[type='text'] {
     font-family: var(--aw-font-family-primary) !important;
     font-optical-sizing: auto;
     /* text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); */
@@ -181,13 +181,13 @@ a {
 .widget-dropdown label,
 .widget-dropdown select,
 .widget-textarea textarea,
-.widget-text input[type="text"] {
+.widget-text input[type='text'] {
     font-style: normal !important;
     font-size: var(--aw-text-size) !important;
     color: var(--aw-color-text-primary) !important;
     user-select: none !important;
 }
-.widget-text input[type="text"]::placeholder {
+.widget-text input[type='text']::placeholder {
     color: grey;
     font-size: var(--aw-text-size) !important;
 }
@@ -226,7 +226,7 @@ a {
     overflow: hidden !important;
 }
 .container::after {
-    content: "ANXETY";
+    content: 'ANXETY';
     position: absolute;
     top: 10px;
     right: 15px;
@@ -280,11 +280,11 @@ a {
 /* Export/Import Button */
 /* (↓ arrow) --> SVG Icon Page: https://www.svgrepo.com/svg/357903/import */
 .export-btn {
-  background-image: url(data:image/svg+xml;base64,PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KDTwhLS0gVXBsb2FkZWQgdG86IFNWRyBSZXBvLCB3d3cuc3ZncmVwby5jb20sIFRyYW5zZm9ybWVkIGJ5OiBTVkcgUmVwbyBNaXhlciBUb29scyAtLT4KPHN2ZyBmaWxsPSIjZmZmZmZmIiB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KDTxnIGlkPSJTVkdSZXBvX2JnQ2FycmllciIgc3Ryb2tlLXdpZHRoPSIwIi8+Cg08ZyBpZD0iU1ZHUmVwb190cmFjZXJDYXJyaWVyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KDTxnIGlkPSJTVkdSZXBvX2ljb25DYXJyaWVyIj4KDTxwYXRoIGQ9Ik0yMSwxNGExLDEsMCwwLDAtMSwxdjRhMSwxLDAsMCwxLTEsMUg1YTEsMSwwLDAsMS0xLTFWMTVhMSwxLDAsMCwwLTIsMHY0YTMsMywwLDAsMCwzLDNIMTlhMywzLDAsMCwwLDMtM1YxNUExLDEsMCwwLDAsMjEsMTRabS05LjcxLDEuNzFhMSwxLDAsMCwwLC4zMy4yMS45NC45NCwwLDAsMCwuNzYsMCwxLDEsMCwwLDAsLjMzLS4yMWw0LTRhMSwxLDAsMCwwLTEuNDItMS40MkwxMywxMi41OVYzYTEsMSwwLDAsMC0yLDB2OS41OWwtMi4yOS0yLjNhMSwxLDAsMSwwLTEuNDIsMS40MloiLz4KDTwvZz4KDTwvc3ZnPg==);
+    background-image: url(data:image/svg+xml;base64,PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KDTwhLS0gVXBsb2FkZWQgdG86IFNWRyBSZXBvLCB3d3cuc3ZncmVwby5jb20sIFRyYW5zZm9ybWVkIGJ5OiBTVkcgUmVwbyBNaXhlciBUb29scyAtLT4KPHN2ZyBmaWxsPSIjZmZmZmZmIiB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KDTxnIGlkPSJTVkdSZXBvX2JnQ2FycmllciIgc3Ryb2tlLXdpZHRoPSIwIi8+Cg08ZyBpZD0iU1ZHUmVwb190cmFjZXJDYXJyaWVyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KDTxnIGlkPSJTVkdSZXBvX2ljb25DYXJyaWVyIj4KDTxwYXRoIGQ9Ik0yMSwxNGExLDEsMCwwLDAtMSwxdjRhMSwxLDAsMCwxLTEsMUg1YTEsMSwwLDAsMS0xLTFWMTVhMSwxLDAsMCwwLTIsMHY0YTMsMywwLDAsMCwzLDNIMTlhMywzLDAsMCwwLDMtM1YxNUExLDEsMCwwLDAsMjEsMTRabS05LjcxLDEuNzFhMSwxLDAsMCwwLC4zMy4yMS45NC45NCwwLDAsMCwuNzYsMCwxLDEsMCwwLDAsLjMzLS4yMWw0LTRhMSwxLDAsMCwwLTEuNDItMS40MkwxMywxMi41OVYzYTEsMSwwLDAsMC0yLDB2OS41OWwtMi4yOS0yLjNhMSwxLDAsMSwwLTEuNDIsMS40MloiLz4KDTwvZz4KDTwvc3ZnPg==);
 }
 /* (↑ arrow) --> SVG Icon Page: https://www.svgrepo.com/svg/357723/export */
 .import-btn {
-  background-image: url(data:image/svg+xml;base64,PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KDTwhLS0gVXBsb2FkZWQgdG86IFNWRyBSZXBvLCB3d3cuc3ZncmVwby5jb20sIFRyYW5zZm9ybWVkIGJ5OiBTVkcgUmVwbyBNaXhlciBUb29scyAtLT4KPHN2ZyBmaWxsPSIjZmZmZmZmIiB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KDTxnIGlkPSJTVkdSZXBvX2JnQ2FycmllciIgc3Ryb2tlLXdpZHRoPSIwIi8+Cg08ZyBpZD0iU1ZHUmVwb190cmFjZXJDYXJyaWVyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KDTxnIGlkPSJTVkdSZXBvX2ljb25DYXJyaWVyIj4KDTxwYXRoIGQ9Ik04LjcxLDcuNzEsMTEsNS40MVYxNWExLDEsMCwwLDAsMiwwVjUuNDFsMi4yOSwyLjNhMSwxLDAsMCwwLDEuNDIsMCwxLDEsMCwwLDAsMC0xLjQybC00LTRhMSwxLDAsMCwwLS4zMy0uMjEsMSwxLDAsMCwwLS43NiwwLDEsMSwwLDAsMC0uMzMuMjFsLTQsNEExLDEsMCwxLDAsOC43MSw3LjcxWk0yMSwxNGExLDEsMCwwLDAtMSwxdjRhMSwxLDAsMCwxLTEsMUg1YTEsMSwwLDAsMS0xLTFWMTVhMSwxLDAsMCwwLTIsMHY0YTMsMywwLDAsMCwzLDNIMTlhMywzLDAsMCwwLDMtM1YxNUExLDEsMCwwLDAsMjEsMTRaIi8+Cg08L2c+Cg08L3N2Zz4=);
+    background-image: url(data:image/svg+xml;base64,PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KDTwhLS0gVXBsb2FkZWQgdG86IFNWRyBSZXBvLCB3d3cuc3ZncmVwby5jb20sIFRyYW5zZm9ybWVkIGJ5OiBTVkcgUmVwbyBNaXhlciBUb29scyAtLT4KPHN2ZyBmaWxsPSIjZmZmZmZmIiB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KDTxnIGlkPSJTVkdSZXBvX2JnQ2FycmllciIgc3Ryb2tlLXdpZHRoPSIwIi8+Cg08ZyBpZD0iU1ZHUmVwb190cmFjZXJDYXJyaWVyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KDTxnIGlkPSJTVkdSZXBvX2ljb25DYXJyaWVyIj4KDTxwYXRoIGQ9Ik04LjcxLDcuNzEsMTEsNS40MVYxNWExLDEsMCwwLDAsMiwwVjUuNDFsMi4yOSwyLjNhMSwxLDAsMCwwLDEuNDIsMCwxLDEsMCwwLDAsMC0xLjQybC00LTRhMSwxLDAsMCwwLS4zMy0uMjEsMSwxLDAsMCwwLS43NiwwLDEsMSwwLDAsMC0uMzMuMjFsLTQsNEExLDEsMCwxLDAsOC43MSw3LjcxWk0yMSwxNGExLDEsMCwwLDAtMSwxdjRhMSwxLDAsMCwxLTEsMUg1YTEsMSwwLDAsMS0xLTFWMTVhMSwxLDAsMCwwLTIsMHY0YTMsMywwLDAsMCwzLDNIMTlhMywzLDAsMCwwLDMtM1YxNUExLDEsMCwwLDAsMjEsMTRaIi8+Cg08L2c+Cg08L3N2Zz4=);
 }
 
 /* Notification PopUp */
@@ -331,21 +331,6 @@ a {
 .notification.error   { --aw-status-color: #f44336; }
 .notification.info    { --aw-status-color: #2196f3; }
 .notification.warning { --aw-status-color: #ffc107; }
-
-/*
-.notification.success,
-.notification.error,
-.notification.info,
-.notification.warning {
-    border-left-color: var(--aw-status-color);
-    background: linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--aw-status-color) 10%, transparent) 0%,
-        var(--aw-container-bg) 50%,
-        color-mix(in srgb, var(--aw-status-color) 20%, transparent) 100%
-    );
-}
-*/
 
 .notification-icon {
     font-size: 20px;
@@ -395,7 +380,7 @@ a {
 /* Input Field Styles */
 
 .widget-dropdown select,
-.widget-text input[type="text"],
+.widget-text input[type='text'],
 .widget-textarea textarea {
     font-weight: 350 !important;
     height: 30px !important;
@@ -406,7 +391,7 @@ a {
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
     transition: all 0.25s ease-in-out;
 }
-.widget-textarea{ /* Kaggle... */
+.widget-textarea { /* Kaggle... */
     height: 200px !important;
     resize: none;
     line-height: 1.2;
@@ -418,13 +403,13 @@ a {
 }
 
 .widget-dropdown select:focus,
-.widget-text input[type="text"]:focus,
+.widget-text input[type='text']:focus,
 .widget-textarea textarea:focus {
     border-color: var(--aw-input-border-focus) !important;
 }
 
 .widget-dropdown select:hover,
-.widget-text input[type="text"]:hover {
+.widget-text input[type='text']:hover {
     /* transform: scale(1.003); */
     background-color: var(--aw-input-bg-hover);
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
@@ -435,7 +420,7 @@ a {
 
 /* Animation when switching empowerment mode */
 .widget-text.empowerment-text-field,
-.widget-textarea.empowerment-output  {
+.widget-textarea.empowerment-output {
     transition: all 0.3s ease;
     overflow: hidden;
 }
@@ -478,7 +463,7 @@ a {
 /* Slider Checkbox Style */
 /* .widget-checkbox label { pointer-events: none; } */
 
-.widget-checkbox input[type="checkbox"] {
+.widget-checkbox input[type='checkbox'] {
     appearance: none;
     position: relative;
     width: 40px;
@@ -491,20 +476,20 @@ a {
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
     transition: background-color 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.85);
 }
-.widget-checkbox input[type="checkbox"]:checked {
+.widget-checkbox input[type='checkbox']:checked {
     background-color: var(--aw-checkbox-checked-bg);
 }
-.inpaint input[type="checkbox"]:checked {
+.inpaint input[type='checkbox']:checked {
     background-color: var(--aw-checkbox-inpaint-bg);
 }
-.sdxl input[type="checkbox"]:checked {
+.sdxl input[type='checkbox']:checked {
     background-color: var(--aw-checkbox-sdxl-bg);
 }
-.empowerment input[type="checkbox"]:checked {
+.empowerment input[type='checkbox']:checked {
     background-color: var(--aw-checkbox-empowerment-bg);
 }
 
-.widget-checkbox input[type="checkbox"]:before {
+.widget-checkbox input[type='checkbox']:before {
     content: '';
     position: absolute;
     top: 50%;
@@ -517,7 +502,7 @@ a {
     transform: translateY(-50%);
     transition: all 0.25s cubic-bezier(0.785, 0.135, 0.15, 0.85);
 }
-.widget-checkbox input[type="checkbox"]:checked:before {
+.widget-checkbox input[type='checkbox']:checked:before {
     left: 20px;
     width: 16px;
     height: 16px;
@@ -556,7 +541,7 @@ a {
     pointer-events: none;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     z-index: 999;
-    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.30, 1.275);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.3, 1.275);
 }
 
 .sample {

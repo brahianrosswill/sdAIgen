@@ -21,36 +21,37 @@ import sys
 import re
 import os
 
+# === Parse CLI arguments ===
+SKIP_INSTALL_VENV = '-s' in sys.argv or '--skip-install-venv' in sys.argv
+
 
 osENV = os.environ
 CD = os.chdir
 ipySys = get_ipython().system
 ipyRun = get_ipython().run_line_magic
 
-# Constants (auto-convert env vars to Path)
-PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
+# Auto-convert *_path env vars to Path
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}
+HOME, VENV, SCR_PATH, SETTINGS_PATH = (
+    PATHS['home_path'], PATHS['venv_path'], PATHS['scr_path'], PATHS['settings_path']
+)
 
-HOME = PATHS['home_path']
-VENV = PATHS['venv_path']
-SCR_PATH = PATHS['scr_path']
-SETTINGS_PATH = PATHS['settings_path']
-
+ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 SCRIPTS = SCR_PATH / 'scripts'
 
 LANG = js.read(SETTINGS_PATH, 'ENVIRONMENT.lang')
-ENV_NAME = js.read(SETTINGS_PATH, 'ENVIRONMENT.env_name')
 UI = js.read(SETTINGS_PATH, 'WEBUI.current')
 WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
 
 # Text Colors (\033)
 class COLORS:
-    R  =  "\033[31m"     # Red
-    G  =  "\033[32m"     # Green
-    Y  =  "\033[33m"     # Yellow
-    B  =  "\033[34m"     # Blue
-    lB =  "\033[36;1m"   # lightBlue + BOLD
-    X  =  "\033[0m"      # Reset
+    R  =  '\033[31m'     # Red
+    G  =  '\033[32m'     # Green
+    Y  =  '\033[33m'     # Yellow
+    B  =  '\033[34m'     # Blue
+    lB =  '\033[36;1m'   # lightBlue + BOLD
+    X  =  '\033[0m'      # Reset
 
 COL = COLORS
 
@@ -58,7 +59,7 @@ COL = COLORS
 # ==================== LIBRARIES | VENV ====================
 
 def install_dependencies(commands):
-    """Run a list of installation commands."""
+    """Run a list of installation commands"""
     for cmd in commands:
         try:
             subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -66,7 +67,7 @@ def install_dependencies(commands):
             pass
 
 def setup_venv(url):
-    """Customize the virtual environment using the specified URL."""
+    """Customize the virtual environment using the specified URL"""
     CD(HOME)
     fn = Path(url).name
 
@@ -87,7 +88,7 @@ def setup_venv(url):
     Path(fn).unlink()
 
     BIN = str(VENV / 'bin')
-    PYTHON_VERSION = '3.11' if UI == 'Classic' else '3.10'
+    PYTHON_VERSION = '3.11' if UI in ['Classic', 'Neo'] else '3.10'
     PKG = str(VENV / f'lib/{PYTHON_VERSION }/site-packages')
 
     osENV.update({
@@ -98,7 +99,7 @@ def setup_venv(url):
     sys.path.insert(0, PKG)
 
 def install_packages(install_lib):
-    """Install packages from the provided library dictionary."""
+    """Install packages from the provided library dictionary"""
     for index, (package, install_cmd) in enumerate(install_lib.items(), start=1):
         print(f"\r[{index}/{len(install_lib)}] {COL.G}>>{COL.X} Installing {COL.Y}{package}{COL.X}..." + ' ' * 35, end='')
         try:
@@ -117,7 +118,7 @@ if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
         ## Tunnels
         'localtunnel': "npm install -g localtunnel",
         'cloudflared': "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64; chmod +x /usr/bin/cl",
-        'zrok': "wget -qO zrok_1.0.6_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v1.0.6/zrok_1.0.6_linux_amd64.tar.gz; tar -xzf zrok_1.0.6_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_1.0.6_linux_amd64.tar.gz",
+        'zrok': "wget -qO zrok_1.1.8_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v1.1.8/zrok_1.1.8_linux_amd64.tar.gz; tar -xzf zrok_1.1.8_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_1.1.8_linux_amd64.tar.gz",
         'ngrok': "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
     }
 
@@ -133,24 +134,28 @@ latest_ui = js.read(SETTINGS_PATH, 'WEBUI.latest')
 # Determine whether to reinstall venv
 venv_needs_reinstall = (
     not VENV.exists()  # venv is missing
-    # Check category change (Classic <-> other)
+    # Check UIs change (Classic/Neo <-> other, ComfyUI <-> other)
+    or (latest_ui == 'Neo') != (current_ui == 'Neo')
     or (latest_ui == 'Classic') != (current_ui == 'Classic')
+    or (latest_ui == 'ComfyUI') != (current_ui == 'ComfyUI')
 )
 
-if venv_needs_reinstall:
+if not SKIP_INSTALL_VENV and venv_needs_reinstall:
     if VENV.exists():
-        print("🗑️ Удаление старого venv...")
+        print('🗑️ Удаление старого venv...')
         shutil.rmtree(VENV)
         clear_output()
 
     HF_VENV_URL = 'https://huggingface.co/NagisaNao/ANXETY/resolve/main'
     venv_config = {
-        'Classic': (f"{HF_VENV_URL}/python31113-venv-torch260-cu124-C-Classic.tar.lz4", '(3.11.13)'),
-        'default': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-fca.tar.lz4", '(3.10.18)')
+        'Neo':     (f"{HF_VENV_URL}/python31113-venv-torch280-cu126-C-Neo.tar.lz4", 'Neo • 3.11.13'),
+        'Classic': (f"{HF_VENV_URL}/python31113-venv-torch260-cu124-C-Classic.tar.lz4", 'Classic • 3.11.13'),
+        'ComfyUI': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-ComfyUI.tar.lz4", 'ComfyUI • 3.10.18'),
+        'default': (f"{HF_VENV_URL}/python31018-venv-torch260-cu124-C-fa.tar.lz4", 'Default • 3.10.18')
     }
-    venv_url, py_version = venv_config.get(current_ui, venv_config['default'])
+    venv_url, venv_version = venv_config.get(current_ui, venv_config['default'])
 
-    print(f"♻️ Установка VENV {py_version}, это займет некоторое время...")
+    print(f"♻️ Установка VENV: {COL.B}{venv_version}{COL.X}, это может занять некоторое время...")
     setup_venv(venv_url)
     clear_output()
 
@@ -161,7 +166,7 @@ if venv_needs_reinstall:
 # =================== loading settings V5 ==================
 
 def load_settings(path):
-    """Load settings from a JSON file."""
+    """Load settings from a JSON file"""
     try:
         return {
             **js.read(path, 'ENVIRONMENT'),
@@ -246,7 +251,7 @@ if latest_webui or latest_extensions:
 ## Version or branch switching
 def _git_branch_exists(branch: str) -> bool:
     result = subprocess.run(
-        ["git", "show-ref", "--verify", f"refs/heads/{branch}"],
+        ['git', 'show-ref', '--verify', f"refs/heads/{branch}"],
         cwd=WEBUI,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL
@@ -254,7 +259,7 @@ def _git_branch_exists(branch: str) -> bool:
     return result.returncode == 0
 
 if commit_hash or branch != 'none':
-    print("🔄 Switching to the specified commit or branch...", end="")
+    print('🔄 Switching to the specified commit or branch...', end='')
     with capture.capture_output():
         CD(WEBUI)
         ipySys('git config --global user.email "you@example.com"')
@@ -263,8 +268,8 @@ if commit_hash or branch != 'none':
         commit_hash = branch if branch != "none" and not commit_hash else commit_hash
 
         # Check for local changes (in the working directory and staged)
-        stash_needed = subprocess.run(["git", "diff", "--quiet"], cwd=WEBUI).returncode != 0 \
-                    or subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=WEBUI).returncode != 0
+        stash_needed = subprocess.run(['git', 'diff', '--quiet'], cwd=WEBUI).returncode != 0 \
+                    or subprocess.run(['git', 'diff', '--cached', '--quiet'], cwd=WEBUI).returncode != 0
 
         if stash_needed:
             # Save local changes and untracked files
@@ -282,15 +287,15 @@ if commit_hash or branch != 'none':
             else:
                 ipySys(f"git checkout -b {commit_hash} origin/{commit_hash}")
 
-            ipySys("git pull")
+            ipySys('git pull')
 
         if stash_needed:
             # Apply stash, saving the index
-            ipySys("git stash pop --index || true")
+            ipySys('git stash pop --index || true')
 
             # In case of conflicts, we resolve them while preserving local changes.
             conflicts = subprocess.run(
-                ["git", "diff", "--name-only", "--diff-filter=U"],
+                ['git', 'diff', '--name-only', '--diff-filter=U'],
                 cwd=WEBUI, stdout=subprocess.PIPE, text=True
             ).stdout.strip().splitlines()
 
@@ -462,7 +467,7 @@ def _center_text(text, terminal_width=45):
     return f"{' ' * padding}{text}{' ' * padding}"
 
 def format_output(url, dst_dir, file_name, image_url=None, image_name=None):
-    """Formats and prints download details with colored text."""
+    """Formats and prints download details with colored text"""
     info = '[NONE]'
     if file_name:
         info = _center_text(f"[{file_name.rsplit('.', 1)[0]}]")
@@ -495,7 +500,7 @@ def _clean_url(url):
 def _extract_filename(url):
     if match := re.search(r'\[(.*?)\]', url):
         return match.group(1)
-    if any(d in urlparse(url).netloc for d in ["civitai.com", "drive.google.com"]):
+    if any(d in urlparse(url).netloc for d in ['civitai.com', 'drive.google.com']):
         return None
     return Path(urlparse(url).path).name
 
@@ -503,7 +508,7 @@ def _extract_filename(url):
 
 @handle_errors
 def _process_download_link(link):
-    """Processes a download link, splitting prefix, URL, and filename."""
+    """Processes a download link, splitting prefix, URL, and filename"""
     link = _clean_url(link)
     if ':' in link:
         prefix, path = link.split(':', 1)
@@ -513,7 +518,7 @@ def _process_download_link(link):
 
 @handle_errors
 def download(line):
-    """Downloads files from comma-separated links, processes prefixes, and unpacks zips post-download."""
+    """Downloads files from comma-separated links, processes prefixes, and unpacks zips post-download"""
     for link in filter(None, map(str.strip, line.split(','))):
         prefix, url, filename = _process_download_link(link)
 
@@ -563,7 +568,7 @@ def manual_download(url, dst_dir, file_name=None):
 
 # Separation of merged numbers
 def _parse_selection_numbers(num_str, max_num):
-    """Split a string of numbers into unique integers, considering max_num as the upper limit."""
+    """Split a string of numbers into unique integers, considering max_num as the upper limit"""
     num_str = num_str.replace(',', ' ').strip()
     unique_numbers = set()
     max_length = len(str(max_num))
@@ -639,7 +644,7 @@ line = handle_submodels(controlnet, controlnet_num, controlnet_list, control_dir
 ''' File.txt - added urls '''
 
 def _process_lines(lines):
-    """Processes text lines, extracts valid URLs with tags/filenames, and ensures uniqueness."""
+    """Processes text lines, extracts valid URLs with tags/filenames, and ensures uniqueness"""
     current_tag = None
     processed_entries = set()  # Store (tag, clean_url) to check uniqueness
     result_urls = []
@@ -678,7 +683,7 @@ def _process_lines(lines):
     return ', '.join(result_urls) if result_urls else ''
 
 def process_file_downloads(file_urls, additional_lines=None):
-    """Reads URLs from files/HTTP sources."""
+    """Reads URLs from files/HTTP sources"""
     lines = []
 
     if additional_lines:

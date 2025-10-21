@@ -8,16 +8,11 @@ import os
 
 osENV = os.environ
 
-
-# ======================== CONSTANTS =======================
-
-# Constants (auto-convert env vars to Path)
-PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}   # k -> key; v -> value
-
-HOME = PATHS['home_path']
-VENV = PATHS['venv_path']
-SCR_PATH = PATHS['scr_path']
-SETTINGS_PATH = PATHS['settings_path']
+# Auto-convert *_path env vars to Path
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}
+HOME, VENV, SCR_PATH, SETTINGS_PATH = (
+    PATHS['home_path'], PATHS['venv_path'], PATHS['scr_path'], PATHS['settings_path']
+)
 
 DEFAULT_UI = 'A1111'
 WEBUI_PATHS = {
@@ -34,12 +29,14 @@ WEBUI_PATHS = {
         'embeddings', 'extensions', 'ESRGAN', 'output'
     )
 }
+# 🔁 Alias
+WEBUI_PATHS['Neo'] = WEBUI_PATHS['Classic']
 
 
 # ===================== WEBUI HANDLERS =====================
 
 def update_current_webui(current_value: str) -> None:
-    """Update the current WebUI value and save settings."""
+    """Update the current WebUI value and save settings"""
     current_stored = js.read(SETTINGS_PATH, 'WEBUI.current')
     latest_value = js.read(SETTINGS_PATH, 'WEBUI.latest', None)
 
@@ -51,22 +48,21 @@ def update_current_webui(current_value: str) -> None:
     _set_webui_paths(current_value)
     _update_webui_symlink(current_value)
 
-
 def _set_webui_paths(ui: str) -> None:
-    """Configure paths for specified UI, fallback to A1111 for unknown UIs."""
+    """Configure paths for specified UI, fallback to A1111 for unknown UIs"""
     selected_ui = ui if ui in WEBUI_PATHS else DEFAULT_UI
     webui_root = HOME / ui
     models_root = webui_root / 'models'
 
     # Get path components for selected UI
-    paths = WEBUI_PATHS[selected_ui]
-    checkpoint, vae, lora, embed, extension, upscale, output = paths
+    PATHS = WEBUI_PATHS[selected_ui]
+    checkpoint, vae, lora, embed, extension, upscale, output = PATHS
 
     # Configure special paths
     is_comfy = selected_ui == 'ComfyUI'
-    is_classic = selected_ui == 'Classic'
+    is_haoming = selected_ui in ['Classic', 'Neo']
     control_dir = 'controlnet' if is_comfy else 'ControlNet'
-    embed_root = models_root if (is_comfy or is_classic) else webui_root
+    embed_root = models_root if (is_comfy or is_haoming) else webui_root
     config_root = webui_root / 'user/default' if is_comfy else webui_root
 
     path_config = {
@@ -90,17 +86,14 @@ def _set_webui_paths(ui: str) -> None:
 
     js.update(SETTINGS_PATH, 'WEBUI', path_config)
 
-
 def _update_webui_symlink(ui: str) -> None:
-    """Create/Update webui_root symlink in home_work_path."""
+    """Create/Update webui_root symlink in home_work_path"""
     try:
         home_work = Path(os.environ.get('home_work_path', ''))
         if not home_work.exists():
             return
 
         webui_root = HOME / ui
-        # models_root = webui_root / 'models'
-        # symlink_path = home_work / 'models_root'
         symlink_path = home_work / 'webui_root'
 
         if symlink_path.exists():
@@ -111,7 +104,7 @@ def _update_webui_symlink(ui: str) -> None:
 
 
 def handle_setup_timer(webui_path: str, timer_webui: float) -> float:
-    """Manage timer persistence for WebUI instances."""
+    """Manage timer persistence for WebUI instances"""
     timer_file = Path(webui_path) / 'static' / 'timer.txt'
     timer_file.parent.mkdir(parents=True, exist_ok=True)
 

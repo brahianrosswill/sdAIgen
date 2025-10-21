@@ -11,6 +11,17 @@ from datetime import datetime
 from pathlib import Path
 
 
+osENV = os.environ
+
+# Auto-convert *_path env vars to Path
+PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}
+HOME, SETTINGS_PATH = (
+    PATHS['home_path'],  PATHS['settings_path']
+)
+# Get current UI and extensions path
+UI = js.read(SETTINGS_PATH, 'WEBUI.current')
+EXTS = Path(js.read(SETTINGS_PATH, 'WEBUI.extension_dir'))
+
 # Configuration
 GITHUB_API_URL = "https://api.github.com/repos/DraconicDragon/dbr-e621-lists-archive/contents/tag-lists"
 GITHUB_RAW_URL = "https://raw.githubusercontent.com/DraconicDragon/dbr-e621-lists-archive/main/tag-lists"
@@ -18,19 +29,10 @@ GITHUB_RAW_URL = "https://raw.githubusercontent.com/DraconicDragon/dbr-e621-list
 # Target categories to process
 TARGET_CATEGORIES = ['danbooru_e621_merged', 'danbooru', 'e621'] # Order is IMPORTANT!
 
-osENV = os.environ
-PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}
-HOME = PATHS['home_path']
-SETTINGS_PATH = PATHS['settings_path']
-
-# Get current UI and extensions path
-UI = js.read(SETTINGS_PATH, 'WEBUI.current')
-EXTS = Path(js.read(SETTINGS_PATH, 'WEBUI.extension_dir'))
-
 
 # Find TagComplete extension directory
 def find_tagcomplete_dir():
-    """Find the TagComplete extension directory."""
+    """Find the TagComplete extension directory"""
     possible_names = [
         'a1111-sd-webui-tagcomplete',
         'sd-webui-tagcomplete',
@@ -72,7 +74,7 @@ class TagsParser:
             await self.session.close()
 
     async def get_directory_contents(self, path=''):
-        """Get contents of a directory from GitHub API."""
+        """Get contents of a directory from GitHub API"""
         url = f"{GITHUB_API_URL}/{path}" if path else GITHUB_API_URL
 
         try:
@@ -89,7 +91,7 @@ class TagsParser:
             return []
 
     def extract_date_from_filename(self, filename):
-        """Extract date from filename like 'danbooru_2025-07-05_pt20-ia-dd.csv'."""
+        """Extract date from filename like 'danbooru_2025-07-05_pt20-ia-dd.csv'"""
         # Pattern to match YYYY-MM-DD format
         date_pattern = r'(\d{4}-\d{2}-\d{2})'
         match = re.search(date_pattern, filename)
@@ -102,11 +104,11 @@ class TagsParser:
         return None
 
     def is_csv_file(self, filename):
-        """Check if file is a CSV file."""
+        """Check if file is a CSV file"""
         return filename.lower().endswith('.csv')
 
     async def find_latest_files(self):
-        """Find the latest CSV files for each category (TARGET_CATEGORIES)."""
+        """Find the latest CSV files for each category (TARGET_CATEGORIES)"""
         if self.verbose:
             print('🔍 Searching for latest tag files...')
 
@@ -157,7 +159,7 @@ class TagsParser:
         return latest_files
 
     async def download_file(self, file_path, filename):
-        """Download a file from GitHub."""
+        """Download a file from GitHub"""
         url = f"{GITHUB_RAW_URL}/{file_path}"
         local_path = self.tags_dir / filename
 
@@ -182,7 +184,7 @@ class TagsParser:
             return False
 
     async def download_latest_tags(self):
-        """Download the latest tag files."""
+        """Download the latest tag files"""
         if self.verbose:
             print(f"📂 Tags will be saved to: {self.tags_dir}")
 
@@ -225,7 +227,7 @@ class TagsParser:
         return downloaded
 
 async def main(args=None):
-    """Main function to run the parser."""
+    """Main function to run the parser"""
     parser = argparse.ArgumentParser(description=f"CSV Tags Parser for {', '.join(TARGET_CATEGORIES)}")
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose output')
     args, _ = parser.parse_known_args(args)

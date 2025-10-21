@@ -6,8 +6,8 @@
     --aw-elements-shadow: 0 0 15px rgba(0, 0, 0, 0.35);
 
     /* Text - Fonts */
-    --aw-font-family-primary: "Shantell Sans", serif;
-    --aw-font-family-secondary: "Tiny5", sans-serif;
+    --aw-font-family-primary: 'Shantell Sans', serif;
+    --aw-font-family-secondary: 'Tiny5', sans-serif;
     --aw-color-text-primary: #f0f8ff;
     --aw-text-size: 14px;
     --aw-text-size-small: 13px;
@@ -118,10 +118,10 @@ hr {
     overflow: hidden !important;
 }
 .mainCleaner-container::before {
+    content: 'AutoCleaner';
     position: absolute;
     top: 5px;
     right: 10px;
-    content: "AutoCleaner";
     font-family: var(--aw-font-family-secondary);
     font-optical-sizing: auto;
     font-weight: 750;
@@ -129,10 +129,10 @@ hr {
     color: rgba(0, 0, 0, 0.3);
 }
 .mainCleaner-container::after {
+    content: 'ANXETY';
     position: absolute;
     top: 30px;
     right: 10px;
-    content: "ANXETY";
     font-family: var(--aw-font-family-secondary);
     font-optical-sizing: auto;
     font-weight: 750;
