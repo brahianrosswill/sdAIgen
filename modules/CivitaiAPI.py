@@ -114,8 +114,9 @@ class CivitAiAPI:
         for img in images:
             url = img.get('url', '')
             ## Images are now downloaded via [Civitai-Extension]
-            # if self.IS_KAGGLE and img.get('nsfwLevel', 0) >= 4:
-            #     continue
+            # Return only for ComfyUI
+            if self.IS_KAGGLE and img.get('nsfwLevel', 0) >= 8:
+                continue
             if any(url.lower().endswith(ext) for ext in ['.gif', '.mp4', '.webm']):
                 continue
             ext = url.split('.')[-1].split('?')[0]

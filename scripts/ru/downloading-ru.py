@@ -46,12 +46,12 @@ WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
 # Text Colors (\033)
 class COLORS:
-    R  =  '\033[31m'     # Red
-    G  =  '\033[32m'     # Green
-    Y  =  '\033[33m'     # Yellow
-    B  =  '\033[34m'     # Blue
-    lB =  '\033[36;1m'   # lightBlue + BOLD
-    X  =  '\033[0m'      # Reset
+    R  =  '\033[31m'    # Red
+    G  =  '\033[32m'    # Green
+    Y  =  '\033[33m'    # Yellow
+    B  =  '\033[34m'    # Blue
+    lB =  '\033[36;1m'  # lightBlue + BOLD
+    X  =  '\033[0m'     # Reset
 
 COL = COLORS
 
@@ -550,9 +550,9 @@ def manual_download(url, dst_dir, file_name=None):
         image_url, image_name = data.image_url, data.image_name     # Image_URL, Image_Name
 
         ## Preview will be downloaded automatically via [CivitAI-Extension]
-        # Download preview images
-        # if image_url and image_name:
-        #     m_download(f"{image_url} {dst_dir} {image_name}")
+        # Download preview images (Only  for ComfyUI)
+        if UI == 'ComfyUI' and image_url and image_name:
+            m_download(f"{image_url} {dst_dir} {image_name}")
 
     elif any(s in url for s in ('github', 'huggingface.co')):
         if file_name and '.' not in file_name:
