@@ -42,7 +42,9 @@
         "Extras",
         "PNG Info",
         "Train",
-        "Checkpoint Merger"
+        "Checkpoint Merger",
+        "SVD",
+        "Z123"
     ],
     "extra_networks_default_multiplier": 0.7,
     "samples_filename_pattern": "M=[model_name]_D=[date]",
