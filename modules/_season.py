@@ -22,66 +22,150 @@ TRANSLATIONS = {
     }
 }
 
+SEASON_CONFIG = {
+    'winter': {
+        'bg': 'linear-gradient(180deg, #66666633, transparent)',
+        'primary': '#666666',
+        'accent': '#ffffff',
+        'icon': '❄️',
+        'particle_color': '#ffffff',
+        'particle': {'class': 'snowflake', 'size': (8, 8), 'duration': (2, 5), 'interval': 50, 'max': 100}
+    },
+    'spring': {
+        'bg': 'linear-gradient(180deg, #9366b433, transparent)',
+        'primary': '#9366b4',
+        'accent': '#dbcce6',
+        'icon': '🌸',
+        'particle_color': '#ffb3ba',
+        'particle': {'class': 'petal', 'size': (8, 8), 'duration': (3, 6), 'interval': 250, 'max': 40}
+    },
+    'summer': {
+        'bg': 'linear-gradient(180deg, #ffe76633, transparent)',
+        'primary': '#ffe766',
+        'accent': '#fff7cc',
+        'icon': '🌴',
+        'particle_color': '#ffd700',
+        'particle': {'class': 'stick', 'size': (2, 15), 'duration': (3, 7), 'interval': 100, 'max': 25}
+    },
+    'autumn': {
+        'bg': 'linear-gradient(180deg, #ff8f6633, transparent)',
+        'primary': '#ff8f66',
+        'accent': '#ffd9cc',
+        'icon': '🍁',
+        'particle_color': '#ff8f66',
+        'particle': {'class': 'leaf', 'size': (12, 12), 'duration': (3, 6), 'interval': 250, 'max': 40}
+    }
+}
+
+PARTICLE_STYLES = {
+    'snowflake': 'border-radius: 50%; filter: blur(1px);',
+    'petal': 'border-radius: 50% 50% 0 50%; transform: rotate(45deg); filter: blur(0.5px);',
+    'stick': 'transform-origin: center bottom;',
+    'leaf': 'clip-path: polygon(50% 0%, 0% 100%, 100% 100%);'
+}
+
+PARTICLE_ANIMATIONS = {
+    'snowflake': 'translate(-50%, -50%) scale(0) | translate(-50%, -50%) scale(1) | translate(-50%, 350%) scale(0.5)',
+    'petal': 'translate(-50%, -50%) scale(0) | translate(-50%, -50%) scale(1) rotate(180deg) | translate(-50%, 150%) scale(0.5) rotate(360deg)',
+    'stick': 'translate(-50%, -50%) rotate(0) scale(0.5) | translate(-50%, -50%) rotate(0deg) scale(1) | translate(-50%, 150%) rotate(180deg) scale(0.5)',
+    'leaf': 'translate(-50%, -50%) rotate(0deg) | translate(-50%, -50%) rotate(180deg) | translate(-50%, 150%) rotate(360deg)'
+}
+
 
 def get_season():
     month = datetime.datetime.now().month
-    if month in [12, 1, 2]:
-        return 'winter'
-    elif month in [3, 4, 5]:
+    if month in range(3, 6):
         return 'spring'
-    elif month in [6, 7, 8]:
+    if month in range(6, 9):
         return 'summer'
-    else:
+    if month in range(9, 12):
         return 'autumn'
+    return 'winter'
 
-def display_info(env, scr_folder, branch, lang='en', fork=None):
+
+def generate_particle_script(season, config):
+    particle = config['particle']
+    particle_class = particle['class']
+    color = config['particle_color']
+
+    anim_steps = PARTICLE_ANIMATIONS[particle_class].split(' | ')
+
+    style = f"""
+        .{particle_class} {{
+          position: absolute;
+          width: {particle['size'][0]}px;
+          height: {particle['size'][1]}px;
+          background: {color};
+          {PARTICLE_STYLES[particle_class]}
+          opacity: 0;
+          pointer-events: none;
+        }}
+        @keyframes particle-fall {{
+          0% {{ opacity: 0; transform: {anim_steps[0]}; }}
+          20% {{ opacity: 0.8; transform: {anim_steps[1]}; }}
+          100% {{ opacity: 0; transform: {anim_steps[2]}; }}
+        }}
+    """
+
+    return f"""
+    <script>
+    ((() => {{
+      const container = document.querySelector('.season-container');
+      if (!container) return;
+
+      const style = document.createElement('style');
+      style.textContent = `{style}`;
+      document.head.appendChild(style);
+
+      let activeParticles = 0;
+      const maxParticles = {particle['max']};
+
+      const createParticle = () => {{
+        if (activeParticles >= maxParticles) return;
+
+        const particle = document.createElement('div');
+        particle.className = '{particle_class}';
+        const duration = {particle['duration'][0]} + Math.random() * {particle['duration'][1] - particle['duration'][0]};
+
+        particle.style.cssText = `
+          left: ${{Math.random() * 100}}%;
+          top: ${{Math.random() * 100}}%;
+          animation: particle-fall ${{duration}}s linear forwards;
+        `;
+
+        activeParticles++;
+        particle.addEventListener('animationend', () => {{
+          particle.remove();
+          activeParticles--;
+        }}, {{ once: true }});
+
+        container.appendChild(particle);
+      }};
+
+      const interval = setInterval(createParticle, {particle['interval']});
+
+      const observer = new MutationObserver(() => {{
+        if (!document.contains(container)) {{
+          clearInterval(interval);
+          observer.disconnect();
+        }}
+      }});
+      observer.observe(document.body, {{ childList: true, subtree: true }});
+    }}))();
+    </script>
+    """
+
+
+def display_info(env, scr_folder, branch='main', lang='en', fork=None):
     season = get_season()
     translations = TRANSLATIONS.get(lang, TRANSLATIONS['en'])
+    config = SEASON_CONFIG[season]
 
-    season_config = {
-        'winter': {
-            'bg': 'linear-gradient(180deg, #66666633, transparent)',
-            'primary': '#666666',
-            'accent': '#ffffff',
-            'icon': '❄️',
-            'particle_color': '#ffffff'
-        },
-        'spring': {
-            'bg': 'linear-gradient(180deg, #9366b433, transparent)',
-            'primary': '#9366b4',
-            'accent': '#dbcce6',
-            'icon': '🌸',
-            'particle_color': '#ffb3ba'
-        },
-        'summer': {
-            'bg': 'linear-gradient(180deg, #ffe76633, transparent)',
-            'primary': '#ffe766',
-            'accent': '#fff7cc',
-            'icon': '🌴',
-            'particle_color': '#ffd700'
-        },
-        'autumn': {
-            'bg': 'linear-gradient(180deg, #ff8f6633, transparent)',
-            'primary': '#ff8f66',
-            'accent': '#ffd9cc',
-            'icon': '🍁',
-            'particle_color': '#ff8f66'
-        }
-    }
-    config = season_config.get(season, season_config['winter'])
-
-    CONTENT = f"""
+    content = f"""
     <div class="season-container">
       <div class="text-container">
-        <span>{config['icon']}</span>
-        <span>A</span><span>N</span><span>X</span><span>E</span><span>T</span><span>Y</span>
-        <span>&nbsp;</span>
-        <span>S</span><span>D</span><span>-</span><span>W</span><span>E</span><span>B</span><span>U</span><span>I</span>
-        <span>&nbsp;</span>
-        <span>V</span><span>2</span>
-        <span>{config['icon']}</span>
+        {''.join(f'<span>{c}</span>' for c in f"{config['icon']} ANXETY   SD-WEBUI   V2 {config['icon']}")}
       </div>
-
       <div class="message-container">
         <span>{translations['done_message']}</span>
         <span>{translations['runtime_env']} <span class="env">{env}</span></span>
@@ -92,7 +176,7 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
     </div>
     """
 
-    STYLE = f"""
+    style = f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
 
@@ -100,64 +184,57 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
       position: relative;
       margin: 0 10px !important;
       padding: 20px !important;
-      border-radius: 15px;
-      margin: 10px 0;
-      overflow: hidden;
       min-height: 200px;
       background: {config['bg']};
       border-top: 2px solid {config['primary']};
-      animation: fadeIn 0.5s ease-in !important;
+      border-radius: 15px;
+      overflow: hidden;
+      animation: fadeIn 0.5s ease-in;
     }}
 
-    @keyframes fadeIn {{
-      from {{ opacity: 0; }}
-      to {{ opacity: 1; }}
-    }}
+    @keyframes fadeIn {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
 
     .text-container {{
+      font-family: 'Righteous', cursive;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 0.5em;
-      font-family: 'Righteous', cursive;
       margin-bottom: 1em;
+      gap: 0.5em;
     }}
 
-    .text-container span {{
-      font-size: 2.5rem;
-      color: {config['primary']};
+    .text-container span,
+    .message-container span {{
       opacity: 0;
-      transform: translateY(-20px);
       filter: blur(4px);
+      transform: translateY(-20px);
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }}
 
-    .text-container.loaded span {{
-      opacity: 1;
-      transform: translateY(0);
-      filter: blur(0);
-      color: {config['accent']};
+    .text-container span {{
+      color: {config['primary']};
+      font-size: 2.5rem;
     }}
 
     .message-container {{
-      font-family: 'Righteous', cursive;
-      text-align: center;
       display: flex;
       flex-direction: column;
+      font-family: 'Righteous', cursive;
+      text-align: center;
       gap: 0.5em;
     }}
 
     .message-container span {{
-      font-size: 1.2rem;
       color: {config['primary']};
-      opacity: 0;
+      font-size: 1.2rem;
       transform: translateY(20px);
-      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }}
 
+    .text-container.loaded span,
     .message-container.loaded span {{
       opacity: 1;
+      filter: blur(0);
       transform: translateY(0);
       color: {config['accent']};
     }}
@@ -169,21 +246,18 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
     </style>
     """
 
-    SCRIPT = """
+    script = """
     <script>
-    (function() {
-      // Text animation
+    (() => {
       const textContainer = document.querySelector('.text-container');
       const messageContainer = document.querySelector('.message-container');
-      const textSpans = textContainer.querySelectorAll('span');
-      const messageSpans = messageContainer.querySelectorAll('span');
 
-      textSpans.forEach((span, index) => {
-        span.style.transitionDelay = `${index * 25}ms`;
+      textContainer.querySelectorAll('span').forEach((span, i) => {
+        span.style.transitionDelay = `${i * 25}ms`;
       });
 
-      messageSpans.forEach((span, index) => {
-        span.style.transitionDelay = `${index * 50}ms`;
+      messageContainer.querySelectorAll('span').forEach((span, i) => {
+        span.style.transitionDelay = `${i * 50}ms`;
       });
 
       setTimeout(() => {
@@ -194,278 +268,8 @@ def display_info(env, scr_folder, branch, lang='en', fork=None):
     </script>
     """
 
-    display(HTML(CONTENT + STYLE + SCRIPT))
-
-    # === Season Scripts ===
-
-    WINTER_SCRIPT = f"""
-    <script>
-    (function() {{
-      const container = document.querySelector('.season-container');
-      const style = document.createElement('style');
-      style.innerHTML = `
-        .snowflake {{
-          position: absolute;
-          background: {config['particle_color']};
-          border-radius: 50%;
-          filter: blur(1px);
-          opacity: 0;
-          animation: snow-fall linear forwards;
-          pointer-events: none;
-        }}
-        @keyframes snow-fall {{
-          0% {{ opacity: 0; transform: translate(-50%, -50%) scale(0); }}
-          20% {{ opacity: 0.8; transform: translate(-50%, -50%) scale(1); }}
-          100% {{ opacity: 0; transform: translate(-50%, 150%) scale(0.5); }}
-        }}
-      `;
-      document.head.appendChild(style);
-
-      let activeParticles = 0;
-      const maxParticles = 100;
-
-      function createSnowflake() {{
-        if (activeParticles >= maxParticles) return;
-
-        const snowflake = document.createElement('div');
-        snowflake.className = 'snowflake';
-        const size = Math.random() * 5 + 3;
-        const x = Math.random() * 100;
-        const duration = Math.random() * 3 + 2;
-
-        snowflake.style.cssText = `
-          width: ${{size}}px;
-          height: ${{size}}px;
-          left: ${{x}}%;
-          top: ${{Math.random() * 100}}%;
-          animation: snow-fall ${{duration}}s linear forwards;
-        `;
-
-        activeParticles++;
-        snowflake.addEventListener('animationend', () => {{
-          snowflake.remove();
-          activeParticles--;
-        }});
-
-        container.appendChild(snowflake);
-      }}
-
-      const interval = setInterval(createSnowflake, 50);
-
-      // Cleanup when container is removed
-      const observer = new MutationObserver(() => {{
-        if (!document.contains(container)) {{
-          clearInterval(interval);
-          observer.disconnect();
-        }}
-      }});
-      observer.observe(document.body, {{ childList: true, subtree: true }});
-    }})();
-    </script>
-    """
-
-    SPRING_SCRIPT = f"""
-    <script>
-    (function() {{
-      const container = document.querySelector('.season-container');
-      const style = document.createElement('style');
-      style.innerHTML = `
-        .petal {{
-          position: absolute;
-          width: 8px;
-          height: 8px;
-          background: {config['particle_color']};
-          border-radius: 50% 50% 0 50%;
-          transform: rotate(45deg);
-          opacity: 0;
-          pointer-events: none;
-          filter: blur(0.5px);
-        }}
-        @keyframes spring-fall {{
-          0% {{ opacity: 0; transform: translate(-50%, -50%) scale(0); }}
-          20% {{ opacity: 0.8; transform: translate(-50%, -50%) scale(1) rotate(180deg); }}
-          100% {{ opacity: 0; transform: translate(-50%, 150%) scale(0.5) rotate(360deg); }}
-        }}
-      `;
-      document.head.appendChild(style);
-
-      let activeParticles = 0;
-      const maxParticles = 40;
-
-      function createPetal() {{
-        if (activeParticles >= maxParticles) return;
-
-        const petal = document.createElement('div');
-        petal.className = 'petal';
-        const startX = Math.random() * 100;
-        const duration = Math.random() * 3 + 3;
-
-        petal.style.cssText = `
-          left: ${{startX}}%;
-          top: ${{Math.random() * 100}}%;
-          animation: spring-fall ${{duration}}s linear forwards;
-        `;
-
-        activeParticles++;
-        petal.addEventListener('animationend', () => {{
-          petal.remove();
-          activeParticles--;
-        }});
-
-        container.appendChild(petal);
-      }}
-
-      const interval = setInterval(createPetal, 250);
-
-      // Cleanup when container is removed
-      const observer = new MutationObserver(() => {{
-        if (!document.contains(container)) {{
-          clearInterval(interval);
-          observer.disconnect();
-        }}
-      }});
-      observer.observe(document.body, {{ childList: true, subtree: true }});
-    }})();
-    </script>
-    """
-
-    SUMMER_SCRIPT = f"""
-    <script>
-    (function() {{
-      const container = document.querySelector('.season-container');
-      const style = document.createElement('style');
-      style.innerHTML = `
-        .stick-particle {{
-          position: absolute;
-          width: 2px;
-          height: 15px;
-          background: {config['particle_color']};
-          transform-origin: center bottom;
-          opacity: 0;
-          pointer-events: none;
-        }}
-        @keyframes stick-fall {{
-          0% {{ opacity: 0; transform: translate(-50%, -50%) rotate(0) scale(0.5); }}
-          20% {{ opacity: 0.8; transform: translate(-50%, -50%) rotate(0deg) scale(1); }}
-          100% {{ opacity: 0; transform: translate(-50%, 150%) rotate(180deg) scale(0.5); }}
-        }}
-      `;
-      document.head.appendChild(style);
-
-      let activeParticles = 0;
-      const maxParticles = 25;
-
-      function createStick() {{
-        if (activeParticles >= maxParticles) return;
-
-        const stick = document.createElement('div');
-        stick.className = 'stick-particle';
-        const startX = Math.random() * 100;
-        const duration = Math.random() * 4 + 3;
-        const rotation = (Math.random() - 0.5) * 180;
-
-        stick.style.cssText = `
-          left: ${{startX}}%;
-          top: ${{Math.random() * 100}}%;
-          animation: stick-fall ${{duration}}s linear forwards;
-          transform: rotate(${{rotation}}deg);
-        `;
-
-        activeParticles++;
-        stick.addEventListener('animationend', () => {{
-          stick.remove();
-          activeParticles--;
-        }});
-
-        container.appendChild(stick);
-      }}
-
-      const interval = setInterval(createStick, 100);
-
-      // Cleanup when container is removed
-      const observer = new MutationObserver(() => {{
-        if (!document.contains(container)) {{
-          clearInterval(interval);
-          observer.disconnect();
-        }}
-      }});
-      observer.observe(document.body, {{ childList: true, subtree: true }});
-    }})();
-    </script>
-    """
-
-    AUTUMN_SCRIPT = f"""
-    <script>
-    (function() {{
-      const container = document.querySelector('.season-container');
-      const style = document.createElement('style');
-      style.innerHTML = `
-        .leaf {{
-          position: absolute;
-          width: 12px;
-          height: 12px;
-          background: {config['particle_color']};
-          clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-          opacity: 0;
-          pointer-events: none;
-        }}
-        @keyframes autumn-fall {{
-          0% {{ opacity: 0; transform: translate(-50%, -50%) rotate(0deg); }}
-          20% {{ opacity: 0.8; transform: translate(-50%, -50%) rotate(180deg); }}
-          100% {{ opacity: 0; transform: translate(-50%, 150%) rotate(360deg); }}
-        }}
-      `;
-      document.head.appendChild(style);
-
-      let activeParticles = 0;
-      const maxParticles = 40;
-
-      function createLeaf() {{
-        if (activeParticles >= maxParticles) return;
-
-        const leaf = document.createElement('div');
-        leaf.className = 'leaf';
-        const startX = Math.random() * 100;
-        const duration = Math.random() * 3 + 3;
-
-        leaf.style.cssText = `
-          left: ${{startX}}%;
-          top: ${{Math.random() * 100}}%;
-          animation: autumn-fall ${{duration}}s linear forwards;
-        `;
-
-        activeParticles++;
-        leaf.addEventListener('animationend', () => {{
-          leaf.remove();
-          activeParticles--;
-        }});
-
-        container.appendChild(leaf);
-      }}
-
-      const interval = setInterval(createLeaf, 250);
-
-      // Cleanup when container is removed
-      const observer = new MutationObserver(() => {{
-        if (!document.contains(container)) {{
-          clearInterval(interval);
-          observer.disconnect();
-        }}
-      }});
-      observer.observe(document.body, {{ childList: true, subtree: true }});
-    }})();
-    </script>
-    """
-
-    # Season Scripts
-    if season == 'winter':
-        display(HTML(WINTER_SCRIPT))
-    elif season == 'spring':
-        display(HTML(SPRING_SCRIPT))
-    elif season == 'summer':
-        display(HTML(SUMMER_SCRIPT))
-    elif season == 'autumn':
-        display(HTML(AUTUMN_SCRIPT))
+    display(HTML(content + style + script))
+    display(HTML(generate_particle_script(season, config)))
 
 
 if __name__ == "__main__":
