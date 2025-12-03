@@ -57,36 +57,36 @@ def read_model_data(file_path, data_type):
     names = list(local_vars[key].keys())
     return prefixes + names
 
-def fetch_github_branches(repo_url, max_retries=3):
-    """Fetch branch names from GitHub API"""
+def fetch_github_branches(repo_url, webui=None):
+    """Fetch branch names from GitHub API with optional filtering"""
     repo_path = repo_url.replace('https://github.com/', '')
     api_url = f'https://api.github.com/repos/{repo_path}/branches'
 
-    for attempt in range(max_retries):
-        try:
-            r = requests.get(api_url, timeout=10)
-            if r.status_code == 200:
-                branches = [b['name'] for b in r.json()]
-                ordered = ['none']
-                for preferred in ('main', 'master'):
-                    if preferred in branches:
-                        ordered.append(preferred)
-                        branches.remove(preferred)
-                return ordered + branches
+    try:
+        r = requests.get(api_url, timeout=10)
+        if r.status_code != 200:
+            return ['none']
 
-            if r.status_code == 403 and attempt < max_retries - 1:
-                time.sleep(2)
-            else:
-                break
+        branches = [b['name'] for b in r.json()]
 
-        except requests.RequestException:
-            if attempt < max_retries - 1:
-                time.sleep(1)
-            else:
-                break
+        # --- ORDER MAIN / MASTER ---
+        ordered = ['none']
+        for preferred in ('main', 'master'):
+            if preferred in branches:
+                ordered.append(preferred)
+                branches.remove(preferred)
+        branches = ordered + branches
 
-    # Fail-Safe
-    return ['none']
+        # --- FILTERING LOGIC ---
+        if webui == 'Classic':
+            branches = [b for b in branches if "neo" not in b.lower()]
+        elif webui == 'Neo':
+            branches = [b for b in branches if "classic" not in b.lower()]
+
+        return branches
+
+    except requests.RequestException:
+        return ['none']
 
 REPO_MAP = {
     'A1111':   "https://github.com/AUTOMATIC1111/stable-diffusion-webui",
@@ -465,7 +465,7 @@ def update_change_webui(change, widget):
 
     if webui in REPO_MAP:
         repo_url = REPO_MAP[webui]
-        new_branches = fetch_github_branches(repo_url)
+        new_branches = fetch_github_branches(repo_url, webui)
         branch_widget.options = new_branches
 
     is_comfy = webui == 'ComfyUI'
