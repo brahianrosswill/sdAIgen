@@ -436,11 +436,12 @@ if __name__ == '__main__':
             print()
 
         # Display selected trigger if was used
-        if args.tagger:
+        if UI != 'ComfyUI' and args.tagger:
             selected_trigger = TAGGER_MAP.get(args.tagger, args.tagger)
             tag_file = find_latest_tag_file(selected_trigger)
-            file_info = f" ({tag_file})" if tag_file else ""
-            print(f"{COL.B}>> 🏷️ Selected Tagger:{COL.X} {COL.lB}{selected_trigger}{COL.X}{file_info}\n")
+
+            if tag_file:
+                print(f"{COL.B}>> 🏷️ Selected Tagger: {COL.lB}{selected_trigger}{COL.X} ({tag_file})\n")
 
         print(f"🔧 WebUI: {COL.B}{UI}{COL.X}")
 

@@ -26,7 +26,7 @@ widgets_css = CSS / 'download-result.css'
 EXCLUDED_EXTENSIONS = {'.txt', '.yaml', '.log', '.json'}
 CONTAINER_WIDTH = '1200px'
 HEADER_DL = 'DOWNLOAD RESULTS'
-VERSION = 'v1.1'
+VERSION = 'v1.2'
 
 
 # =================== loading settings V5 ==================
@@ -142,8 +142,13 @@ def create_all_sections():
 factory.load_css(widgets_css)   # load CSS (widgets)
 
 header = factory.create_html(
-    f'<div><span class="header-main-title">{HEADER_DL}</span>'
-    f'<span style="color: grey; opacity: 0.25;"> | {VERSION}</span></div>'
+    f'''
+    <div class="header-wrap">
+        <span class="header-main-title">{HEADER_DL}</span>
+        <span class="header-ui">{UI}</span>
+        <span class="header-version">| {VERSION}</span>
+    </div>
+    '''
 )
 
 widget_section = create_all_sections()
