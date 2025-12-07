@@ -378,7 +378,7 @@ def handle_gdrive(mount_flag, ui='A1111', log=False):
 
                 print('🗑️ Симлинки успешно удалены!')
             except Exception as e:
-                print(f"❌ Unmount error: {str(e)}")
+                print(f"\r❌ Unmount error: {str(e)}")
         return
 
     # Mount logic
@@ -390,7 +390,7 @@ def handle_gdrive(mount_flag, ui='A1111', log=False):
             print('\r🚀 Google Drive успешно подключён!')
         except Exception as e:
             # clear_output()
-            print(f"❌ Mounting failed: {str(e)}")
+            print(f"\r❌ Mounting failed: {str(e)}")
             return
     else:
         print('🎉 Google Drive уже подключён~')
@@ -401,8 +401,9 @@ def handle_gdrive(mount_flag, ui='A1111', log=False):
         # Create structure in Drive and symlinks
         for cfg in build_symlink_config(ui):
             dst = os.path.join(GD_BASE, cfg['gdrive'])
-            os.makedirs(dst, exist_ok=True)
             src = os.path.join(cfg['local'], 'GDrive')
+            os.makedirs(dst, exist_ok=True)
+            os.makedirs(os.path.dirname(src), exist_ok=True)
             create_symlink(src, dst, log)
 
         print('✅ Симлинки успешно созданы!')
