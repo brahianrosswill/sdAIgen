@@ -60,7 +60,7 @@ class CivitAiAPI:
     IS_KAGGLE = 'KAGGLE_URL_BASE' in os.environ
 
     def __init__(self, token: Optional[str] = None, log: bool = True):
-        self.token = token or '65b66176dcf284b266579de57fbdc024'    # FAKE
+        self.token = token or 'f49f7c1a1a4b60890e4bdcdb8b194c70'    # FAKE
         self.logger = APILogger(verbose=log)
 
     # === Core Helpers ===
