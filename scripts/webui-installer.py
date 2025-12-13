@@ -101,7 +101,7 @@ CONFIG_MAP = {
     'ComfyUI': [
         f"{CONFIG_URL}/{UI}/install-deps.py",
         f"{CONFIG_URL}/{UI}/comfy.settings.json, {WEBUI}/user/default",
-        f"{CONFIG_URL}/{UI}/Comfy-Manager/config.ini, {WEBUI}/user/default/ComfyUI-Manager",
+        f"{CONFIG_URL}/{UI}/Comfy-Manager/config.ini, {WEBUI}/user/__manager",
         f"{CONFIG_URL}/{UI}/workflows/anxety-workflow.json, {WEBUI}/user/default/workflows",
         # Special Scripts
         f"{CONFIG_URL}/gradio-tunneling.py, {VENV}/lib/python3.10/site-packages/gradio_tunneling, main.py"

@@ -21,7 +21,7 @@ HOME, SCR_PATH, SETTINGS_PATH = (
     PATHS['home_path'], PATHS['scr_path'], PATHS['settings_path']
 )
 
-CAI_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.civitai_token') or '65b66176dcf284b266579de57fbdc024'
+CAI_TOKEN = js.read(SETTINGS_PATH, 'WIDGETS.civitai_token') or 'f49f7c1a1a4b60890e4bdcdb8b194c70'
 HF_TOKEN  = js.read(SETTINGS_PATH, 'WIDGETS.huggingface_token') or ''
 
 

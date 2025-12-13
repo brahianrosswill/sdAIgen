@@ -46,12 +46,12 @@ WEBUI = js.read(SETTINGS_PATH, 'WEBUI.webui_path')
 
 # Text Colors (\033)
 class COLORS:
-    R  =  '\033[31m'     # Red
-    G  =  '\033[32m'     # Green
-    Y  =  '\033[33m'     # Yellow
-    B  =  '\033[34m'     # Blue
-    lB =  '\033[36;1m'   # lightBlue + BOLD
-    X  =  '\033[0m'      # Reset
+    R  =  '\033[31m'    # Red
+    G  =  '\033[32m'    # Green
+    Y  =  '\033[33m'    # Yellow
+    B  =  '\033[34m'    # Blue
+    lB =  '\033[36;1m'  # lightBlue + BOLD
+    X  =  '\033[0m'     # Reset
 
 COL = COLORS
 
@@ -118,7 +118,7 @@ if not js.key_exists(SETTINGS_PATH, 'ENVIRONMENT.install_deps', True):
         ## Tunnels
         'localtunnel': "npm install -g localtunnel",
         'cloudflared': "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64; chmod +x /usr/bin/cl",
-        'zrok': "wget -qO zrok_1.1.8_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v1.1.8/zrok_1.1.8_linux_amd64.tar.gz; tar -xzf zrok_1.1.8_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_1.1.8_linux_amd64.tar.gz",
+        'zrok': "wget -qO zrok_1.1.10_linux_amd64.tar.gz https://github.com/openziti/zrok/releases/download/v1.1.10/zrok_1.1.10_linux_amd64.tar.gz; tar -xzf zrok_1.1.10_linux_amd64.tar.gz -C /usr/bin; rm -f zrok_1.1.10_linux_amd64.tar.gz",
         'ngrok': "wget -qO ngrok-v3-stable-linux-amd64.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz; tar -xzf ngrok-v3-stable-linux-amd64.tgz -C /usr/bin; rm -f ngrok-v3-stable-linux-amd64.tgz"
     }
 
@@ -378,7 +378,7 @@ def handle_gdrive(mount_flag, ui='A1111', log=False):
 
                 print('🗑️ Симлинки успешно удалены!')
             except Exception as e:
-                print(f"❌ Unmount error: {str(e)}")
+                print(f"\r❌ Unmount error: {str(e)}")
         return
 
     # Mount logic
@@ -390,7 +390,7 @@ def handle_gdrive(mount_flag, ui='A1111', log=False):
             print('\r🚀 Google Drive успешно подключён!')
         except Exception as e:
             # clear_output()
-            print(f"❌ Mounting failed: {str(e)}")
+            print(f"\r❌ Mounting failed: {str(e)}")
             return
     else:
         print('🎉 Google Drive уже подключён~')
@@ -401,8 +401,9 @@ def handle_gdrive(mount_flag, ui='A1111', log=False):
         # Create structure in Drive and symlinks
         for cfg in build_symlink_config(ui):
             dst = os.path.join(GD_BASE, cfg['gdrive'])
-            os.makedirs(dst, exist_ok=True)
             src = os.path.join(cfg['local'], 'GDrive')
+            os.makedirs(dst, exist_ok=True)
+            os.makedirs(os.path.dirname(src), exist_ok=True)
             create_symlink(src, dst, log)
 
         print('✅ Симлинки успешно созданы!')
@@ -550,9 +551,9 @@ def manual_download(url, dst_dir, file_name=None):
         image_url, image_name = data.image_url, data.image_name     # Image_URL, Image_Name
 
         ## Preview will be downloaded automatically via [CivitAI-Extension]
-        # Download preview images
-        # if image_url and image_name:
-        #     m_download(f"{image_url} {dst_dir} {image_name}")
+        # Download preview images (Only  for ComfyUI)
+        if UI == 'ComfyUI' and image_url and image_name:
+            m_download(f"{image_url} {dst_dir} {image_name}")
 
     elif any(s in url for s in ('github', 'huggingface.co')):
         if file_name and '.' not in file_name:

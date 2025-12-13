@@ -52,8 +52,9 @@
 | [SuperMerger](https://github.com/hako-mikan/sd-webui-supermerger) | ✔️ | ✔️ | ❌ | ❌ | ✔️ | ✔️ |
 | [Tag-Complete](https://github.com/DominikDoom/a1111-sd-webui-tagcomplete) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [Umi-AI-Wildcards](https://github.com/Tsukreya/Umi-AI-Wildcards) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| [Ultimate-Upscale](https://github.com/Coyote-A/ultimate-upscale-for-automatic1111) | ✔️ | ❌ | ✔️ | ✔️ | ✔️ | ✔️ |
 | [WD14-Tagger](https://github.com/picobyte/stable-diffusion-webui-wd14-tagger) | ✔️ | ✔️ | ❌ | ❌ | ✔️ | ✔️ |
-| [webui_timer](https://github.com/anxety-solo/webui_timer) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| [webui_timer](https://github.com/anxety-solo/webui_timer) | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ❌ |
 
 </details>
 
@@ -62,6 +63,7 @@
 
 - [Advanced-ControlNet](https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet)
 - [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts)
+- [ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF)
 - [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack)
 - [ComfyUI-Impact-Subpack](https://github.com/ltdrdata/ComfyUI-Impact-Subpack)
 - [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager)

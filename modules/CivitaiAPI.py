@@ -60,7 +60,7 @@ class CivitAiAPI:
     IS_KAGGLE = 'KAGGLE_URL_BASE' in os.environ
 
     def __init__(self, token: Optional[str] = None, log: bool = True):
-        self.token = token or '65b66176dcf284b266579de57fbdc024'    # FAKE
+        self.token = token or 'f49f7c1a1a4b60890e4bdcdb8b194c70'    # FAKE
         self.logger = APILogger(verbose=log)
 
     # === Core Helpers ===
@@ -114,8 +114,9 @@ class CivitAiAPI:
         for img in images:
             url = img.get('url', '')
             ## Images are now downloaded via [Civitai-Extension]
-            # if self.IS_KAGGLE and img.get('nsfwLevel', 0) >= 4:
-            #     continue
+            # Return only for ComfyUI
+            if self.IS_KAGGLE and img.get('nsfwLevel', 0) >= 8:
+                continue
             if any(url.lower().endswith(ext) for ext in ['.gif', '.mp4', '.webm']):
                 continue
             ext = url.split('.')[-1].split('?')[0]
