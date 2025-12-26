@@ -79,9 +79,9 @@ def fetch_github_branches(repo_url, webui=None):
 
         # --- FILTERING LOGIC ---
         if webui == 'Classic':
-            branches = [b for b in branches if "neo" not in b.lower()]
+            branches = [b for b in branches if 'neo' not in b.lower()]
         elif webui == 'Neo':
-            branches = [b for b in branches if "classic" not in b.lower()]
+            branches = [b for b in branches if 'classic' not in b.lower()]
 
         return branches
 
@@ -104,7 +104,7 @@ WEBUI_PARAMS = {
     'Forge':   "--xformers --cuda-stream",                       # Remove: --disable-xformers --opt-sdp-attention --pin-shared-memory
     'Classic': "--xformers --cuda-stream --persistent-patches",  # Remove: --pin-shared-memory
     'Neo':     "--xformers --cuda-stream",
-    'ReForge': "--xformers --cuda-stream",                       # Remove: --pin-shared-memory
+    'ReForge': "--xformers",                                     # Remove: --pin-shared-memory --cuda-stream
     'SD-UX':   "--xformers --no-half-vae"
 }
 
