@@ -25,6 +25,8 @@ osENV = os.environ
 CD = os.chdir
 ipySys = get_ipython().system
 
+osENV['PYTHONWARNINGS'] = 'ignore'
+
 # Auto-convert *_path env vars to Path
 PATHS = {k: Path(v) for k, v in osENV.items() if k.endswith('_path')}
 HOME, VENV, SCR_PATH, SETTINGS_PATH = (
@@ -383,7 +385,7 @@ if __name__ == '__main__':
     args = parse_arguments()
     print('Please Wait...\n')
 
-    osENV['PYTHONWARNINGS'] = 'ignore'
+    osENV.setdefault('IIB_ACCESS_CONTROL', 'disable')
 
     # Initialize tunnel manager and services
     tunnel_port = 8188 if UI == 'ComfyUI' else 7860

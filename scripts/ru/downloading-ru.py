@@ -265,7 +265,7 @@ if commit_hash or branch != 'none':
         ipySys('git config --global user.email "you@example.com"')
         ipySys('git config --global user.name "Your Name"')
 
-        commit_hash = branch if branch != "none" and not commit_hash else commit_hash
+        commit_hash = branch if branch != 'none' and not commit_hash else commit_hash
 
         # Check for local changes (in the working directory and staged)
         stash_needed = subprocess.run(['git', 'diff', '--quiet'], cwd=WEBUI).returncode != 0 \
@@ -293,7 +293,7 @@ if commit_hash or branch != 'none':
             # Apply stash, saving the index
             ipySys('git stash pop --index || true')
 
-            # In case of conflicts, we resolve them while preserving local changes.
+            # In case of conflicts, resolve them while preserving local changes
             conflicts = subprocess.run(
                 ['git', 'diff', '--name-only', '--diff-filter=U'],
                 cwd=WEBUI, stdout=subprocess.PIPE, text=True
