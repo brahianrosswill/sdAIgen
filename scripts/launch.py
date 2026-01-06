@@ -386,6 +386,7 @@ if __name__ == '__main__':
     print('Please Wait...\n')
 
     osENV.setdefault('IIB_ACCESS_CONTROL', 'disable')
+    osENV.setdefault('IIB_SKIP_OPTIONAL_DEPS', '1')    # (thx: github.com/zanllp/sd-webui-infinite-image-browsing/issues/880)
 
     # Initialize tunnel manager and services
     tunnel_port = 8188 if UI == 'ComfyUI' else 7860
