@@ -108,7 +108,7 @@ class Tunnel:
         self.log_dir.mkdir(parents=True, exist_ok=True)
         self.callback = callback
 
-        self.WINDOWS = os.name == "nt"
+        self.WINDOWS = os.name == 'nt'
         self.logger = self._setup_logger(propagate)
 
     def _setup_logger(self, propagate: bool) -> logging.Logger:
@@ -157,10 +157,10 @@ class Tunnel:
         """Create a Tunnel instance with a pre-defined list of tunnels"""
         if not tunnel_list or not all(
             isinstance(i, dict)
-            and {"command", "pattern", "name"}.issubset(i)
-            and isinstance(i["command"], str)
-            and isinstance(i["pattern"], get_args(StrOrRegexPattern))
-            and isinstance(i["name"], str)
+            and {'command', 'pattern', 'name'}.issubset(i)
+            and isinstance(i['command'], str)
+            and isinstance(i['pattern'], get_args(StrOrRegexPattern))
+            and isinstance(i['name'], str)
             for i in tunnel_list
         ):
             raise ValueError(
@@ -218,11 +218,11 @@ class Tunnel:
         self.logger.debug(f"Adding tunnel {command=} {pattern=} {name=} {note=} {callback=}")
 
         self.tunnel_list.append({
-            "command": command,
-            "pattern": pattern,
-            "name": name,
-            "note": note,
-            "callback": callback,
+            'command': command,
+            'pattern': pattern,
+            'name': name,
+            'note': note,
+            'callback': callback,
         })
 
     def start(self) -> None:
@@ -294,8 +294,8 @@ class Tunnel:
 
         # Start tunnel jobs
         for tunnel in self.tunnel_list:
-            cmd = tunnel["command"].format(port=self.port)
-            name = tunnel["name"]
+            cmd = tunnel['command'].format(port=self.port)
+            name = tunnel['name']
             tunnel_thread = Thread(target=self._run, args=(cmd, name), daemon=True)
             tunnel_thread.start()
             self.jobs.append(tunnel_thread)
@@ -312,7 +312,7 @@ class Tunnel:
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.settimeout(1)
-                return s.connect_ex(("localhost", port)) == 0
+                return s.connect_ex(('localhost', port)) == 0
         except Exception:
             return False
 
@@ -346,18 +346,18 @@ class Tunnel:
     def _process_line(self, line: str) -> bool:
         """Process output line to extract URL"""
         for tunnel in self.tunnel_list:
-            matches = tunnel["pattern"].search(line)
+            matches = tunnel['pattern'].search(line)
             if matches:
                 link = matches.group().strip()
-                link = link if link.startswith("http") else "http://" + link
+                link = link if link.startswith('http') else 'http://' + link
 
                 with self.urls_lock:
-                    self.urls.append((link, tunnel.get("note"), tunnel["name"]))
+                    self.urls.append((link, tunnel.get('note'), tunnel['name']))
 
                 # Invoke individual callback
-                if tunnel.get("callback"):
+                if tunnel.get('callback'):
                     try:
-                        tunnel["callback"](link, tunnel.get("note"), tunnel["name"])
+                        tunnel['callback'](link, tunnel.get('note'), tunnel['name'])
                     except Exception:
                         self.logger.error("An error occurred while invoking URL callback", exc_info=True)
 
@@ -449,7 +449,7 @@ class Tunnel:
         if not self.stop_event.is_set() and self.urls:
             with self.urls_lock:
                 width = 100
-                tunnel_name_width = max(len(name) for _, _, name in self.urls)
+                tunnel_name_width = max(len(name) for _, _, name in self.urls) if self.urls else 6
 
                 print('\n\033[32m+' + '=' * (width - 2) + '+\033[0m\n')
                 for url, note, name in self.urls:
@@ -461,11 +461,11 @@ class Tunnel:
                     try:
                         self.callback(self.urls)
                     except Exception:
-                        self.logger.error("An error occurred while invoking URLs callback", exc_info=True)
+                        self.logger.error('An error occurred while invoking URLs callback', exc_info=True)
 
         # Log failed tunnels in debug mode
         if self.debug:
-            failed = set(t["name"] for t in self.tunnel_list) - set(name for _, _, name in self.urls)
+            failed = set(t['name'] for t in self.tunnel_list) - set(name for _, _, name in self.urls)
             if failed:
                 self.logger.debug(f"Failed to get URLs for: {', '.join(failed)}")
 
